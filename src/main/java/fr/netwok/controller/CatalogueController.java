@@ -28,12 +28,19 @@ public class CatalogueController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        updatePanierDisplay(); // Met à jour le bandeau du bas au lancement
-        afficherPlats("Entrées");
+        // On entoure par un try-catch pour éviter que l'appli ne se bloque
+        try {
+            MockService.getInstance().rafraichirCatalogue();
+        } catch (Exception e) {
+            System.err.println("Le catalogue n'a pas pu être chargé : " + e.getMessage());
+        }
+
+        updatePanierDisplay();
+        afficherPlats("Entrée");
     }
 
-    @FXML void filtrerEntrees() { afficherPlats("Entrées"); }
-    @FXML void filtrerPlats() { afficherPlats("Plats"); }
+    @FXML void filtrerEntrees() { afficherPlats("Entrée"); }
+    @FXML void filtrerPlats() { afficherPlats("Plat"); }
     
     @FXML
     void filtrerDesserts() {
@@ -65,100 +72,100 @@ public class CatalogueController implements Initializable {
     private void afficherPlats(String categorie) {
         gridPlats.getChildren().clear();
         List<Plat> plats = MockService.getInstance().getPlatsParCategorie(categorie);
+
+        // DEBUG VITAL : Est-ce que la liste contient quelque chose ?
+        System.out.println("🔍 Tentative d'affichage pour : " + categorie);
+        System.out.println("📊 Nombre de plats trouvés dans cette catégorie : " + plats.size());
+
+        if (plats.isEmpty()) {
+            System.out.println("⚠️ Attention : Aucun plat trouvé. Vérifiez l'orthographe dans MySQL !");
+        }
+
         for (Plat p : plats) {
             creerCartePlat(p);
         }
     }
 
     private void creerCartePlat(Plat p) {
-        // 1. La Carte Globale
+        // 1. Le conteneur principal (VBox)
         VBox carte = new VBox(10);
         carte.getStyleClass().add("card-produit");
         carte.setPrefWidth(280);
         carte.setAlignment(Pos.CENTER);
 
-        // 2. L'Image
+        // 2. L'Image avec sécurité
         ImageView imgView = new ImageView();
         imgView.setFitHeight(180);
         imgView.setFitWidth(240);
         imgView.setPreserveRatio(true);
-        
+
         try {
-            String imagePath = "/fr/netwok/images/" + p.getImagePath();
-            URL urlImg = getClass().getResource(imagePath);
-            if(urlImg != null) {
-                imgView.setImage(new Image(urlImg.toExternalForm()));
+            String imagePath = p.getImagePath();
+            if (imagePath == null || imagePath.isEmpty()) {
+                System.err.println("❌ L'ID " + p.getId() + " n'a pas de chemin d'image en BDD.");
             } else {
-                throw new Exception("Image introuvable");
+                String fullPath = "/fr/netwok/images/" + imagePath;
+                URL res = getClass().getResource(fullPath);
+
+                if (res != null) {
+                    imgView.setImage(new Image(res.toExternalForm()));
+                } else {
+                    // C'EST CETTE LIGNE QUI VA TE DONNER LA SOLUTION
+                    System.err.println("⚠️ Fichier introuvable : " + fullPath);
+                    System.err.println("   -> Vérifiez que le fichier existe bien dans src/main/resources" + fullPath);
+                }
             }
         } catch (Exception e) {
-            try {
-                imgView.setImage(new Image(getClass().getResource("/fr/netwok/images/logo_main.png").toExternalForm()));
-            } catch (Exception ex) { }
+            e.printStackTrace();
         }
 
-        // 3. Les Textes
-        Label nom = new Label(p.getNom());
-        nom.setStyle("-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;");
-        nom.setWrapText(true);
-        nom.setTextAlignment(TextAlignment.CENTER);
+        // 3. Les Textes (Utilisation des nouveaux getters)
+        Label name = new Label(p.getNom()); // ou p.getName() selon ton Plat.java
+        name.setStyle("-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;");
+        name.setWrapText(true);
+        name.setTextAlignment(TextAlignment.CENTER);
 
         Label desc = new Label(p.getDescription());
         desc.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 14px;");
         desc.setWrapText(true);
         desc.setTextAlignment(TextAlignment.CENTER);
 
-        Label prix = new Label(p.getPrixFormate());
-        prix.setStyle("-fx-text-fill: #00F0FF; -fx-font-size: 24px; -fx-font-weight: bold; -fx-font-family: 'Consolas';");
+        Label price = new Label(String.format("%.2f €", p.getPrix())); // ou p.getPrice()
+        price.setStyle("-fx-text-fill: #00F0FF; -fx-font-size: 24px; -fx-font-weight: bold;");
 
-        // 4. LE SÉLECTEUR DE QUANTITÉ (Nouveau !)
-        
-        // On vérifie combien il y en a déjà dans le panier pour afficher le bon chiffre
+        // 4. Sélecteur de quantité
         int qteActuelle = MockService.getInstance().getQuantiteDuPlat(p);
-        
-        HBox quantityBox = new HBox();
-        quantityBox.getStyleClass().add("box-quantite");
-        quantityBox.setAlignment(Pos.CENTER);
-        
-        Button btnMinus = new Button("-");
-        btnMinus.getStyleClass().add("btn-minus");
-        
-        Label lblQty = new Label(String.valueOf(qteActuelle));
-        lblQty.getStyleClass().add("lbl-quantite");
-        
-        Button btnPlus = new Button("+");
-        btnPlus.getStyleClass().add("btn-plus");
 
-        // ACTION : BOUTON PLUS (+)
+        HBox quantityBox = new HBox(15);
+        quantityBox.setAlignment(Pos.CENTER);
+
+        Button btnMinus = new Button("-");
+        btnMinus.setStyle("-fx-cursor: hand;");
+
+        Label lblQty = new Label(String.valueOf(qteActuelle));
+        lblQty.setStyle("-fx-text-fill: white; -fx-font-size: 18px;");
+
+        Button btnPlus = new Button("+");
+        btnPlus.setStyle("-fx-cursor: hand;");
+
         btnPlus.setOnAction(e -> {
             MockService.getInstance().ajouterAuPanier(p);
-            
-            // Mise à jour visuelle locale
-            int newQte = Integer.parseInt(lblQty.getText()) + 1;
-            lblQty.setText(String.valueOf(newQte));
-            
-            // Mise à jour de la barre du bas
+            lblQty.setText(String.valueOf(MockService.getInstance().getQuantiteDuPlat(p)));
             updatePanierDisplay();
         });
 
-        // ACTION : BOUTON MOINS (-)
         btnMinus.setOnAction(e -> {
-            int currentQte = Integer.parseInt(lblQty.getText());
-            if (currentQte > 0) {
+            if (MockService.getInstance().getQuantiteDuPlat(p) > 0) {
                 MockService.getInstance().retirerDuPanier(p);
-                
-                // Mise à jour visuelle locale
-                lblQty.setText(String.valueOf(currentQte - 1));
-                
-                // Mise à jour de la barre du bas
+                lblQty.setText(String.valueOf(MockService.getInstance().getQuantiteDuPlat(p)));
                 updatePanierDisplay();
             }
         });
 
         quantityBox.getChildren().addAll(btnMinus, lblQty, btnPlus);
 
-        // 5. Assemblage final
-        carte.getChildren().addAll(imgView, nom, desc, prix, quantityBox);
+        // 5. Assemblage
+        carte.getChildren().addAll(imgView, name, desc, price, quantityBox);
         gridPlats.getChildren().add(carte);
     }
 }

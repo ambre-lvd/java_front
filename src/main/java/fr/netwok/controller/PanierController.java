@@ -2,6 +2,7 @@ package fr.netwok.controller;
 
 import fr.netwok.NetwokApp;
 import fr.netwok.model.Plat;
+import fr.netwok.service.ApiClient;
 import fr.netwok.service.MockService;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -21,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PanierController implements Initializable {
 
@@ -33,48 +35,35 @@ public class PanierController implements Initializable {
     }
 
     private void chargerPanier() {
-        // 1. Nettoyer l'affichage précédent
         vboxPanier.getChildren().clear();
-        
-        // 2. Récupérer tous les articles
+
         List<Plat> toutLePanier = MockService.getInstance().getPanier();
-        
-        // 3. Astuce pour ne pas afficher de doublons : on garde une liste des ID déjà traités
         Set<String> idsTraites = new HashSet<>();
 
-        // Si le panier est vide
         if (toutLePanier.isEmpty()) {
-            Label vide = new Label("Votre panier est vide pour le moment.");
+            Label vide = new Label("Votre panier est vide.");
             vide.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 24px;");
             vboxPanier.getChildren().add(vide);
         }
 
-        // 4. Parcourir le panier et créer une ligne pour chaque plat unique
         for (Plat p : toutLePanier) {
             if (!idsTraites.contains(p.getId())) {
                 idsTraites.add(p.getId());
-                
-                // On récupère la quantité réelle
                 int qte = MockService.getInstance().getQuantiteDuPlat(p);
-                
-                // Créer la ligne visuelle
                 vboxPanier.getChildren().add(creerLigneProduit(p, qte));
             }
         }
 
-        // 5. Afficher le total global
         double total = MockService.getInstance().getTotalPanier();
         lblTotalFinal.setText(String.format("%.2f €", total));
     }
 
     private HBox creerLigneProduit(Plat p, int qte) {
-        // Conteneur de la ligne (Style "Carte en verre")
         HBox ligne = new HBox(20);
         ligne.setAlignment(Pos.CENTER_LEFT);
-        ligne.setStyle("-fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 15; -fx-padding: 15; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 15;");
+        ligne.setStyle("-fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 15; -fx-padding: 15;");
         ligne.setPrefHeight(100);
 
-        // Image (Petite vignette)
         ImageView img = new ImageView();
         img.setFitHeight(80);
         img.setFitWidth(100);
@@ -82,41 +71,61 @@ public class PanierController implements Initializable {
         try {
             String path = "/fr/netwok/images/" + p.getImagePath();
             img.setImage(new Image(getClass().getResource(path).toExternalForm()));
-        } catch (Exception e) { /* Pas d'image, tant pis */ }
+        } catch (Exception e) { /* Image par défaut si erreur */ }
 
-        // Nom du produit
         Label nom = new Label(p.getNom());
-        nom.setStyle("-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: bold;");
-        nom.setMinWidth(300);
+        nom.setStyle("-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;");
+        nom.setMinWidth(250);
 
-        // Quantité (ex: "x 2")
         Label lblQte = new Label("x " + qte);
-        lblQte.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 20px;");
-        
-        // Espace flexible
+        lblQte.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 18px;");
+
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // Prix total pour cette ligne (Prix unitaire * Quantité)
         double sousTotal = p.getPrix() * qte;
         Label prix = new Label(String.format("%.2f €", sousTotal));
-        prix.setStyle("-fx-text-fill: #00F0FF; -fx-font-size: 28px; -fx-font-weight: bold; -fx-font-family: 'Consolas';");
+        prix.setStyle("-fx-text-fill: #00F0FF; -fx-font-size: 24px; -fx-font-weight: bold;");
 
-        // Bouton Supprimer (Croix rouge)
         Button btnSupprimer = new Button("X");
-        btnSupprimer.setStyle("-fx-background-color: transparent; -fx-text-fill: #FF007F; -fx-font-weight: bold; -fx-font-size: 18px; -fx-cursor: hand; -fx-border-color: #FF007F; -fx-border-radius: 50%;");
+        btnSupprimer.setStyle("-fx-background-color: transparent; -fx-text-fill: #FF007F; -fx-cursor: hand;");
         btnSupprimer.setOnAction(e -> {
-            // Retire TOUS les exemplaires de ce produit
             while(MockService.getInstance().getQuantiteDuPlat(p) > 0) {
                 MockService.getInstance().retirerDuPanier(p);
             }
-            // Recharge la page pour mettre à jour
-            chargerPanier(); 
+            chargerPanier();
         });
 
-        // Assemblage
         ligne.getChildren().addAll(img, nom, lblQte, spacer, prix, btnSupprimer);
         return ligne;
+    }
+
+    /**
+     * ACTION : Envoyer la commande au serveur Java (Back-end)
+     */
+    @FXML
+    void validerCommande() {
+        List<Plat> panier = MockService.getInstance().getPanier();
+        if (panier.isEmpty()) return;
+
+        try {
+            // Extraction des IDs (E1, P2...) pour l'envoi API
+            List<String> ids = panier.stream()
+                    .map(Plat::getId)
+                    .collect(Collectors.toList());
+
+            // Appel de l'ApiClient (Table 99 par défaut)
+            ApiClient.sendOrder(99, ids);
+
+            // Succès : Vider et quitter
+            MockService.getInstance().viderPanier();
+            System.out.println("✅ Commande envoyée avec succès au serveur !");
+            retourCatalogue();
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lors de l'envoi : " + e.getMessage());
+            // Ici tu pourrais ajouter une alerte visuelle pour l'utilisateur
+        }
     }
 
     @FXML
