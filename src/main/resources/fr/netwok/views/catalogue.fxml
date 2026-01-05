@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.effect.Glow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="rootPane" styleClass="root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.netwok.controller.CatalogueController">
+
+    <top>
+        <VBox alignment="CENTER" spacing="20.0" styleClass="tab-bar-container" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="10.0" top="20.0" />
+            </padding>
+            
+            <HBox alignment="CENTER" spacing="15.0">
+                <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/logo_main.png" />
+                    </image>
+                    <effect>
+                        <Glow level="0.8" />
+                    </effect>
+                </ImageView>
+                <Label styleClass="titre-app" text="NetWok">
+                    <font>
+                        <Font size="36.0" />
+                    </font>
+                </Label>
+            </HBox>
+
+            <HBox alignment="CENTER" spacing="30.0">
+                <ToggleButton fx:id="tabEntrees" onAction="#filtrerEntrees" selected="true" styleClass="btn-tab" text="ENTRÉES">
+                    <toggleGroup>
+                        <ToggleGroup fx:id="groupeCategories" />
+                    </toggleGroup>
+                </ToggleButton>
+                <ToggleButton fx:id="tabPlats" onAction="#filtrerPlats" styleClass="btn-tab" text="PLATS" toggleGroup="$groupeCategories" />
+                <ToggleButton fx:id="tabDesserts" onAction="#filtrerDesserts" styleClass="btn-tab" text="DESSERTS / BOISSONS" toggleGroup="$groupeCategories" />
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" BorderPane.alignment="CENTER">
+            <content>
+                <FlowPane fx:id="gridPlats" alignment="TOP_CENTER" hgap="30.0" vgap="30.0">
+                    <padding>
+                        <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
+                    </padding>
+                </FlowPane>
+            </content>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="barre-panier" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="20.0" left="40.0" right="40.0" top="20.0" />
+            </padding>
+            
+            <VBox>
+                <Label text="MON PANIER" textFill="#94a3b8">
+                    <font><Font name="System Bold" size="14.0" /></font>
+                </Label>
+                <Label fx:id="lblNbArticles" text="0 articles" textFill="WHITE">
+                    <font><Font size="18.0" /></font>
+                </Label>
+            </VBox>
+            
+            <Region HBox.hgrow="ALWAYS" />
+            
+            <Label text="TOTAL :" textFill="#94a3b8">
+                <font><Font size="24.0" /></font>
+            </Label>
+            <Label fx:id="lblTotal" text="0.00 €" textFill="#00f0ff">
+                <font><Font name="System Bold" size="36.0" /></font>
+                <effect>
+                    <Glow level="0.5" />
+                </effect>
+            </Label>
+            
+            <Button onAction="#voirPanier" styleClass="btn-action" text="VOIR PANIER &gt;">
+                <font><Font size="20.0" /></font>
+                <HBox.margin>
+                    <Insets left="30.0" />
+                </HBox.margin>
+            </Button>
+        </HBox>
+    </bottom>
+
+</BorderPane>

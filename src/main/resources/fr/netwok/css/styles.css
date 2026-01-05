@@ -1,0 +1,245 @@
+/* ==================================================================
+   NETWOK - CHARTE GRAPHIQUE "SEOUL NIGHT"
+   Ambiance : Cyberpunk, Street Food, Néons, Mode Sombre
+   ================================================================== */
+
+/* 1. CHARGEMENT DE LA POLICE PERSONNALISÉE */
+/* Indispensable pour le style "Asiatique" du titre */
+@font-face {
+    font-family: 'Shojumaru';
+    src: url('../fonts/Shojumaru-Regular.ttf');
+}
+
+/* 2. CONFIGURATION GLOBALE */
+.root {
+    -fx-background-color: #050505; /* Noir profond (Midnight Black) */
+    -fx-font-family: 'Segoe UI', sans-serif; /* Police moderne par défaut pour le reste */
+}
+
+/* 3. TYPOGRAPHIE & TITRES */
+
+/* Le Logo principal (Écran d'accueil) */
+.titre-app {
+    -fx-text-fill: white;
+    -fx-font-size: 96px;       /* Très grand pour l'impact */
+    -fx-font-weight: normal;   /* Shojumaru est déjà grasse, pas besoin de bold */
+    
+    /* C'est ici qu'on applique votre police téléchargée */
+    -fx-font-family: 'Shojumaru';
+    
+    /* Double effet de néon (Cyan interne + flou externe) */
+    -fx-effect: dropshadow(gaussian, #00F0FF, 30, 0.4, 0, 0); 
+}
+
+/* Les Sous-titres (Style "Code") */
+.sous-titre {
+    -fx-text-fill: #94A3B8;    /* Gris bleuté tech */
+    -fx-font-size: 28px;
+    -fx-font-family: 'Consolas', 'Monospaced'; /* Police de développeur */
+    -fx-tracking: 2;           /* Espacement des lettres */
+}
+
+/* Titres de section (ex: "NOS ENTRÉES") */
+.titre-section {
+    -fx-text-fill: #00F0FF;    /* Cyan électrique */
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 20 0;
+}
+
+/* 4. BOUTONS & INTERACTION */
+
+/* Le Gros Bouton "TOUCH TO START" (Rose Fluo) */
+.btn-action {
+    -fx-background-color: rgba(255, 0, 127, 0.05); /* Fond quasi transparent */
+    -fx-border-color: #FF007F;         /* Bordure Rose Électrique */
+    -fx-border-width: 4px;
+    -fx-border-radius: 15px;
+    -fx-background-radius: 15px;
+    
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 42px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 25 80 25 80; /* Large zone de touche */
+    
+    /* Lueur rose permanente */
+    -fx-effect: dropshadow(gaussian, rgba(255, 0, 127, 0.5), 20, 0.3, 0, 0);
+    -fx-transition: all 0.3s;
+}
+
+.btn-action:hover {
+    -fx-background-color: rgba(255, 0, 127, 0.2); 
+    -fx-border-color: #FF55A3; /* Rose plus clair au survol */
+    -fx-effect: dropshadow(gaussian, #FF007F, 40, 0.7, 0, 0); /* Boom de lumière */
+    -fx-scale-x: 1.05; /* Léger grossissement */
+    -fx-scale-y: 1.05;
+}
+
+.btn-action:pressed {
+    -fx-background-color: #FF007F;
+    -fx-text-fill: #000000;
+}
+
+/* Boutons de Navigation (Catégories) */
+.btn-categorie {
+    -fx-background-color: transparent;
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-border-color: transparent transparent #334155 transparent; /* Ligne grise en bas */
+    -fx-border-width: 3px;
+    -fx-cursor: hand;
+    -fx-padding: 15 30 15 30;
+}
+
+.btn-categorie:hover {
+    -fx-text-fill: white;
+    -fx-border-color: transparent transparent #FFFFFF transparent;
+}
+
+/* Onglet Actif (Sélectionné) */
+.btn-categorie-active {
+    -fx-text-fill: #00F0FF;
+    -fx-border-color: transparent transparent #00F0FF transparent; /* Ligne Cyan */
+    -fx-effect: dropshadow(gaussian, rgba(0, 240, 255, 0.4), 15, 0, 0, 5);
+}
+
+/* Petits boutons ronds (Langue, Retour) */
+.btn-round {
+    -fx-background-color: transparent;
+    -fx-border-color: #334155;
+    -fx-border-radius: 50%;
+    -fx-background-radius: 50%;
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-min-width: 60px;
+    -fx-min-height: 60px;
+    -fx-cursor: hand;
+}
+
+.btn-round:hover {
+    -fx-border-color: #00F0FF;
+    -fx-text-fill: #00F0FF;
+    -fx-effect: dropshadow(gaussian, #00F0FF, 10, 0.5, 0, 0);
+}
+
+/* 5. CARTES PRODUITS (GLASSMORPHISM) */
+
+.card-plat {
+    /* Fond effet verre teinté sombre */
+    -fx-background-color: rgba(30, 41, 59, 0.6); 
+    -fx-background-radius: 20px;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-radius: 20px;
+    -fx-border-width: 1px;
+    
+    /* Ombre portée douce pour détacher du fond noir */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 20, 0, 0, 10);
+    -fx-padding: 15;
+}
+
+.text-plat-nom {
+    -fx-text-fill: white;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Segoe UI';
+}
+
+.text-plat-desc {
+    -fx-text-fill: #CBD5E1; /* Gris clair */
+    -fx-font-size: 14px;
+    -fx-wrap-text: true;
+}
+
+.text-prix {
+    -fx-text-fill: #00F0FF; /* Prix en Cyan pour ressortir */
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Consolas', monospace;
+}
+
+/* Bouton "Ajouter" dans la carte */
+.btn-ajouter {
+    -fx-background-color: #FF007F;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 30;
+    -fx-cursor: hand;
+}
+
+/* La barre de navigation (Onglets) */
+.tab-bar-container {
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.2) transparent;
+    -fx-border-width: 1px;
+}
+
+.btn-tab {
+    -fx-background-color: transparent;
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-border-color: transparent transparent transparent transparent;
+    -fx-border-width: 3px;
+    -fx-padding: 10 30 10 30;
+}
+
+.btn-tab:selected, .btn-tab:hover {
+    -fx-text-fill: #FF007F; /* Rose Fluo */
+    -fx-border-color: transparent transparent #FF007F transparent;
+    -fx-effect: dropshadow(gaussian, rgba(255, 0, 127, 0.4), 15, 0, 0, 0);
+}
+
+/* Le ScrollPane (Zone de défilement) invisible */
+.scroll-pane {
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+}
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Carte Produit (L'effet Verre) */
+.card-produit {
+    -fx-background-color: rgba(30, 41, 59, 0.4); /* Fond semi-transparent */
+    -fx-background-radius: 20px;
+    -fx-border-color: rgba(255, 255, 255, 0.1); /* Bordure subtile */
+    -fx-border-radius: 20px;
+    -fx-border-width: 1px;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 5);
+}
+
+.card-produit:hover {
+    -fx-border-color: #00F0FF; /* Bordure Cyan au survol */
+    -fx-effect: dropshadow(gaussian, #00F0FF, 15, 0.3, 0, 0);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* Bouton Ajouter (+) dans la carte */
+.btn-card-add {
+    -fx-background-color: transparent;
+    -fx-border-color: #FF007F;
+    -fx-border-radius: 50%;
+    -fx-text-fill: #FF007F;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-min-width: 40px;
+    -fx-min-height: 40px;
+}
+
+.btn-card-add:hover {
+    -fx-background-color: #FF007F;
+    -fx-text-fill: white;
+}
+
+/* La Barre Panier en bas */
+.barre-panier {
+    -fx-background-color: rgba(15, 23, 42, 0.95); /* Très sombre */
+    -fx-border-color: #00F0FF transparent transparent transparent; /* Ligne Cyan au dessus */
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 240, 255, 0.2), 20, 0, 0, -5);
+}
