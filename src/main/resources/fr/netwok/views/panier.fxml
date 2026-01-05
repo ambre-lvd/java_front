@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.effect.Glow?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane styleClass="root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.netwok.controller.PanierController">
+
+    <top>
+        <Label styleClass="titre-app" text="VOTRE COMMANDE" BorderPane.alignment="CENTER">
+            <font><Font size="60.0"/></font>
+            <padding><Insets top="30.0" bottom="20.0"/></padding>
+            <effect><Glow level="0.8"/></effect>
+        </Label>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="scroll-pane" BorderPane.alignment="CENTER">
+            <content>
+                <VBox fx:id="vboxPanier" alignment="TOP_CENTER" spacing="15.0">
+                    <padding><Insets top="20" bottom="50" left="100" right="100"/></padding>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <VBox>
+            <HBox alignment="CENTER_RIGHT" spacing="20.0" style="-fx-background-color: rgba(30, 41, 59, 0.8); -fx-padding: 20;">
+                <Label text="TOTAL À PAYER :" textFill="#94a3b8">
+                    <font><Font size="28.0"/></font>
+                </Label>
+                <Label fx:id="lblTotalFinal" text="0.00 €" textFill="#00f0ff">
+                    <font><Font name="System Bold" size="48.0"/></font>
+                    <effect><Glow level="0.6"/></effect>
+                </Label>
+                <Region prefWidth="80.0" />
+            </HBox>
+
+            <HBox alignment="CENTER" spacing="50.0" styleClass="barre-panier">
+                <padding><Insets bottom="30.0" top="30.0"/></padding>
+                
+                <Button onAction="#retourCatalogue" styleClass="btn-round" text="&lt;" style="-fx-font-size: 24px;"/>
+                
+                <Button onAction="#retourCatalogue" style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-border-color: #94a3b8; -fx-border-radius: 10; -fx-border-width: 2; -fx-cursor: hand;" text="CONTINUER LES ACHATS">
+                    <font><Font size="20.0"/></font>
+                    <padding><Insets top="15" bottom="15" left="30" right="30"/></padding>
+                </Button>
+                
+                <Region HBox.hgrow="ALWAYS" />
+
+                <Button styleClass="btn-action" text="PAYER MAINTENANT">
+                    <font><Font size="28.0"/></font>
+                    <padding><Insets top="15" bottom="15" left="50" right="50"/></padding>
+                </Button>
+            </HBox>
+        </VBox>
+    </bottom>
+
+</BorderPane>

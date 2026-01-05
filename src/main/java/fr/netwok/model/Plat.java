@@ -18,6 +18,7 @@ public class Plat {
     }
 
     // Getters
+    public String getId() { return id; }
     public String getNom() { return nom; }
     public String getDescription() { return description; }
     public double getPrix() { return prix; }

@@ -243,3 +243,48 @@
     -fx-border-width: 2px;
     -fx-effect: dropshadow(gaussian, rgba(0, 240, 255, 0.2), 20, 0, 0, -5);
 }
+
+/* --- SÉLECTEUR DE QUANTITÉ --- */
+
+.box-quantite {
+    -fx-background-color: white;
+    -fx-background-radius: 10px;
+    -fx-alignment: center;
+    -fx-padding: 5;
+    -fx-spacing: 10;
+    -fx-max-width: 160px;
+}
+
+.btn-minus, .btn-plus {
+    -fx-background-color: transparent;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 0 10 0 10;
+}
+
+.btn-minus {
+    -fx-text-fill: #94A3B8; /* Gris */
+}
+
+.btn-minus:hover {
+    -fx-text-fill: #FF007F; /* Devient rose au survol */
+}
+
+.btn-plus {
+    -fx-text-fill: #FF8C00; /* Orange/Or comme sur la photo */
+}
+
+.btn-plus:hover {
+    -fx-text-fill: #FF007F; /* Rose au survol */
+    -fx-scale-x: 1.2;
+    -fx-scale-y: 1.2;
+}
+
+.lbl-quantite {
+    -fx-text-fill: #050505; /* Texte noir sur fond blanc */
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-min-width: 30px;
+    -fx-alignment: center;
+}
