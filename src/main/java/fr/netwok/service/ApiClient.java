@@ -6,13 +6,13 @@ import java.net.URI;
 import java.net.http.*;
 import java.util.List;
 import java.util.Arrays;
+import java.util.stream.Collectors; // AJOUT : Import indispensable pour .collect()
 
 public class ApiClient {
     private static final String BASE_URL = "http://localhost:7001";
     private static final HttpClient client = HttpClient.newHttpClient();
     private static final Gson gson = new Gson();
 
-    // Récupérer le menu depuis le Back-end
     public static List<Plat> fetchMenu() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/menu"))
@@ -20,21 +20,15 @@ public class ApiClient {
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        // Transforme le JSON reçu en liste d'objets Plat
         return Arrays.asList(gson.fromJson(response.body(), Plat[].class));
     }
 
-    // Envoyer la commande finale au Back-end
-    public static void sendOrder(int tableNumber, List<String> dishIds) throws Exception {
-        // Objet temporaire pour correspondre au format attendu par le Back
-        var data = new Object() {
-            int tableNumberValue = tableNumber;
-            List<String> dishIdsList = dishIds;
-        };
+    public static void sendOrder(int tableNumber, List<Plat> panier) throws Exception {
+        // On crée une structure simple (Map ou classe dédiée)
+        // Utiliser une classe interne static est plus propre que l'objet anonyme "var orderData"
+        OrderRequest data = new OrderRequest(tableNumber, panier);
 
-        String json = gson.toJson(data)
-                .replace("tableNumberValue", "tableNumber")
-                .replace("dishIdsList", "dishIds");
+        String json = gson.toJson(data);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/orders"))
@@ -42,6 +36,40 @@ public class ApiClient {
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
 
-        client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != 200 && response.statusCode() != 201) {
+            throw new RuntimeException("Erreur serveur : " + response.statusCode());
+        }
+    }
+
+    // --- CLASSES DE STRUCTURE POUR GSON ---
+
+    // Structure globale de la commande
+    private static class OrderRequest {
+        int tableNumber;
+        List<ItemData> items;
+
+        OrderRequest(int tableNumber, List<Plat> panier) {
+            this.tableNumber = tableNumber;
+            this.items = panier.stream()
+                    .map(p -> new ItemData(p.getId(), 1, 0, 0))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    // Structure d'un plat dans la commande (doit être STATIC)
+    private static class ItemData {
+        String dishId;
+        int quantity;
+        int piment;
+        int accompagnement;
+
+        ItemData(String id, int q, int p, int a) {
+            this.dishId = id;
+            this.quantity = q;
+            this.piment = p;
+            this.accompagnement = a;
+        }
     }
 }
