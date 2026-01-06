@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" 
+      fx:controller="fr.netwok.controller.RecuCommandeController"
+      styleClass="root-container"
+      stylesheets="@../css/styles.css"
+      alignment="CENTER"
+      spacing="20">
+
+    <!-- Conteneur du ticket de caisse -->
+    <VBox alignment="CENTER" VBox.vgrow="ALWAYS" style="-fx-padding: 40;">
+        
+        <!-- Ticket de caisse principal -->
+        <VBox styleClass="ticket-container" spacing="0">
+            
+            <!-- En-tête du ticket -->
+            <VBox alignment="CENTER" styleClass="ticket-header" spacing="10">
+                <padding>
+                    <Insets top="30" right="20" bottom="30" left="20"/>
+                </padding>
+                <Label text="🧾" style="-fx-font-size: 48px;"/>
+                <Label text="TICKET DE CAISSE" styleClass="ticket-title"/>
+                <Label text="NETWOK" styleClass="ticket-subtitle"/>
+            </VBox>
+            
+            <!-- Séparateur -->
+            <Separator styleClass="ticket-separator"/>
+            
+            <!-- Informations de commande -->
+            <VBox spacing="8" styleClass="ticket-info">
+                <padding>
+                    <Insets top="15" right="20" bottom="15" left="20"/>
+                </padding>
+                
+                <HBox spacing="40">
+                    <Label text="N° Commande :" styleClass="ticket-label"/>
+                    <Label fx:id="lblNumCommande" text="CMD-2025-001" styleClass="ticket-value"/>
+                </HBox>
+                
+                <HBox spacing="40">
+                    <Label text="Table :" styleClass="ticket-label"/>
+                    <Label fx:id="lblNumTable" text="12" styleClass="ticket-value"/>
+                </HBox>
+                
+                <HBox spacing="40">
+                    <Label text="Client :" styleClass="ticket-label"/>
+                    <Label fx:id="lblNomClient" text="Non spécifié" styleClass="ticket-value"/>
+                </HBox>
+                
+                <HBox spacing="40">
+                    <Label text="Heure :" styleClass="ticket-label"/>
+                    <Label fx:id="lblHeure" text="12:34:56" styleClass="ticket-value"/>
+                </HBox>
+            </VBox>
+            
+            <!-- Séparateur -->
+            <Separator styleClass="ticket-separator"/>
+            
+            <!-- Articles -->
+            <VBox fx:id="vboxArticlesTicket" spacing="5" styleClass="ticket-articles">
+                <padding>
+                    <Insets top="15" right="20" bottom="15" left="20"/>
+                </padding>
+            </VBox>
+            
+            <!-- Séparateur gras -->
+            <Separator styleClass="ticket-separator-bold"/>
+            
+            <!-- Totaux -->
+            <VBox spacing="8" styleClass="ticket-totaux">
+                <padding>
+                    <Insets top="15" right="20" bottom="15" left="20"/>
+                </padding>
+                
+                <HBox spacing="40" alignment="CENTER_RIGHT">
+                    <Label text="Sous-total :" styleClass="ticket-label"/>
+                    <Label fx:id="lblSousTotal" text="0,00$" styleClass="ticket-total-value"/>
+                </HBox>
+                
+                <HBox spacing="40" alignment="CENTER_RIGHT">
+                    <Label text="Taxes (15%) :" styleClass="ticket-label"/>
+                    <Label fx:id="lblTaxes" text="0,00$" styleClass="ticket-total-value"/>
+                </HBox>
+                
+                <Separator styleClass="ticket-separator-light"/>
+                
+                <HBox spacing="40" alignment="CENTER_RIGHT">
+                    <Label text="TOTAL :" styleClass="ticket-total-label"/>
+                    <Label fx:id="lblTotal" text="0,00$" styleClass="ticket-total-final"/>
+                </HBox>
+            </VBox>
+            
+            <!-- Séparateur -->
+            <Separator styleClass="ticket-separator"/>
+            
+            <!-- Message de merci -->
+            <VBox alignment="CENTER" spacing="10" styleClass="ticket-footer">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+                <Label text="Merci de votre commande !" styleClass="ticket-thank-you"/>
+                <Label text="À bientôt chez NETWOK" styleClass="ticket-goodbye"/>
+            </VBox>
+            
+        </VBox>
+        
+        <!-- Bouton Terminé -->
+        <Button fx:id="btnTermine" text="✓ Terminé" 
+                styleClass="btn-termine" 
+                onAction="#terminerCommande"
+                style="-fx-padding: 15 50 15 50; -fx-font-size: 20px; -fx-margin: 30 0 0 0;"/>
+        
+    </VBox>
+    
+    <!-- Message de remerciement (caché au départ) -->
+    <VBox fx:id="vboxMessage" alignment="CENTER" VBox.vgrow="ALWAYS" 
+          style="-fx-background-color: rgba(0, 0, 0, 0.9); -fx-opacity: 0;">
+        <Label text="Merci de votre commande !" 
+               style="-fx-text-fill: #00F0FF; -fx-font-size: 48px; -fx-font-weight: bold;"/>
+        <Label text="À très bientôt ! 🍜" 
+               style="-fx-text-fill: #FF007F; -fx-font-size: 32px; -fx-margin: 20 0 0 0;"/>
+    </VBox>
+
+</VBox>

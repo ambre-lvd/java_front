@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" 
+      fx:controller="fr.netwok.controller.DetailPlatController"
+      styleClass="root-container"
+      stylesheets="@../css/styles.css"
+      spacing="0">
+
+    <!-- Header avec bouton retour -->
+    <HBox styleClass="header" alignment="CENTER_LEFT" spacing="15">
+        <padding>
+            <Insets top="20" right="30" bottom="20" left="30"/>
+        </padding>
+        
+        <Button fx:id="btnRetour" text="← Retour" styleClass="btn-retour" onAction="#retourCatalogue"/>
+        
+        <Region HBox.hgrow="ALWAYS"/>
+        
+        <Label text="Détail du plat" styleClass="header-title"/>
+        
+        <Region HBox.hgrow="ALWAYS"/>
+        
+        <!-- Zone panier -->
+        <HBox alignment="CENTER_RIGHT" spacing="15">
+            <Label fx:id="lblNbArticles" text="0 articles" styleClass="header-info"/>
+            <Label fx:id="lblTotal" text="0,00 €" styleClass="header-price"/>
+            <Button text="🛒 Panier" styleClass="btn-panier" onAction="#voirPanier"/>
+        </HBox>
+    </HBox>
+
+    <!-- Contenu principal -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll-container">
+        <VBox spacing="30" styleClass="detail-container">
+            <padding>
+                <Insets top="40" right="60" bottom="40" left="60"/>
+            </padding>
+            
+            <HBox spacing="50" alignment="TOP_LEFT">
+                <!-- Colonne gauche : Image -->
+                <VBox alignment="TOP_CENTER" spacing="15" styleClass="image-section">
+                    <ImageView fx:id="imgPlat" fitWidth="450" fitHeight="400" preserveRatio="true" 
+                               styleClass="detail-image"/>
+                </VBox>
+                
+                <!-- Colonne droite : Informations -->
+                <VBox spacing="25" HBox.hgrow="ALWAYS" styleClass="info-section">
+                    <!-- Nom du plat -->
+                    <Label fx:id="lblNom" text="Nom du plat" styleClass="plat-nom"/>
+                    
+                    <!-- Prix -->
+                    <Label fx:id="lblPrix" text="0,00 €" styleClass="plat-prix"/>
+                    
+                    <!-- Description -->
+                    <VBox spacing="10">
+                        <Label text="Description" styleClass="section-title"/>
+                        <Text fx:id="txtDescription" wrappingWidth="500" styleClass="plat-description"/>
+                    </VBox>
+                    
+                    <!-- Informations additionnelles -->
+                    <VBox spacing="10" fx:id="vboxInfos">
+                        <Label text="Informations" styleClass="section-title"/>
+                        <Text fx:id="txtInfos" wrappingWidth="500" styleClass="plat-infos" 
+                              text="Allergènes : gluten, soja&#10;Calories : 450 kcal&#10;Temps de préparation : 15 min"/>
+                    </VBox>
+                    
+                    <!-- Options de personnalisation -->
+                    <VBox spacing="20" styleClass="options-container">
+                        <Label text="Options" styleClass="section-title"/>
+                        
+                        <!-- Niveau d'épice -->
+                        <VBox spacing="10" styleClass="option-group">
+                            <Label text="Épice : doux / moyen / fort" styleClass="option-label"/>
+                            <HBox spacing="15">
+                                <RadioButton fx:id="rbDoux" text="Doux" toggleGroup="$epice" selected="true" 
+                                           styleClass="radio-option"/>
+                                <RadioButton fx:id="rbMoyen" text="Moyen" toggleGroup="$epice" 
+                                           styleClass="radio-option"/>
+                                <RadioButton fx:id="rbFort" text="Fort" toggleGroup="$epice" 
+                                           styleClass="radio-option"/>
+                            </HBox>
+                        </VBox>
+                        
+                        <!-- Accompagnement -->
+                        <VBox spacing="10" styleClass="option-group">
+                            <Label text="Accompagnement : riz / nouilles" styleClass="option-label"/>
+                            <HBox spacing="15">
+                                <RadioButton fx:id="rbRiz" text="Riz" toggleGroup="$accompagnement" selected="true" 
+                                           styleClass="radio-option"/>
+                                <RadioButton fx:id="rbNouilles" text="Nouilles" toggleGroup="$accompagnement" 
+                                           styleClass="radio-option"/>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+                    
+                    <!-- Sélecteur de quantité -->
+                    <VBox spacing="15" styleClass="quantity-section">
+                        <Label text="Quantité" styleClass="section-title"/>
+                        <HBox spacing="20" alignment="CENTER_LEFT">
+                            <Button fx:id="btnMinus" text="-" styleClass="btn-quantity" onAction="#diminuerQuantite"/>
+                            <Label fx:id="lblQuantite" text="1" styleClass="quantity-label"/>
+                            <Button fx:id="btnPlus" text="+" styleClass="btn-quantity" onAction="#augmenterQuantite"/>
+                        </HBox>
+                    </VBox>
+                    
+                    <!-- Bouton Ajouter au panier -->
+                    <Button fx:id="btnAjouter" text="Ajouter au panier" 
+                            styleClass="btn-ajouter-panier" onAction="#ajouterAuPanier"
+                            maxWidth="Infinity"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </ScrollPane>
+</VBox>
