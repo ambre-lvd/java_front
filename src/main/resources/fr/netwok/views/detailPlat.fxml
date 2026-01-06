@@ -118,6 +118,10 @@
                             styleClass="btn-ajouter-panier" onAction="#ajouterAuPanier"
                             maxWidth="Infinity"/>
                 </VBox>
+                <Label fx:id="languageDisplay" text="Langue sélectionnée" />
+
+                <Button alignment="CENTER" mnemonicParsing="false" styleClass="btn-round" text="FR" onAction="#changeLanguage" />
+                <Button alignment="CENTER" mnemonicParsing="false" styleClass="btn-round" text="EN" onAction="#changeLanguage" />
             </HBox>
         </VBox>
     </ScrollPane>
