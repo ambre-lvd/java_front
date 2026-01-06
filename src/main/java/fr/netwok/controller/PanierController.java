@@ -300,6 +300,7 @@ public class PanierController implements Initializable {
 
     @FXML
     void confirmerCommande() {
+        // 1. Récupération du panier (liste d'objets Plat)
         List<Plat> panier = MockService.getInstance().getPanier();
         if (panier.isEmpty()) {
             System.out.println("⚠️ Le panier est vide");
@@ -308,49 +309,44 @@ public class PanierController implements Initializable {
 
         String numeroTable = txtNumeroTable.getText().trim();
         String nomClient = txtNomClient.getText().trim();
-        
+
+        // 2. Validation du numéro de table
         if (numeroTable.isEmpty()) {
             System.out.println("⚠️ Veuillez entrer un numéro de table");
-            txtNumeroTable.setStyle(txtNumeroTable.getStyle() + "-fx-border-color: #FF007F; -fx-border-width: 3px;");
+            txtNumeroTable.setStyle("-fx-border-color: #FF007F; -fx-border-width: 2px; -fx-background-color: #1e293b; -fx-text-fill: white;");
             return;
         }
 
         try {
-            // Extraction des IDs pour l'envoi API
-            List<String> ids = panier.stream()
-                    .map(Plat::getId)
-                    .collect(Collectors.toList());
-
-            // Conversion du numéro de table
-            int tableNumber = 99;
+            // 3. Conversion du numéro de table
+            int tableNumber;
             try {
                 tableNumber = Integer.parseInt(numeroTable);
             } catch (NumberFormatException e) {
                 System.out.println("⚠️ Numéro de table invalide");
-                txtNumeroTable.setStyle(txtNumeroTable.getStyle() + "-fx-border-color: #FF007F; -fx-border-width: 3px;");
+                txtNumeroTable.setStyle("-fx-border-color: #FF007F; -fx-border-width: 2px;");
                 return;
             }
-            
-            System.out.println("📝 Table: " + tableNumber + " | Client: " + (nomClient.isEmpty() ? "Non spécifié" : nomClient));
-            
-            ApiClient.sendOrder(tableNumber, ids);
 
-            // Succès : Afficher le ticket de caisse
-            System.out.println("✅ Commande envoyée avec succès !");
-            
-            // Feedback visuel
+            System.out.println("📝 Envoi de la commande - Table: " + tableNumber);
+
+            // 4. ENVOI À L'API (On envoie la liste de Plats, l'ApiClient gèrera la conversion en JSON)
+            ApiClient.sendOrder(tableNumber, panier);
+
+            // 5. Succès : Feedback visuel
+            System.out.println("✅ Commande enregistrée en BDD !");
             btnConfirmer.setText("✓ Commande confirmée");
             btnConfirmer.setDisable(true);
-            
-            // Génération du numéro de commande (doit être final pour la lambda)
+            btnConfirmer.setStyle("-fx-background-color: #10b981; -fx-text-fill: white;"); // Vert succès
+
+            // 6. Navigation vers le reçu
             final String numCommande = "CMD-" + System.currentTimeMillis() % 100000;
             final int finalTableNumber = tableNumber;
             final String finalNomClient = nomClient;
-            
-            // Redirection vers l'écran de reçu
+
             new Thread(() -> {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(1200);
                     javafx.application.Platform.runLater(() -> {
                         RecuCommandeController.setCommandeInfo(numCommande, finalTableNumber, finalNomClient);
                         try {
@@ -365,8 +361,9 @@ public class PanierController implements Initializable {
             }).start();
 
         } catch (Exception e) {
-            System.err.println("❌ Erreur lors de l'envoi : " + e.getMessage());
-            btnConfirmer.setText("❌ Erreur - Réessayer");
+            System.err.println("❌ Erreur API : " + e.getMessage());
+            btnConfirmer.setText("❌ Erreur Serveur");
+            btnConfirmer.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white;");
         }
     }
 
