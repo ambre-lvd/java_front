@@ -15,6 +15,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import java.lang.String?>
 
 <BorderPane fx:id="rootPane" styleClass="root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.netwok.controller.CatalogueController">
 
@@ -49,6 +50,25 @@
                 <ToggleButton fx:id="tabPlats" onAction="#filtrerPlats" styleClass="btn-tab" text="PLATS" toggleGroup="$groupeCategories" />
                 <ToggleButton fx:id="tabDesserts" onAction="#filtrerDesserts" styleClass="btn-tab" text="DESSERTS / BOISSONS" toggleGroup="$groupeCategories" />
             </HBox>
+
+            <HBox fx:id="sousCategorieBar" alignment="CENTER" spacing="20.0" visible="false" managed="false">
+                <ToggleButton fx:id="tabAllDesserts" onAction="#filtrerAllDessertsBoissons" styleClass="btn-tab" text="TOUT" selected="true">
+                    <toggleGroup>
+                        <ToggleGroup fx:id="groupeSousCategories" />
+                    </toggleGroup>
+                </ToggleButton>
+                <ToggleButton fx:id="tabDessertsOnly" onAction="#filtrerDessertsOnly" styleClass="btn-tab" text="DESSERTS" toggleGroup="$groupeSousCategories" />
+                <ToggleButton fx:id="tabBoissonsOnly" onAction="#filtrerBoissonsOnly" styleClass="btn-tab" text="BOISSONS" toggleGroup="$groupeSousCategories" />
+            </HBox>
+
+            <Label fx:id="sectionTitle" text="" visible="false" managed="false">
+                <font>
+                    <Font size="22.0" />
+                </font>
+                <styleClass>
+                    <String fx:value="section-title" />
+                </styleClass>
+            </Label>
         </VBox>
     </top>
 

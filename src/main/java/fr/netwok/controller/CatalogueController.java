@@ -8,10 +8,13 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
@@ -25,6 +28,11 @@ public class CatalogueController implements Initializable {
     @FXML private FlowPane gridPlats;
     @FXML private Label lblNbArticles; 
     @FXML private Label lblTotal;
+    @FXML private HBox sousCategorieBar;
+    @FXML private ToggleButton tabAllDesserts;
+    @FXML private ToggleButton tabDessertsOnly;
+    @FXML private ToggleButton tabBoissonsOnly;
+    @FXML private Label sectionTitle;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -36,19 +44,49 @@ public class CatalogueController implements Initializable {
         }
 
         updatePanierDisplay();
+        if (sousCategorieBar != null) {
+            sousCategorieBar.setVisible(false);
+            sousCategorieBar.setManaged(false);
+        }
+        if (sectionTitle != null) {
+            sectionTitle.setVisible(false);
+            sectionTitle.setManaged(false);
+        }
         afficherPlats("Entrée");
     }
 
-    @FXML void filtrerEntrees() { afficherPlats("Entrée"); }
-    @FXML void filtrerPlats() { afficherPlats("Plat"); }
+    @FXML void filtrerEntrees() {
+        toggleSousCategorie(false);
+        afficherPlats("Entrée");
+    }
+
+    @FXML void filtrerPlats() {
+        toggleSousCategorie(false);
+        afficherPlats("Plat");
+    }
     
     @FXML
     void filtrerDesserts() {
-        gridPlats.getChildren().clear();
-        List<Plat> desserts = MockService.getInstance().getPlatsParCategorie("Desserts");
-        List<Plat> boissons = MockService.getInstance().getPlatsParCategorie("Boissons");
-        desserts.forEach(this::creerCartePlat);
-        boissons.forEach(this::creerCartePlat);
+        toggleSousCategorie(true);
+        if (tabAllDesserts != null && !tabAllDesserts.isSelected()) {
+            tabAllDesserts.setSelected(true);
+        }
+        afficherPlatsDessertsBoissons("ALL");
+    }
+
+    @FXML
+    void filtrerDessertsOnly() {
+        afficherPlatsDessertsBoissons("Dessert");
+    }
+
+    @FXML
+    void filtrerBoissonsOnly() {
+        afficherPlatsDessertsBoissons("Boisson");
+    }
+
+    @FXML
+    void filtrerAllDessertsBoissons() {
+        afficherPlatsDessertsBoissons("ALL");
     }
     
     @FXML
@@ -86,7 +124,85 @@ public class CatalogueController implements Initializable {
         }
     }
 
+    private void afficherPlatsDessertsBoissons(String mode) {
+        gridPlats.getChildren().clear();
+        updateSectionTitle(mode);
+        if ("Dessert".equalsIgnoreCase(mode)) {
+            afficherSectionAvecTitre("Desserts", MockService.getInstance().getPlatsParCategorie("Dessert"));
+            return;
+        }
+        if ("Boisson".equalsIgnoreCase(mode)) {
+            afficherSectionAvecTitre("Boissons", MockService.getInstance().getPlatsParCategorie("Boisson"));
+            return;
+        }
+        // ALL
+        afficherSectionAvecTitre("Desserts", MockService.getInstance().getPlatsParCategorie("Dessert"));
+        afficherSectionAvecTitre("Boissons", MockService.getInstance().getPlatsParCategorie("Boisson"));
+    }
+
+    private void afficherSectionAvecTitre(String titre, List<Plat> plats) {
+        VBox section = new VBox(15);
+        section.setAlignment(Pos.TOP_CENTER);
+        section.setStyle("-fx-padding: 20 0 20 0;");
+        section.setMaxWidth(Double.MAX_VALUE);
+
+        // Titre au-dessus - grand et blanc
+        Label sectionLabel = new Label(titre.toUpperCase());
+        sectionLabel.setStyle("-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold;");
+
+        // FlowPane avec les cartes en dessous
+        FlowPane carteContainer = new FlowPane(30, 30);
+        carteContainer.setAlignment(Pos.TOP_CENTER);
+        carteContainer.setPrefWrapLength(1200);
+        plats.forEach(p -> carteContainer.getChildren().add(creerCarteVBox(p)));
+
+        VBox.setVgrow(carteContainer, Priority.ALWAYS);
+        section.getChildren().addAll(sectionLabel, carteContainer);
+        
+        gridPlats.getChildren().add(section);
+    }
+
+    private void updateSectionTitle(String mode) {
+        if (sectionTitle == null) return;
+        sectionTitle.setVisible(true);
+        sectionTitle.setManaged(true);
+
+        switch (mode.toUpperCase()) {
+            case "DESSERT" -> sectionTitle.setText("Desserts");
+            case "BOISSON" -> sectionTitle.setText("Boissons");
+            default -> sectionTitle.setText("Desserts & Boissons");
+        }
+    }
+
+    // Petit séparateur visuel façon apps de commande
+    private HBox creerSectionHeader(String titre) {
+        Label lbl = new Label(titre.toUpperCase());
+        lbl.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
+
+        Region line = new Region();
+        line.setPrefHeight(1);
+        line.setStyle("-fx-background-color: #00f0ff; -fx-min-height: 2px; -fx-max-height: 2px;");
+        HBox.setHgrow(line, Priority.ALWAYS);
+
+        HBox box = new HBox(12, lbl, line);
+        box.setAlignment(Pos.CENTER_LEFT);
+        box.setStyle("-fx-padding: 10 0 5 0;");
+        box.setMaxWidth(900);
+        return box;
+    }
+
+    private void toggleSousCategorie(boolean show) {
+        if (sousCategorieBar != null) {
+            sousCategorieBar.setVisible(show);
+            sousCategorieBar.setManaged(show);
+        }
+    }
+
     private void creerCartePlat(Plat p) {
+        gridPlats.getChildren().add(creerCarteVBox(p));
+    }
+
+    private VBox creerCarteVBox(Plat p) {
         // 1. Le conteneur principal (VBox)
         VBox carte = new VBox(10);
         carte.getStyleClass().add("card-produit");
@@ -166,6 +282,6 @@ public class CatalogueController implements Initializable {
 
         // 5. Assemblage
         carte.getChildren().addAll(imgView, name, desc, price, quantityBox);
-        gridPlats.getChildren().add(carte);
+        return carte;
     }
 }
