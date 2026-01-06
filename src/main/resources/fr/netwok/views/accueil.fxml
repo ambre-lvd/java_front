@@ -38,7 +38,7 @@
                 </effect>
             </Label>
 
-            <Label styleClass="sous-titre" text="Matt CAZORLA, Louis DURAND, Ambre LAVAUD et Corentin DE ANGELIS" 
+            <Label fx:id="nomsEquipe" styleClass="sous-titre" text="Matt CAZORLA, Louis DURAND, Ambre LAVAUD et Corentin DE ANGELIS"
                    textAlignment="CENTER" wrapText="true">
                 <font>
                     <Font name="Consolas" size="18.0" />

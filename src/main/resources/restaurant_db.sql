@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost
--- Généré le : lun. 05 jan. 2026 à 22:22
+-- Généré le : mar. 06 jan. 2026 à 15:30
 -- Version du serveur : 10.4.28-MariaDB
 -- Version de PHP : 8.2.4
 
@@ -24,53 +24,74 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Structure de la table `dishes`
+-- Structure de la table `category`
 --
 
-CREATE TABLE `dishes` (
+CREATE TABLE `category` (
+  `id` int(11) NOT NULL,
+  `name` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `category`
+--
+
+INSERT INTO `category` (`id`, `name`) VALUES
+(1, 'Entree'),
+(2, 'Plat'),
+(3, 'Dessert'),
+(4, 'Boisson');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `Dish`
+--
+
+CREATE TABLE `Dish` (
   `id` varchar(10) NOT NULL,
   `name` varchar(100) NOT NULL,
-  `description` text DEFAULT NULL,
-  `price` decimal(10,2) NOT NULL,
-  `category` varchar(50) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `price` float NOT NULL,
+  `category_id` int(11) NOT NULL,
   `image_path` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déchargement des données de la table `dishes`
+-- Déchargement des données de la table `Dish`
 --
 
-INSERT INTO `dishes` (`id`, `name`, `description`, `price`, `category`, `image_path`) VALUES
-('B1', 'Thé Glacé', 'Maison, citron vert', 3.50, 'Boisson', 'Desserts/the.png'),
-('B2', 'Bière Tsingtao', 'Bière blonde 33cl', 4.50, 'Boisson', 'Desserts/biere.png'),
-('B3', 'Limonade Jap', 'Ramune à la bille', 4.00, 'Boisson', 'Desserts/limonade.png'),
-('B4', 'Jus de Coco', 'Avec morceaux', 3.90, 'Boisson', 'Desserts/juscoco.png'),
-('B5', 'Saké', 'Petit pichet', 6.00, 'Boisson', 'Desserts/sake.png'),
-('D1', 'Perles de Coco', '2 pièces, chaud', 4.50, 'Dessert', 'Desserts/perlecoco.png'),
-('D2', 'Mochi Glacé', '2 pièces, parfum au choix', 5.50, 'Dessert', 'Desserts/mochi.png'),
-('D3', 'Mangue Fraîche', 'Tranches de mangue', 5.90, 'Dessert', 'Desserts/mangue.png'),
-('D4', 'Banane Flambée', 'Au saké', 6.50, 'Dessert', 'Desserts/banane.png'),
-('D5', 'Nougat Chinois', 'Aux graines de sésame', 3.50, 'Dessert', 'Desserts/nougat.png'),
-('E1', 'Nems Poulet', '4 pièces, sauce nuoc-mâm', 6.90, 'Entrée', 'Entrees/nems.png'),
-('E10', 'Dim Sum Mix', 'Panier vapeur (6 pièces)', 9.90, 'Entrée', 'Entrees/dimsum.png'),
-('E2', 'Rouleaux Printemps', 'Crevettes, menthe, riz', 5.50, 'Entrée', 'Entrees/rouleaux.png'),
-('E3', 'Gyozas Poulet', 'Raviolis grillés (5 pièces)', 6.50, 'Entrée', 'Entrees/gyozas.png'),
-('E4', 'Samoussas Bœuf', 'Croustillants aux épices', 6.00, 'Entrée', 'Entrees/samoussa.png'),
-('E5', 'Salade de Chou', 'Chou blanc mariné sésame', 4.50, 'Entrée', 'Entrees/salade.png'),
-('E6', 'Soupe Miso', 'Tofu, algues wakame', 4.00, 'Entrée', 'Entrees/soupe.png'),
-('E7', 'Tempura Crevettes', 'Beignets légers (4 pièces)', 8.90, 'Entrée', 'Entrees/crevettes.png'),
-('E8', 'Yakitori Bœuf', 'Brochettes bœuf-fromage', 5.90, 'Entrée', 'Entrees/yakitori.png'),
-('E9', 'Edamame', 'Fèves de soja, fleur de sel', 4.50, 'Entrée', 'Entrees/edamame.png'),
-('P1', 'Pad Thaï', 'Nouilles riz, crevettes', 14.90, 'Plat', 'Plats/padthai.png'),
-('P10', 'Wok Végé', 'Nouilles, tofu', 11.90, 'Plat', 'Plats/wok.png'),
-('P2', 'Bo Bun Bœuf', 'Vermicelles, bœuf sauté', 13.50, 'Plat', 'Plats/bobun.png'),
-('P3', 'Curry Vert', 'Poulet, lait coco', 12.90, 'Plat', 'Plats/curry.png'),
-('P4', 'Riz Cantonais', 'Riz sauté, jambon', 10.50, 'Plat', 'Plats/riz.png'),
-('P5', 'Porc Caramel', 'Travers confits', 13.90, 'Plat', 'Plats/porc.png'),
-('P6', 'Canard Laqué', 'Avec crêpes', 16.90, 'Plat', 'Plats/canard.png'),
-('P7', 'Bibimbap', 'Riz, bœuf, légumes', 14.50, 'Plat', 'Plats/bibimbap.png'),
-('P8', 'Ramen Tonkotsu', 'Bouillon porc, nouilles', 13.90, 'Plat', 'Plats/ramen.png'),
-('P9', 'Sushi Mix 12', 'Assortiment sushis', 15.90, 'Plat', 'Plats/sushi.png');
+INSERT INTO `Dish` (`id`, `name`, `description`, `price`, `category_id`, `image_path`) VALUES
+('B1', 'Thé Glacé', 'Maison, citron vert', 3.5, 4, 'Desserts/the.png'),
+('B2', 'Bière Tsingtao', 'Bière blonde 33cl', 4.5, 4, 'Desserts/biere.png'),
+('B3', 'Limonade Jap', 'Ramune à la bille', 4, 4, 'Desserts/limonade.png'),
+('B4', 'Jus de Coco', 'Avec morceaux', 3.9, 4, 'Desserts/juscoco.png'),
+('B5', 'Saké', 'Petit pichet', 6, 4, 'Desserts/sake.png'),
+('D1', 'Perles de Coco', '2 pièces, chaud', 4.5, 3, 'Desserts/perlecoco.png'),
+('D2', 'Mochi Glacé', '2 pièces, parfum au choix', 5.5, 3, 'Desserts/mochi.png'),
+('D3', 'Mangue Fraîche', 'Tranches de mangue', 5.9, 3, 'Desserts/mangue.png'),
+('D4', 'Banane Flambée', 'Au saké', 6.5, 3, 'Desserts/banane.png'),
+('D5', 'Nougat Chinois', 'Aux graines de sésame', 3.5, 3, 'Desserts/nougat.png'),
+('E1', 'Nems Poulet', '4 pièces, sauce nuoc-mâm', 6.9, 1, 'Entrees/nems.png'),
+('E10', 'Dim Sum Mix', 'Panier vapeur (6 pièces)', 9.9, 1, 'Entrees/dimsum.png'),
+('E2', 'Rouleaux Printemps', 'Crevettes, menthe, riz', 5.5, 1, 'Entrees/rouleaux.png'),
+('E3', 'Gyozas Poulet', 'Raviolis grillés (5 pièces)', 6.5, 1, 'Entrees/gyozas.png'),
+('E4', 'Samoussas Bœuf', 'Croustillants aux épices', 6, 1, 'Entrees/samoussa.png'),
+('E5', 'Salade de Chou', 'Chou blanc mariné sésame', 4.5, 1, 'Entrees/salade.png'),
+('E6', 'Soupe Miso', 'Tofu, algues wakame', 4, 1, 'Entrees/soupe.png'),
+('E7', 'Tempura Crevettes', 'Beignets légers (4 pièces)', 8.9, 1, 'Entrees/crevettes.png'),
+('E8', 'Yakitori Bœuf', 'Brochettes bœuf-fromage', 5.9, 1, 'Entrees/yakitori.png'),
+('E9', 'Edamame', 'Fèves de soja, fleur de sel', 4.5, 1, 'Entrees/edamame.png'),
+('P1', 'Pad Thaï', 'Nouilles riz, crevettes', 14.9, 2, 'Plats/padthai.png'),
+('P10', 'Wok Végé', 'Nouilles, tofu', 11.9, 2, 'Plats/wok.png'),
+('P2', 'Bo Bun Bœuf', 'Vermicelles, bœuf sauté', 13.5, 2, 'Plats/bobun.png'),
+('P3', 'Curry Vert', 'Poulet, lait coco', 12.9, 2, 'Plats/curry.png'),
+('P4', 'Riz Cantonais', 'Riz sauté, jambon', 10.5, 2, 'Plats/riz.png'),
+('P5', 'Porc Caramel', 'Travers confits', 13.9, 2, 'Plats/porc.png'),
+('P6', 'Canard Laqué', 'Avec crêpes', 16.9, 2, 'Plats/canard.png'),
+('P7', 'Bibimbap', 'Riz, bœuf, légumes', 14.5, 2, 'Plats/bibimbap.png'),
+('P8', 'Ramen Tonkotsu', 'Bouillon porc, nouilles', 13.9, 2, 'Plats/ramen.png'),
+('P9', 'Sushi Mix 12', 'Assortiment sushis', 15.9, 2, 'Plats/sushi.png');
 
 -- --------------------------------------------------------
 
@@ -103,10 +124,17 @@ CREATE TABLE `order_items` (
 --
 
 --
--- Index pour la table `dishes`
+-- Index pour la table `category`
 --
-ALTER TABLE `dishes`
+ALTER TABLE `category`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Index pour la table `Dish`
+--
+ALTER TABLE `Dish`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `category_id` (`category_id`);
 
 --
 -- Index pour la table `orders`
@@ -127,6 +155,12 @@ ALTER TABLE `order_items`
 --
 
 --
+-- AUTO_INCREMENT pour la table `category`
+--
+ALTER TABLE `category`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT pour la table `orders`
 --
 ALTER TABLE `orders`
@@ -143,11 +177,17 @@ ALTER TABLE `order_items`
 --
 
 --
+-- Contraintes pour la table `Dish`
+--
+ALTER TABLE `Dish`
+  ADD CONSTRAINT `fk_dishes_categories` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON UPDATE CASCADE;
+
+--
 -- Contraintes pour la table `order_items`
 --
 ALTER TABLE `order_items`
-  ADD CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`dish_id`) REFERENCES `dishes` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_order_items_dish` FOREIGN KEY (`dish_id`) REFERENCES `Dish` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
