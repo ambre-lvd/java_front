@@ -12,6 +12,11 @@
       stylesheets="@../css/styles.css"
       spacing="0">
 
+    <fx:define>
+        <ToggleGroup fx:id="epice"/>
+        <ToggleGroup fx:id="accompagnement"/>
+    </fx:define>
+
     <!-- Header avec bouton retour -->
     <HBox styleClass="header" alignment="CENTER_LEFT" spacing="15">
         <padding>

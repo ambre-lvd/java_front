@@ -153,25 +153,41 @@ public class PanierController implements Initializable {
         boxQuantite.setMinWidth(130);
         
         Button btnMoins = new Button("-");
-        btnMoins.setStyle("-fx-background-color: transparent; " +
+        btnMoins.setText("-");
+        btnMoins.setStyle("-fx-padding: 10px; " +
+                         "-fx-background-color: rgba(0, 240, 255, 0.2); " +
                          "-fx-text-fill: #00F0FF; " +
-                         "-fx-font-size: 20px; " +
+                         "-fx-font-size: 28px; " +
                          "-fx-font-weight: bold; " +
                          "-fx-cursor: hand; " +
-                         "-fx-min-width: 30px; " +
-                         "-fx-min-height: 30px;");
+                         "-fx-min-width: 50px; " +
+                         "-fx-min-height: 50px; " +
+                         "-fx-pref-width: 50px; " +
+                         "-fx-pref-height: 50px; " +
+                         "-fx-border-color: #00F0FF; " +
+                         "-fx-border-width: 2; " +
+                         "-fx-border-radius: 10; " +
+                         "-fx-background-radius: 10;");
         
         Label lblQte = new Label(String.valueOf(qte));
-        lblQte.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold; -fx-min-width: 40px; -fx-alignment: center;");
+        lblQte.setStyle("-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: bold; -fx-min-width: 50px; -fx-alignment: center;");
         
         Button btnPlus = new Button("+");
-        btnPlus.setStyle("-fx-background-color: transparent; " +
+        btnPlus.setText("+");
+        btnPlus.setStyle("-fx-padding: 10px; " +
+                        "-fx-background-color: rgba(0, 240, 255, 0.2); " +
                         "-fx-text-fill: #00F0FF; " +
-                        "-fx-font-size: 20px; " +
+                        "-fx-font-size: 28px; " +
                         "-fx-font-weight: bold; " +
                         "-fx-cursor: hand; " +
-                        "-fx-min-width: 30px; " +
-                        "-fx-min-height: 30px;");
+                        "-fx-min-width: 50px; " +
+                        "-fx-min-height: 50px; " +
+                        "-fx-pref-width: 50px; " +
+                        "-fx-pref-height: 50px; " +
+                        "-fx-border-color: #00F0FF; " +
+                        "-fx-border-width: 2; " +
+                        "-fx-border-radius: 10; " +
+                        "-fx-background-radius: 10;");
         
         btnMoins.setOnAction(e -> {
             MockService.getInstance().retirerDuPanier(p);
@@ -188,7 +204,7 @@ public class PanierController implements Initializable {
         boxQuantite.getChildren().addAll(btnMoins, lblQte, btnPlus);
 
         // Colonne 3 : Prix unitaire
-        Label lblPrixUnit = new Label(String.format("%.2f$", p.getPrix()));
+        Label lblPrixUnit = new Label(String.format("%.2f€", p.getPrix()));
         lblPrixUnit.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 16px;");
         lblPrixUnit.setPrefWidth(100);
         lblPrixUnit.setMinWidth(100);
@@ -196,7 +212,7 @@ public class PanierController implements Initializable {
 
         // Colonne 4 : Total
         double total = p.getPrix() * qte;
-        Label lblTotal = new Label(String.format("%.2f$", total));
+        Label lblTotal = new Label(String.format("%.2f€", total));
         lblTotal.setStyle("-fx-text-fill: #00F0FF; -fx-font-size: 18px; -fx-font-weight: bold;");
         lblTotal.setPrefWidth(120);
         lblTotal.setMinWidth(120);
@@ -252,9 +268,9 @@ public class PanierController implements Initializable {
         double taxes = sousTotal * TAUX_TAXE;
         double totalFinal = sousTotal + taxes;
 
-        lblSousTotal.setText(String.format("%.2f$", sousTotal));
-        lblTaxes.setText(String.format("%.2f$", taxes));
-        lblTotalFinal.setText(String.format("%.2f$", totalFinal));
+        lblSousTotal.setText(String.format("%.2f€", sousTotal));
+        lblTaxes.setText(String.format("%.2f€", taxes));
+        lblTotalFinal.setText(String.format("%.2f€", totalFinal));
     }
 
     private void animerTotaux() {
@@ -274,9 +290,9 @@ public class PanierController implements Initializable {
         fade.setToValue(1);
         fade.setDelay(Duration.millis(200));
 
-        lblSousTotal.setText(String.format("%.2f$", sousTotal));
-        lblTaxes.setText(String.format("%.2f$", taxes));
-        lblTotalFinal.setText(String.format("%.2f$", totalFinal));
+        lblSousTotal.setText(String.format("%.2f€", sousTotal));
+        lblTaxes.setText(String.format("%.2f€", taxes));
+        lblTotalFinal.setText(String.format("%.2f€", totalFinal));
         
         scale.play();
         fade.play();

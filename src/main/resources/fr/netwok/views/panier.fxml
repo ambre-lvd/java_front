@@ -37,10 +37,10 @@
             
             <!-- Section Articles -->
             <VBox spacing="20" styleClass="panier-section">
-                <HBox styleClass="panier-header">
-                    <Label text="Article" styleClass="panier-header-label" HBox.hgrow="ALWAYS"/>
-                    <Label text="Qté" styleClass="panier-header-label" style="-fx-min-width: 80px; -fx-alignment: center;"/>
-                    <Label text="Prix" styleClass="panier-header-label" style="-fx-min-width: 100px; -fx-alignment: center-right;"/>
+                <HBox styleClass="panier-header" spacing="20">
+                    <Label text="Article" styleClass="panier-header-label" style="-fx-min-width: 430px;"/> <!-- Image 80 + Info 350 -->
+                    <Label text="Quantité" styleClass="panier-header-label" style="-fx-min-width: 130px; -fx-alignment: center;"/>
+                    <Label text="Prix Unit." styleClass="panier-header-label" style="-fx-min-width: 100px; -fx-alignment: center-right;"/>
                     <Label text="Total" styleClass="panier-header-label" style="-fx-min-width: 120px; -fx-alignment: center-right;"/>
                     <Label text="" styleClass="panier-header-label" style="-fx-min-width: 50px;"/> <!-- Pour le bouton supprimer -->
                 </HBox>

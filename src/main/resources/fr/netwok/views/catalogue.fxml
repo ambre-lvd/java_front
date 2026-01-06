@@ -73,7 +73,7 @@
     </top>
 
     <center>
-        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" BorderPane.alignment="CENTER">
+        <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" BorderPane.alignment="CENTER">
             <content>
                 <FlowPane fx:id="gridPlats" alignment="TOP_CENTER" hgap="30.0" vgap="30.0">
                     <padding>

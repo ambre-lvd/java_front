@@ -90,7 +90,7 @@ public class RecuCommandeController implements Initializable {
 
         // Prix total
         double total = p.getPrix() * qte;
-        Label lblPrix = new Label(String.format("%.2f$", total));
+        Label lblPrix = new Label(String.format("%.2f€", total));
         lblPrix.setStyle("-fx-text-fill: #00F0FF; -fx-font-size: 14px; -fx-font-weight: bold;");
         lblPrix.setMinWidth(80);
         lblPrix.setAlignment(Pos.CENTER_RIGHT);
@@ -104,9 +104,9 @@ public class RecuCommandeController implements Initializable {
         double taxes = sousTotal * 0.15;
         double totalFinal = sousTotal + taxes;
 
-        lblSousTotal.setText(String.format("%.2f$", sousTotal));
-        lblTaxes.setText(String.format("%.2f$", taxes));
-        lblTotal.setText(String.format("%.2f$", totalFinal));
+        lblSousTotal.setText(String.format("%.2f€", sousTotal));
+        lblTaxes.setText(String.format("%.2f€", taxes));
+        lblTotal.setText(String.format("%.2f€", totalFinal));
     }
 
     private void afficherMessageMerci() {
@@ -142,7 +142,7 @@ public class RecuCommandeController implements Initializable {
         try {
             // Vider le panier
             MockService.getInstance().viderPanier();
-            NetwokApp.setRoot("views/catalogue");
+            NetwokApp.setRoot("views/accueil");
         } catch (IOException e) {
             e.printStackTrace();
         }

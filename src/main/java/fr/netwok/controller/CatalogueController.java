@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
@@ -33,6 +34,7 @@ public class CatalogueController implements Initializable {
     @FXML private Label lblNbArticles; 
     @FXML private Label lblTotal;
     @FXML private HBox sousCategorieBar;
+    @FXML private ScrollPane scrollPane;
     @FXML private ToggleButton tabAllDesserts;
     @FXML private ToggleButton tabDessertsOnly;
     @FXML private ToggleButton tabBoissonsOnly;
@@ -62,11 +64,13 @@ public class CatalogueController implements Initializable {
     @FXML void filtrerEntrees() {
         toggleSousCategorie(false);
         afficherPlats(1);
+        resetScroll();
     }
 
     @FXML void filtrerPlats() {
         toggleSousCategorie(false);
         afficherPlats(2);
+        resetScroll();
     }
     
     @FXML
@@ -76,21 +80,25 @@ public class CatalogueController implements Initializable {
             tabAllDesserts.setSelected(true);
         }
         afficherPlatsDessertsBoissons(0);
+        resetScroll();
     }
 
     @FXML
     void filtrerDessertsOnly() {
         afficherPlatsDessertsBoissons(3);
+        resetScroll();
     }
 
     @FXML
     void filtrerBoissonsOnly() {
         afficherPlatsDessertsBoissons(4);
+        resetScroll();
     }
 
     @FXML
     void filtrerAllDessertsBoissons() {
         afficherPlatsDessertsBoissons(0);
+        resetScroll();
     }
     
     @FXML
@@ -342,5 +350,12 @@ public class CatalogueController implements Initializable {
         // 5. Assemblage
         carte.getChildren().addAll(imgView, name, desc, price, quantityBox);
         return carte;
+    }
+
+    // Remet le scroll en haut de la page
+    private void resetScroll() {
+        if (scrollPane != null) {
+            scrollPane.setVvalue(0);
+        }
     }
 }
