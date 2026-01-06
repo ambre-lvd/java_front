@@ -49,7 +49,7 @@
             </Label>
 
             <Button fx:id="btnCommencer" mnemonicParsing="false" onAction="#commencerCommande" 
-                    styleClass="btn-action" text="TOUCH TO START">
+                    styleClass="btn-action" text="APPUYER POUR COMMENCER">
                 <VBox.margin>
                     <Insets top="20.0" />
                 </VBox.margin>
@@ -63,8 +63,14 @@
             <padding>
                 <Insets bottom="30.0" top="10.0"/>
             </padding>
-            <Button mnemonicParsing="false" styleClass="btn-round" text="FR" />
-            <Button mnemonicParsing="false" styleClass="btn-round" text="EN" />
+            <Label fx:id="languageDisplay" text="Langue sélectionnée" />
+
+            <Button mnemonicParsing="false" styleClass="btn-round" text="FR" onAction="#changeLanguage" />
+            <Button mnemonicParsing="false" styleClass="btn-round" text="EN" onAction="#changeLanguage" />
+            <Button mnemonicParsing="false" styleClass="btn-round" text="ES" onAction="#changeLanguage" />
+            <Button mnemonicParsing="false" styleClass="btn-round" text="中文" onAction="#changeLanguage" />
+            <Button mnemonicParsing="false" styleClass="btn-round" text="日本語" onAction="#changeLanguage" />
+            <Button mnemonicParsing="false" styleClass="btn-round" text="한국말" onAction="#changeLanguage" />
             <Label text="|" textFill="#334155">
                <font><Font size="24.0" /></font>
             </Label>
