@@ -3,9 +3,8 @@ package fr.netwok.controller;
 import fr.netwok.NetwokApp;
 import fr.netwok.model.Plat;
 import fr.netwok.service.MockService;
-import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
-import javafx.animation.TranslateTransition;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -16,8 +15,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
@@ -30,184 +27,237 @@ import java.util.ResourceBundle;
 public class CatalogueController implements Initializable {
 
     @FXML private FlowPane gridPlats;
-    @FXML private Label lblNbArticles; 
+    @FXML private Label lblNbArticles;
     @FXML private Label lblTotal;
     @FXML private HBox sousCategorieBar;
     @FXML private ToggleButton tabAllDesserts;
-    @FXML private ToggleButton tabDessertsOnly;
-    @FXML private ToggleButton tabBoissonsOnly;
     @FXML private Label sectionTitle;
+
+    // N'oubliez pas de mettre ces fx:id sur vos boutons de navigation dans Scene Builder
+    @FXML private Button btnNavEntrees;
+    @FXML private Button btnNavPlats;
+    @FXML private Button btnNavDesserts;
+    @FXML private Button btnVoirPanier;
+
+    private String langueActuelle = "FR";
+    private int categorieActuelle = 1;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // On entoure par un try-catch pour éviter que l'appli ne se bloque
         try {
             MockService.getInstance().rafraichirCatalogue();
         } catch (Exception e) {
-            System.err.println("Le catalogue n'a pas pu être chargé : " + e.getMessage());
+            System.err.println("Erreur chargement : " + e.getMessage());
         }
-
         updatePanierDisplay();
-        if (sousCategorieBar != null) {
-            sousCategorieBar.setVisible(false);
-            sousCategorieBar.setManaged(false);
-        }
-        if (sectionTitle != null) {
-            sectionTitle.setVisible(false);
-            sectionTitle.setManaged(false);
-        }
-        afficherPlats(1);
+        filtrerEntrees(); // Affiche les entrées par défaut
     }
 
+    // --- LOGIQUE DE TRADUCTION ---
+
+    private String ui(String fr, String en) {
+        return "FR".equals(langueActuelle) ? fr : en;
+    }
+
+    private String getTraductionProduit(String id, String type) {
+        if ("FR".equals(langueActuelle)) return null;
+
+        return switch (id) {
+            // Boissons (B)
+            case "B1" -> type.equals("nom") ? "Iced Tea" : "Homemade, lime";
+            case "B2" -> type.equals("nom") ? "Tsingtao Beer" : "Lager beer 33cl";
+            case "B3" -> type.equals("nom") ? "Jap Lemonade" : "Ramune with marble";
+            case "B4" -> type.equals("nom") ? "Coconut Juice" : "With chunks";
+            case "B5" -> type.equals("nom") ? "Sake" : "Small pitcher";
+            // Desserts (D)
+            case "D1" -> type.equals("nom") ? "Coconut Pearls" : "2 pieces, warm";
+            case "D2" -> type.equals("nom") ? "Iced Mochi" : "2 pieces, flavor of choice";
+            case "D3" -> type.equals("nom") ? "Fresh Mango" : "Mango slices";
+            case "D4" -> type.equals("nom") ? "Flambé Banana" : "With sake";
+            case "D5" -> type.equals("nom") ? "Chinese Nougat" : "With sesame seeds";
+            // Entrées (E)
+            case "E1" -> type.equals("nom") ? "Chicken Nems" : "4 pieces, fish sauce";
+            case "E10" -> type.equals("nom") ? "Dim Sum Mix" : "Steamed basket (6 pieces)";
+            case "E2" -> type.equals("nom") ? "Spring Rolls" : "Shrimp, mint, rice";
+            case "E3" -> type.equals("nom") ? "Chicken Gyozas" : "Grilled dumplings (5 pieces)";
+            case "E4" -> type.equals("nom") ? "Beef Samoussas" : "Crispy with spices";
+            case "E5" -> type.equals("nom") ? "Cabbage Salad" : "White cabbage, sesame marinade";
+            case "E6" -> type.equals("nom") ? "Miso Soup" : "Tofu, wakame seaweed";
+            case "E7" -> type.equals("nom") ? "Shrimp Tempura" : "Light fritters (4 pieces)";
+            case "E8" -> type.equals("nom") ? "Beef Yakitori" : "Beef-cheese skewers";
+            case "E9" -> type.equals("nom") ? "Edamame" : "Soybeans, sea salt";
+            // Plats (P)
+            case "P1" -> type.equals("nom") ? "Pad Thai" : "Rice noodles, shrimp";
+            case "P10" -> type.equals("nom") ? "Vege Wok" : "Noodles, tofu";
+            case "P2" -> type.equals("nom") ? "Beef Bo Bun" : "Vermicelli, sautéed beef";
+            case "P3" -> type.equals("nom") ? "Green Curry" : "Chicken, coconut milk";
+            case "P4" -> type.equals("nom") ? "Cantonese Rice" : "Fried rice, ham";
+            case "P5" -> type.equals("nom") ? "Caramel Pork" : "Candied ribs";
+            case "P6" -> type.equals("nom") ? "Peking Duck" : "With pancakes";
+            case "P7" -> type.equals("nom") ? "Bibimbap" : "Rice, beef, vegetables";
+            case "P8" -> type.equals("nom") ? "Tonkotsu Ramen" : "Pork broth, noodles";
+            case "P9" -> type.equals("nom") ? "Sushi Mix 12" : "Sushi assortment";
+            default -> null;
+        };
+    }
+
+    @FXML
+    void changeLanguage(ActionEvent event) {
+        Button btn = (Button) event.getSource();
+        this.langueActuelle = btn.getText().toUpperCase();
+
+        // 1. Traduire les boutons de navigation
+        if (btnNavEntrees != null) btnNavEntrees.setText(ui("ENTRÉES", "STARTERS"));
+        if (btnNavPlats != null) btnNavPlats.setText(ui("PLATS", "MAIN COURSES"));
+        if (btnNavDesserts != null) btnNavDesserts.setText(ui("DESSERTS", "DESSERTS"));
+        if (btnVoirPanier != null) btnVoirPanier.setText(ui("VOIR MON PANIER", "VIEW MY BASKET"));
+
+        // 2. Traduire le récapitulatif du bas
+        updatePanierDisplay();
+
+        // 3. Rafraîchir la vue de contenu
+        if (categorieActuelle == 1) filtrerEntrees();
+        else if (categorieActuelle == 2) filtrerPlats();
+        else filtrerDesserts();
+    }
+
+    // --- NAVIGATION ---
+
     @FXML void filtrerEntrees() {
+        categorieActuelle = 1;
         toggleSousCategorie(false);
-        afficherPlats(1);
+        updateSectionTitle(1);
+        afficherPlatsSimple(1);
     }
 
     @FXML void filtrerPlats() {
+        categorieActuelle = 2;
         toggleSousCategorie(false);
-        afficherPlats(2);
+        updateSectionTitle(2);
+        afficherPlatsSimple(2);
     }
-    
-    @FXML
-    void filtrerDesserts() {
+
+    @FXML void filtrerDesserts() {
+        categorieActuelle = 3;
         toggleSousCategorie(true);
-        if (tabAllDesserts != null && !tabAllDesserts.isSelected()) {
-            tabAllDesserts.setSelected(true);
-        }
+        if (tabAllDesserts != null) tabAllDesserts.setSelected(true);
         afficherPlatsDessertsBoissons(0);
     }
 
-    @FXML
-    void filtrerDessertsOnly() {
-        afficherPlatsDessertsBoissons(3);
+    private void updateSectionTitle(int code) {
+        if (sectionTitle == null) return;
+        sectionTitle.setVisible(true);
+        sectionTitle.setManaged(true);
+        String titre = switch (code) {
+            case 1 -> ui("NOS ENTRÉES", "OUR STARTERS");
+            case 2 -> ui("NOS PLATS", "OUR MAIN COURSES");
+            case 3 -> ui("NOS DESSERTS", "OUR DESSERTS");
+            case 4 -> ui("NOS BOISSONS", "OUR DRINKS");
+            default -> ui("DESSERTS & BOISSONS", "DESSERTS & DRINKS");
+        };
+        sectionTitle.setText(titre);
     }
 
-    @FXML
-    void filtrerBoissonsOnly() {
-        afficherPlatsDessertsBoissons(4);
-    }
-
-    @FXML
-    void filtrerAllDessertsBoissons() {
-        afficherPlatsDessertsBoissons(0);
-    }
-    
-    @FXML
-    void voirPanier() {
-        try {
-            NetwokApp.setRoot("views/panier");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    // Ouvre l'écran de détail du plat
-    private void ouvrirDetailPlat(Plat p) {
-        try {
-            DetailPlatController.setPlatAfficher(p);
-            NetwokApp.setRoot("views/detailPlat");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Met à jour la barre du bas (Total et Nombre d'articles)
     private void updatePanierDisplay() {
         int nb = MockService.getInstance().getNombreArticlesPanier();
         double total = MockService.getInstance().getTotalPanier();
-        
-        lblNbArticles.setText(nb + " articles");
-        lblTotal.setText(String.format("%.2f €", total));
+        lblNbArticles.setText(nb + " " + ui("articles", "items"));
+        lblTotal.setText(String.format(ui("Total : %.2f €", "Total: %.2f €"), total));
     }
 
-    private void afficherPlats(int categorie) {
+    // --- LOGIQUE D'AFFICHAGE ---
+
+    private void afficherPlatsSimple(int cat) {
         gridPlats.getChildren().clear();
-        List<Plat> plats = MockService.getInstance().getPlatsParCategorie(categorie);
-
-        // DEBUG VITAL : Est-ce que la liste contient quelque chose ?
-        System.out.println("🔍 Tentative d'affichage pour : " + categorie);
-        System.out.println("📊 Nombre de plats trouvés dans cette catégorie : " + plats.size());
-
-        if (plats.isEmpty()) {
-            System.out.println("⚠️ Attention : Aucun plat trouvé. Vérifiez l'orthographe dans MySQL !");
-        }
-
-        for (Plat p : plats) {
-            creerCartePlat(p);
-        }
+        MockService.getInstance().getPlatsParCategorie(cat).forEach(p -> gridPlats.getChildren().add(creerCarteVBox(p)));
     }
 
     private void afficherPlatsDessertsBoissons(int mode) {
         gridPlats.getChildren().clear();
         updateSectionTitle(mode);
-
-        // MODE DESSERT (ID 3)
         if (mode == 3) {
-            afficherSectionAvecTitre("Desserts", MockService.getInstance().getPlatsParCategorie(3));
-            return;
-        }
-
-        // MODE BOISSON (ID 4)
-        if (mode == 4) {
-            afficherSectionAvecTitre("Boissons", MockService.getInstance().getPlatsParCategorie(4));
-            return;
-        }
-
-        // MODE TOUT (Si mode n'est ni 3 ni 4, on affiche les deux sections)
-        afficherSectionAvecTitre("Desserts", MockService.getInstance().getPlatsParCategorie(3));
-        afficherSectionAvecTitre("Boissons", MockService.getInstance().getPlatsParCategorie(4));
-    }
-
-    private void afficherSectionAvecTitre(String titre, List<Plat> plats) {
-        VBox section = new VBox(15);
-        section.setAlignment(Pos.TOP_CENTER);
-        section.setStyle("-fx-padding: 20 0 20 0;");
-        section.setMaxWidth(Double.MAX_VALUE);
-
-        // Titre au-dessus - grand et blanc
-        Label sectionLabel = new Label(titre.toUpperCase());
-        sectionLabel.setStyle("-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold;");
-
-        // FlowPane avec les cartes en dessous
-        FlowPane carteContainer = new FlowPane(30, 30);
-        carteContainer.setAlignment(Pos.TOP_CENTER);
-        carteContainer.setPrefWrapLength(1200);
-        plats.forEach(p -> carteContainer.getChildren().add(creerCarteVBox(p)));
-
-        VBox.setVgrow(carteContainer, Priority.ALWAYS);
-        section.getChildren().addAll(sectionLabel, carteContainer);
-        
-        gridPlats.getChildren().add(section);
-    }
-
-    private void updateSectionTitle(int mode) {
-        if (sectionTitle == null) return;
-        sectionTitle.setVisible(true);
-        sectionTitle.setManaged(true);
-
-        switch (mode) {
-            case 3 -> sectionTitle.setText("Desserts");
-            case 4 -> sectionTitle.setText("Boissons");
-            default -> sectionTitle.setText("Desserts & Boissons");
+            afficherZoneInterne(ui("DESSERTS", "DESSERTS"), 3);
+        } else if (mode == 4) {
+            afficherZoneInterne(ui("BOISSONS", "DRINKS"), 4);
+        } else {
+            afficherZoneInterne(ui("DESSERTS", "DESSERTS"), 3);
+            afficherZoneInterne(ui("BOISSONS", "DRINKS"), 4);
         }
     }
 
-    // Petit séparateur visuel façon apps de commande
-    private HBox creerSectionHeader(String titre) {
-        Label lbl = new Label(titre.toUpperCase());
-        lbl.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
+    private void afficherZoneInterne(String titre, int cat) {
+        VBox zone = new VBox(10);
+        zone.setAlignment(Pos.TOP_CENTER);
+        Label l = new Label(titre);
+        l.setStyle("-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold; -fx-padding: 10 0 5 0;");
+        FlowPane fp = new FlowPane(25, 25);
+        fp.setAlignment(Pos.TOP_CENTER);
+        fp.setPrefWrapLength(1100);
+        MockService.getInstance().getPlatsParCategorie(cat).forEach(p -> fp.getChildren().add(creerCarteVBox(p)));
+        zone.getChildren().addAll(l, fp);
+        gridPlats.getChildren().add(zone);
+    }
 
-        Region line = new Region();
-        line.setPrefHeight(1);
-        line.setStyle("-fx-background-color: #00f0ff; -fx-min-height: 2px; -fx-max-height: 2px;");
-        HBox.setHgrow(line, Priority.ALWAYS);
+    private VBox creerCarteVBox(Plat p) {
+        VBox carte = new VBox(10);
+        carte.getStyleClass().add("card-produit");
+        carte.setPrefWidth(260);
+        carte.setAlignment(Pos.CENTER);
 
-        HBox box = new HBox(12, lbl, line);
-        box.setAlignment(Pos.CENTER_LEFT);
-        box.setStyle("-fx-padding: 10 0 5 0;");
-        box.setMaxWidth(900);
-        return box;
+        ImageView iv = new ImageView();
+        iv.setFitHeight(160); iv.setFitWidth(220); iv.setPreserveRatio(true);
+        try {
+            URL res = getClass().getResource("/fr/netwok/images/" + p.getImagePath());
+            if (res != null) iv.setImage(new Image(res.toExternalForm()));
+        } catch (Exception e) {}
+
+        // Traduction Nom/Desc
+        String n = getTraductionProduit(p.getId(), "nom");
+        String d = getTraductionProduit(p.getId(), "desc");
+
+        Label name = new Label(n != null ? n : p.getNom());
+        name.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
+        name.setWrapText(true); name.setTextAlignment(TextAlignment.CENTER);
+
+        Label desc = new Label(d != null ? d : p.getDescription());
+        desc.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 13px;");
+        desc.setWrapText(true); desc.setTextAlignment(TextAlignment.CENTER);
+
+        Label price = new Label(String.format("%.2f €", p.getPrix()));
+        price.setStyle("-fx-text-fill: #00F0FF; -fx-font-size: 20px; -fx-font-weight: bold;");
+
+        HBox qBox = new HBox(15);
+        qBox.setAlignment(Pos.CENTER);
+        Button btnM = new Button("-");
+        Label lblQ = new Label(String.valueOf(MockService.getInstance().getQuantiteDuPlat(p)));
+        lblQ.setStyle("-fx-text-fill: white;");
+        Button btnP = new Button("+");
+
+        btnP.setOnAction(e -> {
+            MockService.getInstance().ajouterAuPanier(p);
+            lblQ.setText(String.valueOf(MockService.getInstance().getQuantiteDuPlat(p)));
+            updatePanierDisplay();
+        });
+        btnM.setOnAction(e -> {
+            if(MockService.getInstance().getQuantiteDuPlat(p) > 0) {
+                MockService.getInstance().retirerDuPanier(p);
+                lblQ.setText(String.valueOf(MockService.getInstance().getQuantiteDuPlat(p)));
+                updatePanierDisplay();
+            }
+        });
+
+        qBox.getChildren().addAll(btnM, lblQ, btnP);
+        carte.getChildren().addAll(iv, name, desc, price, qBox);
+
+        carte.setOnMouseClicked(e -> { if(e.getClickCount() == 1) ouvrirDetail(p); });
+        return carte;
+    }
+
+    private void ouvrirDetail(Plat p) {
+        try {
+            // DetailPlatController.setPlatAfficher(p);
+            NetwokApp.setRoot("views/detailPlat");
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     private void toggleSousCategorie(boolean show) {
@@ -217,130 +267,8 @@ public class CatalogueController implements Initializable {
         }
     }
 
-    private void creerCartePlat(Plat p) {
-        gridPlats.getChildren().add(creerCarteVBox(p));
-    }
-
-    private VBox creerCarteVBox(Plat p) {
-        // 1. Le conteneur principal (VBox)
-        VBox carte = new VBox(10);
-        carte.getStyleClass().add("card-produit");
-        carte.setPrefWidth(280);
-        carte.setAlignment(Pos.CENTER);
-        
-        // Rendre la carte cliquable pour voir le détail
-        carte.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 1) { // Simple clic
-                // Animation de clic
-                ScaleTransition scale = new ScaleTransition(Duration.millis(150), carte);
-                scale.setFromX(1.0);
-                scale.setFromY(1.0);
-                scale.setToX(0.95);
-                scale.setToY(0.95);
-                
-                scale.setOnFinished(event -> ouvrirDetailPlat(p));
-                scale.play();
-            }
-        });
-        carte.setStyle(carte.getStyle() + "-fx-cursor: hand;");
-
-        // 2. L'Image avec sécurité
-        ImageView imgView = new ImageView();
-        imgView.setFitHeight(180);
-        imgView.setFitWidth(240);
-        imgView.setPreserveRatio(true);
-
-        try {
-            String imagePath = p.getImagePath();
-            if (imagePath == null || imagePath.isEmpty()) {
-                System.err.println("❌ L'ID " + p.getId() + " n'a pas de chemin d'image en BDD.");
-            } else {
-                String fullPath = "/fr/netwok/images/" + imagePath;
-                URL res = getClass().getResource(fullPath);
-
-                if (res != null) {
-                    imgView.setImage(new Image(res.toExternalForm()));
-                } else {
-                    // C'EST CETTE LIGNE QUI VA TE DONNER LA SOLUTION
-                    System.err.println("⚠️ Fichier introuvable : " + fullPath);
-                    System.err.println("   -> Vérifiez que le fichier existe bien dans src/main/resources" + fullPath);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // 3. Les Textes (Utilisation des nouveaux getters)
-        Label name = new Label(p.getNom()); // ou p.getName() selon ton Plat.java
-        name.setStyle("-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;");
-        name.setWrapText(true);
-        name.setTextAlignment(TextAlignment.CENTER);
-
-        Label desc = new Label(p.getDescription());
-        desc.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 14px;");
-        desc.setWrapText(true);
-        desc.setTextAlignment(TextAlignment.CENTER);
-
-        Label price = new Label(String.format("%.2f €", p.getPrix())); // ou p.getPrice()
-        price.setStyle("-fx-text-fill: #00F0FF; -fx-font-size: 24px; -fx-font-weight: bold;");
-
-        // 4. Sélecteur de quantité
-        int qteActuelle = MockService.getInstance().getQuantiteDuPlat(p);
-
-        HBox quantityBox = new HBox(15);
-        quantityBox.setAlignment(Pos.CENTER);
-
-        Button btnMinus = new Button("-");
-        btnMinus.setStyle("-fx-cursor: hand;");
-
-        Label lblQty = new Label(String.valueOf(qteActuelle));
-        lblQty.setStyle("-fx-text-fill: white; -fx-font-size: 18px;");
-
-        Button btnPlus = new Button("+");
-        btnPlus.setStyle("-fx-cursor: hand;");
-
-        btnPlus.setOnAction(e -> {
-            MockService.getInstance().ajouterAuPanier(p);
-            lblQty.setText(String.valueOf(MockService.getInstance().getQuantiteDuPlat(p)));
-            updatePanierDisplay();
-            
-            // Animation du bouton +
-            ScaleTransition scale = new ScaleTransition(Duration.millis(150), btnPlus);
-            scale.setFromX(1.0);
-            scale.setFromY(1.0);
-            scale.setToX(1.3);
-            scale.setToY(1.3);
-            scale.play();
-            
-            // Animation du label quantité
-            ScaleTransition scaleQty = new ScaleTransition(Duration.millis(200), lblQty);
-            scaleQty.setFromX(0.8);
-            scaleQty.setFromY(0.8);
-            scaleQty.setToX(1.1);
-            scaleQty.setToY(1.1);
-            scaleQty.play();
-        });
-
-        btnMinus.setOnAction(e -> {
-            if (MockService.getInstance().getQuantiteDuPlat(p) > 0) {
-                MockService.getInstance().retirerDuPanier(p);
-                lblQty.setText(String.valueOf(MockService.getInstance().getQuantiteDuPlat(p)));
-                updatePanierDisplay();
-                
-                // Animation du bouton -
-                ScaleTransition scale = new ScaleTransition(Duration.millis(150), btnMinus);
-                scale.setFromX(1.0);
-                scale.setFromY(1.0);
-                scale.setToX(1.3);
-                scale.setToY(1.3);
-                scale.play();
-            }
-        });
-
-        quantityBox.getChildren().addAll(btnMinus, lblQty, btnPlus);
-
-        // 5. Assemblage
-        carte.getChildren().addAll(imgView, name, desc, price, quantityBox);
-        return carte;
-    }
+    @FXML void filtrerDessertsOnly() { afficherPlatsDessertsBoissons(3); }
+    @FXML void filtrerBoissonsOnly() { afficherPlatsDessertsBoissons(4); }
+    @FXML void filtrerAllDessertsBoissons() { afficherPlatsDessertsBoissons(0); }
+    @FXML void voirPanier() { try { NetwokApp.setRoot("views/panier"); } catch (IOException e) { e.printStackTrace(); } }
 }
