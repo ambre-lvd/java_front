@@ -41,15 +41,16 @@ public class CatalogueController implements Initializable {
 
     @FXML void filtrerEntrees() { afficherPlats("Entrée"); }
     @FXML void filtrerPlats() { afficherPlats("Plat"); }
+    @FXML void filtrerDesserts() { afficherPlats("Dessert"); }
     
-    @FXML
-    void filtrerDesserts() {
-        gridPlats.getChildren().clear();
-        List<Plat> desserts = MockService.getInstance().getPlatsParCategorie("Desserts");
-        List<Plat> boissons = MockService.getInstance().getPlatsParCategorie("Boissons");
-        desserts.forEach(this::creerCartePlat);
-        boissons.forEach(this::creerCartePlat);
-    }
+    //@FXML
+    //void filtrerDesserts() {
+    //    gridPlats.getChildren().clear();
+    //    List<Plat> desserts = MockService.getInstance().getPlatsParCategorie("Desserts");
+    //    List<Plat> boissons = MockService.getInstance().getPlatsParCategorie("Boissons");
+    //    desserts.forEach(this::creerCartePlat);
+    //    boissons.forEach(this::creerCartePlat);
+    //}
     
     @FXML
     void voirPanier() {
