@@ -10,10 +10,39 @@
     src: url('../fonts/Shojumaru-Regular.ttf');
 }
 
+/* ==================================================================
+   ANIMATIONS GLOBALES
+   ================================================================== */
+
+@-fx-keyframes fadeIn {
+    0% { -fx-opacity: 0; }
+    100% { -fx-opacity: 1; }
+}
+
+@-fx-keyframes slideInUp {
+    0% {
+        -fx-opacity: 0;
+        -fx-translate-y: 30px;
+    }
+    100% {
+        -fx-opacity: 1;
+        -fx-translate-y: 0px;
+    }
+}
+
+@-fx-keyframes glow {
+    0%, 100% { -fx-effect: dropshadow(gaussian, rgba(0, 240, 255, 0.3), 10, 0.3, 0, 0); }
+    50% { -fx-effect: dropshadow(gaussian, rgba(0, 240, 255, 0.6), 20, 0.5, 0, 0); }
+}
+
 /* 2. CONFIGURATION GLOBALE */
 .root {
     -fx-background-color: #050505; /* Noir profond (Midnight Black) */
     -fx-font-family: 'Segoe UI', sans-serif; /* Police moderne par défaut pour le reste */
+}
+
+.root-container {
+    -fx-animation: fadeIn 0.6s ease-in;
 }
 
 /* 3. TYPOGRAPHIE & TITRES */
@@ -28,7 +57,8 @@
     -fx-font-family: 'Shojumaru';
     
     /* Double effet de néon (Cyan interne + flou externe) */
-    -fx-effect: dropshadow(gaussian, #00F0FF, 30, 0.4, 0, 0); 
+    -fx-effect: dropshadow(gaussian, #00F0FF, 30, 0.4, 0, 0);
+    -fx-animation: glow 3s ease-in-out infinite;
 }
 
 /* Les Sous-titres (Style "Code") */
@@ -37,6 +67,7 @@
     -fx-font-size: 28px;
     -fx-font-family: 'Consolas', 'Monospaced'; /* Police de développeur */
     -fx-tracking: 2;           /* Espacement des lettres */
+    -fx-animation: slideInUp 0.8s ease-out;
 }
 
 /* Titres de section (ex: "NOS ENTRÉES") */
@@ -45,6 +76,20 @@
     -fx-font-size: 36px;
     -fx-font-weight: bold;
     -fx-padding: 0 0 20 0;
+}
+
+/* Header */
+.header {
+    -fx-background-color: rgba(15, 23, 42, 0.8);
+    -fx-border-color: rgba(0, 240, 255, 0.2) transparent transparent transparent;
+    -fx-border-width: 1px;
+    -fx-animation: slideInUp 0.5s ease-out;
+}
+
+.header-title {
+    -fx-text-fill: white;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
 }
 
 /* 4. BOUTONS & INTERACTION */
@@ -65,20 +110,22 @@
     
     /* Lueur rose permanente */
     -fx-effect: dropshadow(gaussian, rgba(255, 0, 127, 0.5), 20, 0.3, 0, 0);
-    -fx-transition: all 0.3s;
 }
 
 .btn-action:hover {
     -fx-background-color: rgba(255, 0, 127, 0.2); 
     -fx-border-color: #FF55A3; /* Rose plus clair au survol */
     -fx-effect: dropshadow(gaussian, #FF007F, 40, 0.7, 0, 0); /* Boom de lumière */
-    -fx-scale-x: 1.05; /* Léger grossissement */
-    -fx-scale-y: 1.05;
+    -fx-scale-x: 1.08;
+    -fx-scale-y: 1.08;
+    -fx-animation: none;
 }
 
 .btn-action:pressed {
     -fx-background-color: #FF007F;
     -fx-text-fill: #000000;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
 }
 
 /* Boutons de Navigation (Catégories) */
@@ -91,11 +138,14 @@
     -fx-border-width: 3px;
     -fx-cursor: hand;
     -fx-padding: 15 30 15 30;
+    -fx-transition: -fx-border-color 0.3s ease, -fx-text-fill 0.3s ease;
 }
 
 .btn-categorie:hover {
     -fx-text-fill: white;
     -fx-border-color: transparent transparent #FFFFFF transparent;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }
 
 /* Onglet Actif (Sélectionné) */
@@ -209,13 +259,14 @@
     -fx-border-width: 1px;
     -fx-padding: 15;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 5);
+    -fx-animation: slideInUp 0.5s ease-out;
 }
 
 .card-produit:hover {
     -fx-border-color: #00F0FF; /* Bordure Cyan au survol */
-    -fx-effect: dropshadow(gaussian, #00F0FF, 15, 0.3, 0, 0);
-    -fx-scale-x: 1.02;
-    -fx-scale-y: 1.02;
+    -fx-effect: dropshadow(gaussian, #00F0FF, 20, 0.5, 0, 0);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }
 
 /* Bouton Ajouter (+) dans la carte */
@@ -287,4 +338,524 @@
     -fx-font-weight: bold;
     -fx-min-width: 30px;
     -fx-alignment: center;
+}
+
+/* ==================================================================
+   ÉCRAN DE DÉTAIL DU PLAT
+   ================================================================== */
+
+/* Bouton Retour */
+.btn-retour {
+    -fx-background-color: transparent;
+    -fx-border-color: #334155;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 10 20 10 20;
+}
+
+.btn-retour:hover {
+    -fx-border-color: #00F0FF;
+    -fx-text-fill: #00F0FF;
+    -fx-effect: dropshadow(gaussian, #00F0FF, 10, 0.5, 0, 0);
+}
+
+/* Container principal du détail */
+.detail-container {
+    -fx-background-color: transparent;
+}
+
+/* Section de l'image */
+.image-section {
+    -fx-background-color: rgba(30, 41, 59, 0.4);
+    -fx-background-radius: 20px;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-radius: 20px;
+    -fx-border-width: 1px;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 5);
+}
+
+.detail-image {
+    -fx-effect: dropshadow(gaussian, rgba(0, 240, 255, 0.2), 10, 0.3, 0, 0);
+}
+
+/* Section des informations */
+.info-section {
+    -fx-spacing: 25;
+}
+
+/* Nom du plat en grand */
+.plat-nom {
+    -fx-text-fill: white;
+    -fx-font-size: 42px;
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
+}
+
+/* Prix en évidence */
+.plat-prix {
+    -fx-text-fill: #00F0FF;
+    -fx-font-size: 38px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Consolas', monospace;
+    -fx-effect: dropshadow(gaussian, rgba(0, 240, 255, 0.3), 10, 0.3, 0, 0);
+}
+
+/* Titres des sections (Description, Options, etc.) */
+.section-title {
+    -fx-text-fill: #00F0FF;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 0 5 0;
+}
+
+/* Description du plat */
+.plat-description {
+    -fx-fill: #CBD5E1;
+    -fx-font-size: 16px;
+    -fx-line-spacing: 5px;
+}
+
+/* Informations additionnelles */
+.plat-infos {
+    -fx-fill: #94A3B8;
+    -fx-font-size: 14px;
+    -fx-line-spacing: 3px;
+    -fx-font-family: 'Consolas', monospace;
+}
+
+/* Container des options */
+.options-container {
+    -fx-background-color: rgba(30, 41, 59, 0.3);
+    -fx-background-radius: 15px;
+    -fx-border-color: rgba(255, 255, 255, 0.05);
+    -fx-border-radius: 15px;
+    -fx-border-width: 1px;
+    -fx-padding: 20;
+}
+
+/* Groupe d'options */
+.option-group {
+    -fx-spacing: 10;
+}
+
+/* Label des options */
+.option-label {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+/* Radio buttons personnalisés */
+.radio-option {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+}
+
+.radio-option .radio {
+    -fx-border-color: #00F0FF;
+    -fx-border-width: 2px;
+    -fx-background-color: transparent;
+}
+
+.radio-option:selected .radio {
+    -fx-background-color: #00F0FF;
+    -fx-border-color: #00F0FF;
+}
+
+.radio-option:hover {
+    -fx-text-fill: #00F0FF;
+}
+
+/* Section quantité */
+.quantity-section {
+    -fx-spacing: 15;
+}
+
+/* Boutons de quantité (+ et -) */
+.btn-quantity {
+    -fx-background-color: rgba(0, 240, 255, 0.1);
+    -fx-border-color: #00F0FF;
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-text-fill: #00F0FF;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-min-width: 50px;
+    -fx-min-height: 50px;
+}
+
+.btn-quantity:hover {
+    -fx-background-color: rgba(0, 240, 255, 0.3);
+    -fx-effect: dropshadow(gaussian, #00F0FF, 15, 0.5, 0, 0);
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+.btn-quantity:pressed {
+    -fx-background-color: #00F0FF;
+    -fx-text-fill: #050505;
+}
+
+/* Label de la quantité */
+.quantity-label {
+    -fx-text-fill: white;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-min-width: 60px;
+    -fx-alignment: center;
+}
+
+/* Bouton "Ajouter au panier" principal */
+.btn-ajouter-panier {
+    -fx-background-color: #FF007F;
+    -fx-text-fill: white;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 15px;
+    -fx-cursor: hand;
+    -fx-padding: 20 40 20 40;
+    -fx-effect: dropshadow(gaussian, rgba(255, 0, 127, 0.5), 20, 0.4, 0, 0);
+}
+
+.btn-ajouter-panier:hover {
+    -fx-background-color: #FF55A3;
+    -fx-effect: dropshadow(gaussian, #FF007F, 30, 0.7, 0, 0);
+    -fx-scale-x: 1.08;
+    -fx-scale-y: 1.08;
+}
+
+.btn-ajouter-panier:pressed {
+    -fx-background-color: #D6006B;
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+.btn-ajouter-panier:disabled {
+    -fx-background-color: #334155;
+    -fx-text-fill: #94A3B8;
+    -fx-effect: none;
+}
+
+/* ==================================================================
+   ÉCRAN DE PANIER / RÉCAPITULATIF
+   ================================================================== */
+
+/* Container principal du panier */
+.panier-container {
+    -fx-background-color: transparent;
+    max-width: 1200px;
+}
+
+/* Section du panier */
+.panier-section {
+    -fx-background-color: rgba(30, 41, 59, 0.3);
+    -fx-background-radius: 20px;
+    -fx-border-color: rgba(255, 255, 255, 0.05);
+    -fx-border-radius: 20px;
+    -fx-border-width: 1px;
+    -fx-padding: 30;
+}
+
+/* Header du tableau (Article, Qté, Prix, Total) */
+.panier-header {
+    -fx-padding: 0 0 15 0;
+}
+
+.panier-header-label {
+    -fx-text-fill: #00F0FF;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-transform: uppercase;
+}
+
+/* Séparateurs */
+.panier-separator {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-pref-height: 1px;
+}
+
+.panier-separator-bold {
+    -fx-background-color: rgba(0, 240, 255, 0.3);
+    -fx-pref-height: 2px;
+}
+
+/* Section des totaux */
+.totaux-section {
+    -fx-background-color: rgba(30, 41, 59, 0.4);
+    -fx-background-radius: 15px;
+    -fx-border-color: rgba(255, 255, 255, 0.05);
+    -fx-border-radius: 15px;
+    -fx-border-width: 1px;
+    -fx-padding: 25;
+}
+
+.total-label {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 18px;
+}
+
+.total-value {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-min-width: 120px;
+    -fx-alignment: center-right;
+}
+
+.total-final-box {
+    -fx-padding: 15 0 0 0;
+}
+
+.total-final-label {
+    -fx-text-fill: #00F0FF;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 240, 255, 0.3), 10, 0.3, 0, 0);
+}
+
+.total-final-value {
+    -fx-text-fill: #00F0FF;
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-min-width: 150px;
+    -fx-alignment: center-right;
+    -fx-effect: dropshadow(gaussian, rgba(0, 240, 255, 0.4), 15, 0.4, 0, 0);
+}
+
+/* Section client (Table / Client) */
+.client-section {
+    -fx-padding: 10 0 10 0;
+}
+
+.client-label {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.client-input {
+    -fx-background-color: rgba(30, 41, 59, 0.6);
+    -fx-background-radius: 10px;
+    -fx-border-color: rgba(0, 240, 255, 0.3);
+    -fx-border-radius: 10px;
+    -fx-border-width: 2px;
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-padding: 15;
+    -fx-prompt-text-fill: #64748B;
+}
+
+.client-input:focused {
+    -fx-border-color: #00F0FF;
+    -fx-effect: dropshadow(gaussian, rgba(0, 240, 255, 0.4), 10, 0.3, 0, 0);
+}
+
+/* Section des actions */
+.actions-section {
+    -fx-padding: 20 0 20 0;
+}
+
+/* Bouton Modifier */
+.btn-modifier {
+    -fx-background-color: transparent;
+    -fx-border-color: #94A3B8;
+    -fx-border-width: 2px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 18 40 18 40;
+}
+
+.btn-modifier:hover {
+    -fx-border-color: #00F0FF;
+    -fx-text-fill: #00F0FF;
+    -fx-effect: dropshadow(gaussian, rgba(0, 240, 255, 0.3), 10, 0.3, 0, 0);
+}
+
+/* Bouton Confirmer */
+.btn-confirmer {
+    -fx-background-color: #FF007F;
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 12px;
+    -fx-cursor: hand;
+    -fx-padding: 18 50 18 50;
+    -fx-effect: dropshadow(gaussian, rgba(255, 0, 127, 0.5), 20, 0.4, 0, 0);
+}
+
+.btn-confirmer:hover {
+    -fx-background-color: #FF55A3;
+    -fx-effect: dropshadow(gaussian, #FF007F, 30, 0.7, 0, 0);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.btn-confirmer:pressed {
+    -fx-background-color: #D6006B;
+}
+
+.btn-confirmer:disabled {
+    -fx-background-color: #334155;
+    -fx-text-fill: #64748B;
+    -fx-effect: none;
+}
+
+/* Message d'information */
+.info-message {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 14px;
+    -fx-font-style: italic;
+    -fx-alignment: center;
+    -fx-padding: 10 0 0 0;
+}
+
+/* ==================================================================
+   ÉCRAN DE REÇU / TICKET DE CAISSE
+   ================================================================== */
+
+/* Container du ticket */
+.ticket-container {
+    -fx-background-color: rgba(20, 30, 48, 0.9);
+    -fx-background-radius: 15px;
+    -fx-border-color: rgba(0, 240, 255, 0.3);
+    -fx-border-radius: 15px;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 240, 255, 0.4), 20, 0.5, 0, 0);
+    -fx-max-width: 500px;
+    -fx-animation: slideInUp 0.6s ease-out;
+}
+
+/* En-tête du ticket */
+.ticket-header {
+    -fx-background-color: rgba(0, 240, 255, 0.1);
+    -fx-background-radius: 15 15 0 0;
+}
+
+/* Titre du ticket */
+.ticket-title {
+    -fx-text-fill: #00F0FF;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.ticket-subtitle {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+/* Séparateurs */
+.ticket-separator {
+    -fx-stroke: rgba(255, 255, 255, 0.2);
+    -fx-stroke-width: 1px;
+    -fx-padding: 0;
+}
+
+.ticket-separator-bold {
+    -fx-stroke: rgba(0, 240, 255, 0.4);
+    -fx-stroke-width: 2px;
+    -fx-padding: 0;
+}
+
+.ticket-separator-light {
+    -fx-stroke: rgba(255, 255, 255, 0.1);
+    -fx-stroke-width: 1px;
+    -fx-padding: 0;
+}
+
+/* Informations du ticket */
+.ticket-info {
+    -fx-background-color: rgba(30, 41, 59, 0.3);
+}
+
+.ticket-label {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 14px;
+}
+
+.ticket-value {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* Articles du ticket */
+.ticket-articles {
+    -fx-background-color: rgba(30, 41, 59, 0.3);
+}
+
+/* Totaux du ticket */
+.ticket-totaux {
+    -fx-background-color: rgba(0, 240, 255, 0.05);
+}
+
+.ticket-total-value {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.ticket-total-label {
+    -fx-text-fill: #00F0FF;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.ticket-total-final {
+    -fx-text-fill: #00F0FF;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 240, 255, 0.5), 10, 0.3, 0, 0);
+}
+
+/* Pied de page du ticket */
+.ticket-footer {
+    -fx-background-color: rgba(0, 240, 255, 0.1);
+    -fx-background-radius: 0 0 15 15;
+}
+
+.ticket-thank-you {
+    -fx-text-fill: #00F0FF;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.ticket-goodbye {
+    -fx-text-fill: #FF007F;
+    -fx-font-size: 16px;
+}
+
+/* Bouton Terminé */
+.btn-termine {
+    -fx-background-color: #FF007F;
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 15px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(255, 0, 127, 0.5), 20, 0.4, 0, 0);
+}
+
+.btn-termine:hover {
+    -fx-background-color: #FF55A3;
+    -fx-effect: dropshadow(gaussian, #FF007F, 30, 0.7, 0, 0);
+    -fx-scale-x: 1.08;
+    -fx-scale-y: 1.08;
+}
+
+.btn-termine:pressed {
+    -fx-background-color: #D6006B;
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
 }

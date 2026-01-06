@@ -3,6 +3,9 @@ package fr.netwok.controller;
 import fr.netwok.NetwokApp;
 import fr.netwok.model.Plat;
 import fr.netwok.service.MockService;
+import javafx.animation.FadeTransition;
+import javafx.animation.ScaleTransition;
+import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -17,6 +20,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -93,6 +97,16 @@ public class CatalogueController implements Initializable {
     void voirPanier() {
         try {
             NetwokApp.setRoot("views/panier");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    // Ouvre l'écran de détail du plat
+    private void ouvrirDetailPlat(Plat p) {
+        try {
+            DetailPlatController.setPlatAfficher(p);
+            NetwokApp.setRoot("views/detailPlat");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -213,6 +227,22 @@ public class CatalogueController implements Initializable {
         carte.getStyleClass().add("card-produit");
         carte.setPrefWidth(280);
         carte.setAlignment(Pos.CENTER);
+        
+        // Rendre la carte cliquable pour voir le détail
+        carte.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 1) { // Simple clic
+                // Animation de clic
+                ScaleTransition scale = new ScaleTransition(Duration.millis(150), carte);
+                scale.setFromX(1.0);
+                scale.setFromY(1.0);
+                scale.setToX(0.95);
+                scale.setToY(0.95);
+                
+                scale.setOnFinished(event -> ouvrirDetailPlat(p));
+                scale.play();
+            }
+        });
+        carte.setStyle(carte.getStyle() + "-fx-cursor: hand;");
 
         // 2. L'Image avec sécurité
         ImageView imgView = new ImageView();
@@ -273,6 +303,22 @@ public class CatalogueController implements Initializable {
             MockService.getInstance().ajouterAuPanier(p);
             lblQty.setText(String.valueOf(MockService.getInstance().getQuantiteDuPlat(p)));
             updatePanierDisplay();
+            
+            // Animation du bouton +
+            ScaleTransition scale = new ScaleTransition(Duration.millis(150), btnPlus);
+            scale.setFromX(1.0);
+            scale.setFromY(1.0);
+            scale.setToX(1.3);
+            scale.setToY(1.3);
+            scale.play();
+            
+            // Animation du label quantité
+            ScaleTransition scaleQty = new ScaleTransition(Duration.millis(200), lblQty);
+            scaleQty.setFromX(0.8);
+            scaleQty.setFromY(0.8);
+            scaleQty.setToX(1.1);
+            scaleQty.setToY(1.1);
+            scaleQty.play();
         });
 
         btnMinus.setOnAction(e -> {
@@ -280,6 +326,14 @@ public class CatalogueController implements Initializable {
                 MockService.getInstance().retirerDuPanier(p);
                 lblQty.setText(String.valueOf(MockService.getInstance().getQuantiteDuPlat(p)));
                 updatePanierDisplay();
+                
+                // Animation du bouton -
+                ScaleTransition scale = new ScaleTransition(Duration.millis(150), btnMinus);
+                scale.setFromX(1.0);
+                scale.setFromY(1.0);
+                scale.setToX(1.3);
+                scale.setToY(1.3);
+                scale.play();
             }
         });
 
