@@ -52,17 +52,17 @@ public class CatalogueController implements Initializable {
             sectionTitle.setVisible(false);
             sectionTitle.setManaged(false);
         }
-        afficherPlats("Entrée");
+        afficherPlats(1);
     }
 
     @FXML void filtrerEntrees() {
         toggleSousCategorie(false);
-        afficherPlats("Entrée");
+        afficherPlats(1);
     }
 
     @FXML void filtrerPlats() {
         toggleSousCategorie(false);
-        afficherPlats("Plat");
+        afficherPlats(2);
     }
     
     @FXML
@@ -71,22 +71,22 @@ public class CatalogueController implements Initializable {
         if (tabAllDesserts != null && !tabAllDesserts.isSelected()) {
             tabAllDesserts.setSelected(true);
         }
-        afficherPlatsDessertsBoissons("ALL");
+        afficherPlatsDessertsBoissons(0);
     }
 
     @FXML
     void filtrerDessertsOnly() {
-        afficherPlatsDessertsBoissons("Dessert");
+        afficherPlatsDessertsBoissons(3);
     }
 
     @FXML
     void filtrerBoissonsOnly() {
-        afficherPlatsDessertsBoissons("Boisson");
+        afficherPlatsDessertsBoissons(4);
     }
 
     @FXML
     void filtrerAllDessertsBoissons() {
-        afficherPlatsDessertsBoissons("ALL");
+        afficherPlatsDessertsBoissons(0);
     }
     
     @FXML
@@ -107,7 +107,7 @@ public class CatalogueController implements Initializable {
         lblTotal.setText(String.format("%.2f €", total));
     }
 
-    private void afficherPlats(String categorie) {
+    private void afficherPlats(int categorie) {
         gridPlats.getChildren().clear();
         List<Plat> plats = MockService.getInstance().getPlatsParCategorie(categorie);
 
@@ -124,20 +124,25 @@ public class CatalogueController implements Initializable {
         }
     }
 
-    private void afficherPlatsDessertsBoissons(String mode) {
+    private void afficherPlatsDessertsBoissons(int mode) {
         gridPlats.getChildren().clear();
         updateSectionTitle(mode);
-        if ("Dessert".equalsIgnoreCase(mode)) {
-            afficherSectionAvecTitre("Desserts", MockService.getInstance().getPlatsParCategorie("Dessert"));
+
+        // MODE DESSERT (ID 3)
+        if (mode == 3) {
+            afficherSectionAvecTitre("Desserts", MockService.getInstance().getPlatsParCategorie(3));
             return;
         }
-        if ("Boisson".equalsIgnoreCase(mode)) {
-            afficherSectionAvecTitre("Boissons", MockService.getInstance().getPlatsParCategorie("Boisson"));
+
+        // MODE BOISSON (ID 4)
+        if (mode == 4) {
+            afficherSectionAvecTitre("Boissons", MockService.getInstance().getPlatsParCategorie(4));
             return;
         }
-        // ALL
-        afficherSectionAvecTitre("Desserts", MockService.getInstance().getPlatsParCategorie("Dessert"));
-        afficherSectionAvecTitre("Boissons", MockService.getInstance().getPlatsParCategorie("Boisson"));
+
+        // MODE TOUT (Si mode n'est ni 3 ni 4, on affiche les deux sections)
+        afficherSectionAvecTitre("Desserts", MockService.getInstance().getPlatsParCategorie(3));
+        afficherSectionAvecTitre("Boissons", MockService.getInstance().getPlatsParCategorie(4));
     }
 
     private void afficherSectionAvecTitre(String titre, List<Plat> plats) {
@@ -162,14 +167,14 @@ public class CatalogueController implements Initializable {
         gridPlats.getChildren().add(section);
     }
 
-    private void updateSectionTitle(String mode) {
+    private void updateSectionTitle(int mode) {
         if (sectionTitle == null) return;
         sectionTitle.setVisible(true);
         sectionTitle.setManaged(true);
 
-        switch (mode.toUpperCase()) {
-            case "DESSERT" -> sectionTitle.setText("Desserts");
-            case "BOISSON" -> sectionTitle.setText("Boissons");
+        switch (mode) {
+            case 3 -> sectionTitle.setText("Desserts");
+            case 4 -> sectionTitle.setText("Boissons");
             default -> sectionTitle.setText("Desserts & Boissons");
         }
     }

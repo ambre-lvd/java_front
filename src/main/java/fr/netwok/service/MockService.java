@@ -40,7 +40,7 @@ public class MockService {
         } catch (Exception e) {
             System.err.println("❌ Erreur API : " + e.getMessage());
             // Optionnel : ajoute un plat de secours pour tester si la page s'ouvre
-            this.catalogue.add(new Plat("ERR", "Erreur Serveur", "Vérifiez la console", 0, "Entrées", ""));
+            this.catalogue.add(new Plat("ERR", "Erreur Serveur", "Vérifiez la console", 0, 1, ""));
         }
     }
 
@@ -52,9 +52,9 @@ public class MockService {
         return catalogue;
     }
 
-    public List<Plat> getPlatsParCategorie(String categorie) {
+    public List<Plat> getPlatsParCategorie(int categorie) {
         return catalogue.stream()
-                .filter(p -> p.getCategorie().equalsIgnoreCase(categorie))
+                .filter(p -> p.getCategorie() == categorie)
                 .collect(Collectors.toList());
     }
 
