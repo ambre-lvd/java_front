@@ -91,7 +91,7 @@
             </padding>
 
             <VBox>
-                <Label text="MON PANIER" textFill="#94a3b8">
+                <Label fx:id="lblMonPanierTitre" text="MON PANIER" textFill="#94a3b8">
                     <font><Font name="System Bold" size="14.0" /></font>
                 </Label>
                 <Label fx:id="lblNbArticles" text="0 articles" textFill="WHITE">
@@ -111,7 +111,7 @@
                 </effect>
             </Label>
 
-            <Button onAction="#voirPanier" styleClass="btn-action" text="VOIR PANIER &gt;">
+            <Button fx:id="btnVoirPanier" onAction="#voirPanier" styleClass="btn-action" text="VOIR PANIER &gt;">
                 <font><Font size="20.0" /></font>
                 <HBox.margin>
                     <Insets left="30.0" />
@@ -123,5 +123,4 @@
             <Button alignment="CENTER" mnemonicParsing="false" styleClass="btn-round" text="EN" onAction="#changeLanguage" />
         </HBox>
     </bottom>
-
 </BorderPane>

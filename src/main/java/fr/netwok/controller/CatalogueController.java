@@ -3,7 +3,6 @@ package fr.netwok.controller;
 import fr.netwok.NetwokApp;
 import fr.netwok.model.Plat;
 import fr.netwok.service.MockService;
-import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -16,10 +15,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
-import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -37,16 +34,17 @@ public class CatalogueController implements Initializable {
     @FXML private ScrollPane scrollPane;
     @FXML private Label sectionTitle;
 
-    // Correspondance avec les ToggleButtons du FXML
     @FXML private ToggleButton tabEntrees;
     @FXML private ToggleButton tabPlats;
     @FXML private ToggleButton tabDesserts;
     @FXML private ToggleButton tabAllDesserts;
+    @FXML private ToggleButton tabDessertsOnly;
+    @FXML private ToggleButton tabBoissonsOnly;
 
-    // Bouton d'action
     @FXML private Button btnVoirPanier;
 
-    private int categorieActuelle = 1;
+    private int categorieActuelle = 1; // 1: Entrees, 2: Plats, 3: Desserts/Boissons
+    private int sousModeActuel = 0;    // 0: Tout, 3: Desserts, 4: Boissons
     private static String langueActuelle = "FR";
 
     @Override
@@ -84,21 +82,32 @@ public class CatalogueController implements Initializable {
 
     @FXML void filtrerDesserts() {
         this.categorieActuelle = 3;
+        this.sousModeActuel = 0;
         toggleSousCategorie(true);
         if (tabAllDesserts != null) tabAllDesserts.setSelected(true);
         afficherPlatsDessertsBoissons(0);
         resetScroll();
     }
 
-    @FXML void filtrerDessertsOnly() { afficherPlatsDessertsBoissons(3); }
-    @FXML void filtrerBoissonsOnly() { afficherPlatsDessertsBoissons(4); }
-    @FXML void filtrerAllDessertsBoissons() { afficherPlatsDessertsBoissons(0); }
+    @FXML void filtrerDessertsOnly() {
+        this.sousModeActuel = 3;
+        afficherPlatsDessertsBoissons(3);
+    }
+
+    @FXML void filtrerBoissonsOnly() {
+        this.sousModeActuel = 4;
+        afficherPlatsDessertsBoissons(4);
+    }
+
+    @FXML void filtrerAllDessertsBoissons() {
+        this.sousModeActuel = 0;
+        afficherPlatsDessertsBoissons(0);
+    }
 
     // --- LOGIQUE D'AFFICHAGE ---
 
     private void afficherPlats(int categorie) {
         gridPlats.getChildren().clear();
-
         List<Plat> plats = MockService.getInstance().getPlatsParCategorie(categorie);
         for (Plat p : plats) {
             gridPlats.getChildren().add(creerCarteVBox(p));
@@ -142,7 +151,6 @@ public class CatalogueController implements Initializable {
         carte.setPrefWidth(280);
         carte.setAlignment(Pos.CENTER);
 
-        // TRADUCTION DYNAMIQUE DU CONTENU
         String nomAffiche = p.getNom();
         String descAffiche = p.getDescription();
         if (!"FR".equals(langueActuelle)) {
@@ -152,7 +160,6 @@ public class CatalogueController implements Initializable {
             if (tDesc != null) descAffiche = tDesc;
         }
 
-        // Image
         ImageView imgView = new ImageView();
         imgView.setFitHeight(180); imgView.setFitWidth(240); imgView.setPreserveRatio(true);
         try {
@@ -161,7 +168,6 @@ public class CatalogueController implements Initializable {
             if (res != null) imgView.setImage(new Image(res.toExternalForm()));
         } catch (Exception e) { e.printStackTrace(); }
 
-        // Textes
         Label name = new Label(nomAffiche);
         name.setStyle("-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;");
         name.setWrapText(true); name.setTextAlignment(TextAlignment.CENTER);
@@ -174,7 +180,6 @@ public class CatalogueController implements Initializable {
         price.setStyle("-fx-text-fill: #00F0FF; -fx-font-size: 24px; -fx-font-weight: bold;");
 
         HBox quantityBox = creerSelecteurQuantite(p);
-
         carte.setOnMouseClicked(e -> ouvrirDetailPlat(p));
         carte.getChildren().addAll(imgView, name, desc, price, quantityBox);
         return carte;
@@ -213,25 +218,33 @@ public class CatalogueController implements Initializable {
         Button btn = (Button) event.getSource();
         langueActuelle = btn.getText().toUpperCase();
 
-        // 1. Traduction des onglets (Navigation)
+        // 1. Navigation Principale
         if (tabEntrees != null) tabEntrees.setText(ui("ENTRÉES", "STARTERS"));
         if (tabPlats != null) tabPlats.setText(ui("PLATS", "MAINS"));
         if (tabDesserts != null) tabDesserts.setText(ui("DESSERTS / BOISSONS", "DESSERTS / DRINKS"));
 
-        // 2. Traduction de la barre de panier
+        // 2. Navigation Sous-Catégories
+        if (tabAllDesserts != null) tabAllDesserts.setText(ui("TOUT", "ALL"));
+        if (tabDessertsOnly != null) tabDessertsOnly.setText(ui("DESSERTS", "DESSERTS"));
+        if (tabBoissonsOnly != null) tabBoissonsOnly.setText(ui("BOISSONS", "DRINKS"));
+
+        // 3. Barre Panier
         if (lblMonPanierTitre != null) lblMonPanierTitre.setText(ui("MON PANIER", "MY BASKET"));
         if (btnVoirPanier != null) btnVoirPanier.setText(ui("VOIR PANIER >", "VIEW BASKET >"));
-        if (languageDisplay != null) languageDisplay.setText(ui("Langue :", "Language:"));
+        if (languageDisplay != null) languageDisplay.setText(ui("Langue sélectionnée", "Language selected"));
 
         updatePanierDisplay();
-
-        // 3. Rafraîchir les cartes produits
         refreshView();
     }
 
-    // Helper pour basculer facilement entre les deux langues
     private String ui(String fr, String en) {
         return "FR".equals(langueActuelle) ? fr : en;
+    }
+
+    private void refreshView() {
+        if (categorieActuelle == 1) afficherPlats(1);
+        else if (categorieActuelle == 2) afficherPlats(2);
+        else afficherPlatsDessertsBoissons(sousModeActuel);
     }
 
     private String getTraductionProduit(String id, String type) {
@@ -271,24 +284,13 @@ public class CatalogueController implements Initializable {
         };
     }
 
-    // --- MISE À JOUR PANIER ---
-
     private void updatePanierDisplay() {
         int nb = MockService.getInstance().getNombreArticlesPanier();
         double total = MockService.getInstance().getTotalPanier();
-
-        // Traduction de l'unité article(s) / item(s)
         String unit = (nb > 1) ? ui("articles", "items") : ui("article", "item");
-
         lblNbArticles.setText(nb + " " + unit);
         lblTotal.setText(String.format("%.2f €", total));
     }
-    private void refreshView() {
-        if (categorieActuelle == 1) afficherPlats(1);
-        else if (categorieActuelle == 2) afficherPlats(2);
-        else afficherPlatsDessertsBoissons(0);
-    }
-    // --- UTILITAIRES ---
 
     private void toggleSousCategorie(boolean show) {
         if (sousCategorieBar != null) {
