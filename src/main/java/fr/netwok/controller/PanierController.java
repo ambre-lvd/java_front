@@ -222,17 +222,69 @@ public class PanierController implements Initializable {
 
     @FXML
     void confirmerCommande() {
+        List<Plat> panier = MockService.getInstance().getPanier();
+        if (panier.isEmpty()) {
+            System.out.println("⚠️ Le panier est vide");
+            return;
+        }
+
+        String numeroTable = txtNumeroTable.getText().trim();
+        String nomClient = txtNomClient.getText().trim();
         if (txtNumeroTable.getText().isEmpty()) {
             txtNumeroTable.setStyle("-fx-border-color: #FF007F;");
             return;
         }
-        // Simulation d'envoi
-        btnConfirmer.setText(currentLanguage.equals("FR") ? "✓ Commande envoyée" : "✓ Order sent");
-        btnConfirmer.setDisable(true);
-    }
+        try {
+            // 3. Conversion du numéro de table
+            int tableNumber;
+            try {
+                tableNumber = Integer.parseInt(numeroTable);
+            } catch (NumberFormatException e) {
+                System.out.println("⚠️ Numéro de table invalide");
+                txtNumeroTable.setStyle("-fx-border-color: #FF007F; -fx-border-width: 2px;");
+                return;
+            }
 
-    @FXML
-    void retourCatalogue() throws IOException {
-        NetwokApp.setRoot("views/catalogue");
+            System.out.println("📝 Envoi de la commande - Table: " + tableNumber);
+
+            // 4. ENVOI À L'API (On envoie la liste de Plats, l'ApiClient gèrera la conversion en JSON)
+            ApiClient.sendOrder(tableNumber, panier);
+
+            // 5. Succès : Feedback visuel
+            System.out.println("✅ Commande enregistrée en BDD !");
+            // Simulation d'envoi
+            btnConfirmer.setText(currentLanguage.equals("FR") ? "✓ Commande envoyée" : "✓ Order sent");
+            btnConfirmer.setDisable(true);
+            btnConfirmer.setStyle("-fx-background-color: #10b981; -fx-text-fill: white;");
+            final String numCommande = "CMD-" + System.currentTimeMillis() % 100000;
+            final int finalTableNumber = tableNumber;
+            final String finalNomClient = nomClient;
+
+            new Thread(() -> {
+                try {
+                    Thread.sleep(1200);
+                    javafx.application.Platform.runLater(() -> {
+                        RecuCommandeController.setCommandeInfo(numCommande, finalTableNumber, finalNomClient);
+                        try {
+                            NetwokApp.setRoot("views/recuCommande");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        } catch (Exception e) {
+            System.err.println("❌ Erreur API : " + e.getMessage());
+            btnConfirmer.setText("❌ Erreur Serveur");
+            btnConfirmer.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white;");
+        }
+
+        }
+
+        @FXML
+        void retourCatalogue () throws IOException {
+            NetwokApp.setRoot("views/catalogue");
+        }
     }
-}
