@@ -75,14 +75,15 @@ public class CatalogueController implements Initializable {
         // 3. Barre Panier
         if (lblMonPanierTitre != null) lblMonPanierTitre.setText(ui("MON PANIER", "MY BASKET"));
         if (btnVoirPanier != null) btnVoirPanier.setText(ui("VOIR PANIER >", "VIEW BASKET >"));
-        if (languageDisplay != null) languageDisplay.setText(ui("Langue sélectionnée", "Language selected"));
+        //if (languageDisplay != null) languageDisplay.setText(ui("Langue sélectionnée", "Language selected"));
 
         updatePanierDisplay();
         refreshView();
         toggleSousCategorie(false);
         if (sectionTitle != null) {
-            sectionTitle.setVisible(false);
-            sectionTitle.setManaged(false);
+            sectionTitle.setVisible(true);
+            sectionTitle.setManaged(true);
+            sectionTitle.setText(ui("Entrées", "Starters"));
         }
         afficherPlats(1);
     }
@@ -285,7 +286,7 @@ public class CatalogueController implements Initializable {
             case "B4" -> type.equals("nom") ? "Coconut Juice" : "With chunks";
             case "B5" -> type.equals("nom") ? "Sake" : "Small pitcher";
             case "D1" -> type.equals("nom") ? "Coconut Pearls" : "2 pieces, warm";
-            case "D2" -> type.equals("nom") ? "Iced Mochi" : "2 pieces, flavor of choice";
+            case "D2" -> type.equals("nom") ? "Iced Mochi" : "2 pieces, Vanilla and Matcha";
             case "D3" -> type.equals("nom") ? "Fresh Mango" : "Mango slices";
             case "D4" -> type.equals("nom") ? "Flambé Banana" : "With sake";
             case "D5" -> type.equals("nom") ? "Chinese Nougat" : "With sesame seeds";
