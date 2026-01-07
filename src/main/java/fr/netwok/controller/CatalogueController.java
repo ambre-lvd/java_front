@@ -358,4 +358,11 @@ public class CatalogueController implements Initializable {
             scrollPane.setVvalue(0);
         }
     }
+
+    @FXML
+    public void changeLanguage(javafx.event.ActionEvent event) {
+        // Méthode ajoutée pour éviter le crash
+        // Tu pourras copier le code de AccueilController ici plus tard si tu veux que ça marche
+        System.out.println("Bouton langue cliqué (non implémenté sur cette page)");
+    }
 }

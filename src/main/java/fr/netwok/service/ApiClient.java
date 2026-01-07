@@ -13,16 +13,14 @@ public class ApiClient {
     private static final String BASE_URL = "http://localhost:7001";
     private static final HttpClient client = HttpClient.newHttpClient();
     private static final Gson gson = new Gson();
-    
-    // Paramètres MySQL
+
+    // Paramètres MySQL pour le mode secours
     private static final String DB_URL = "jdbc:mysql://localhost:3306/restaurant_db";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "";
 
-    // Récupérer le menu depuis le Back-end ou la BDD locale
     public static List<Plat> fetchMenu() throws Exception {
         try {
-            // Essayer d'abord l'API
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(BASE_URL + "/menu"))
                     .GET()
@@ -30,26 +28,23 @@ public class ApiClient {
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            // Transforme le JSON reçu en liste d'objets Plat
             return Arrays.asList(gson.fromJson(response.body(), Plat[].class));
         } catch (Exception e) {
             System.out.println("API indisponible, chargement depuis la base de données...");
-            // Fallback : charger depuis la BDD
             return fetchMenuFromDatabase();
         }
     }
 
-    // Récupérer les plats depuis la base de données MySQL
     private static List<Plat> fetchMenuFromDatabase() throws Exception {
         List<Plat> plats = new ArrayList<>();
-        
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            // On récupère l'ID en String et category_id en Int
             String query = "SELECT id, name, description, price, category_id, image_path FROM Dish";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            
+
             while (rs.next()) {
                 String id = rs.getString("id");
                 String nom = rs.getString("name");
@@ -57,25 +52,25 @@ public class ApiClient {
                 double prix = rs.getDouble("price");
                 int categorie = rs.getInt("category_id");
                 String image = rs.getString("image_path");
-                
+
                 Plat p = new Plat(id, nom, description, prix, categorie, image);
                 plats.add(p);
             }
-            
             conn.close();
-            System.out.println("✅ " + plats.size() + " plats chargés depuis la BDD");
-        } catch (Exception e) {
-            System.err.println("❌ Erreur connexion BDD : " + e.getMessage());
-            throw e;
-        }
-        
+        } catch (Exception e) { throw e; }
         return plats;
     }
 
-    // Envoyer la commande finale au Back-end
-    public static void sendOrder(int tableNumber, List<String> dishIds) throws Exception {
+    // --- CORRECTION : Accepte List<Plat> pour correspondre au PanierController ---
+    public static void sendOrder(int tableNumber, List<Plat> plats) throws Exception {
         try {
-            // Objet temporaire pour correspondre au format attendu par le Back
+            // Extraction des IDs (Le travail que le contrôleur ne fait pas)
+            List<String> dishIds = new ArrayList<>();
+            for (Plat p : plats) {
+                dishIds.add(p.getId());
+            }
+
+            // Préparation de l'objet JSON
             var data = new Object() {
                 int tableNumberValue = tableNumber;
                 List<String> dishIdsList = dishIds;
@@ -95,8 +90,7 @@ public class ApiClient {
             client.send(request, HttpResponse.BodyHandlers.ofString());
             System.out.println("✅ Commande envoyée au serveur");
         } catch (Exception e) {
-            System.out.println("⚠️ Serveur indisponible - Commande traitée localement");
-            // Ne pas lever l'exception, continuer normalement
+            System.out.println("⚠️ Serveur indisponible - Commande non envoyée");
         }
     }
 }
