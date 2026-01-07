@@ -92,6 +92,9 @@ public class CatalogueController implements Initializable {
     @FXML void filtrerEntrees() {
         this.categorieActuelle = 1;
         toggleSousCategorie(false);
+        sectionTitle.setVisible(true);
+        sectionTitle.setManaged(true);
+        sectionTitle.setText(ui("Entrées", "Starters"));
         afficherPlats(1);
         resetScroll();
     }
@@ -99,6 +102,9 @@ public class CatalogueController implements Initializable {
     @FXML void filtrerPlats() {
         this.categorieActuelle = 2;
         toggleSousCategorie(false);
+        sectionTitle.setVisible(true);
+        sectionTitle.setManaged(true);
+        sectionTitle.setText(ui("Plats", "Mains"));
         afficherPlats(2);
         resetScroll();
     }
@@ -254,7 +260,7 @@ public class CatalogueController implements Initializable {
         // 3. Barre Panier
         if (lblMonPanierTitre != null) lblMonPanierTitre.setText(ui("MON PANIER", "MY BASKET"));
         if (btnVoirPanier != null) btnVoirPanier.setText(ui("VOIR PANIER >", "VIEW BASKET >"));
-        if (languageDisplay != null) languageDisplay.setText(ui("Langue sélectionnée", "Language selected"));
+        //if (languageDisplay != null) languageDisplay.setText(ui("Langue sélectionnée", "Language selected"));
 
         updatePanierDisplay();
         refreshView();

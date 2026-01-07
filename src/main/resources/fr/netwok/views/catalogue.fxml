@@ -117,7 +117,7 @@
                     <Insets left="30.0" />
                 </HBox.margin>
             </Button>
-            <Label fx:id="languageDisplay" text="Langue sélectionnée" />
+            <Label fx:id="languageDisplay"/>
 
             <Button alignment="CENTER" mnemonicParsing="false" styleClass="btn-round" text="FR" onAction="#changeLanguage" />
             <Button alignment="CENTER" mnemonicParsing="false" styleClass="btn-round" text="EN" onAction="#changeLanguage" />

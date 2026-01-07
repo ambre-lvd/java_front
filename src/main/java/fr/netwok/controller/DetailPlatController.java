@@ -25,6 +25,10 @@ public class DetailPlatController implements Initializable {
     @FXML private Text txtDescription;
     @FXML private Text txtInfos;
 
+    @FXML private Label epices;
+    @FXML private Label acc;
+    @FXML private Label qt;
+
     @FXML private RadioButton rbDoux;
     @FXML private RadioButton rbMoyen;
     @FXML private RadioButton rbFort;
@@ -82,13 +86,15 @@ public class DetailPlatController implements Initializable {
         if (btnAjouter != null) btnAjouter.setText(ui("Ajouter au panier", "Add to basket"));
         if (btnRetour != null) btnRetour.setText(ui("Retour", "Back"));
         if (btnVoirPanier != null) btnVoirPanier.setText(ui("Voir mon panier", "View my basket"));
-
+        if (epices != null) epices.setText(ui("Épice", "Spice"));
+        if (acc != null) acc.setText(ui("Accompagnement", "Side"));
         if (rbDoux != null) rbDoux.setText(ui("Doux", "Mild"));
         if (rbMoyen != null) rbMoyen.setText(ui("Moyen", "Medium"));
         if (rbFort != null) rbFort.setText(ui("Fort", "Spicy"));
 
         if (rbRiz != null) rbRiz.setText(ui("Riz", "Rice"));
         if (rbNouilles != null) rbNouilles.setText(ui("Nouilles", "Noodles"));
+        if (qt != null) qt.setText(ui("Quantité", "Quantity"));
     }
 
     private String getTraductionProduit(String id, String type) {

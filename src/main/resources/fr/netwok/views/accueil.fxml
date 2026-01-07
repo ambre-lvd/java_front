@@ -63,7 +63,7 @@
             <padding>
                 <Insets bottom="30.0" top="10.0"/>
             </padding>
-            <Label fx:id="languageDisplay" text="Langue sélectionnée" />
+            <Label fx:id="languageDisplay" />
 
             <Button mnemonicParsing="false" styleClass="btn-round" text="FR" onAction="#changeLanguage" />
             <Button mnemonicParsing="false" styleClass="btn-round" text="EN" onAction="#changeLanguage" />

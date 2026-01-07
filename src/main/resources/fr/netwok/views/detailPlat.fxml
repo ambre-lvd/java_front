@@ -80,7 +80,7 @@
                         
                         <!-- Niveau d'épice -->
                         <VBox spacing="10" styleClass="option-group">
-                            <Label text="Épice : doux / moyen / fort" styleClass="option-label"/>
+                            <Label fx:id="epices" text="Épice" styleClass="option-label"/>
                             <HBox spacing="15">
                                 <RadioButton fx:id="rbDoux" text="Doux" toggleGroup="$epice" selected="true" 
                                            styleClass="radio-option"/>
@@ -93,7 +93,7 @@
                         
                         <!-- Accompagnement -->
                         <VBox spacing="10" styleClass="option-group">
-                            <Label text="Accompagnement : riz / nouilles" styleClass="option-label"/>
+                            <Label fx:id="acc" text="Accompagnement" styleClass="option-label"/>
                             <HBox spacing="15">
                                 <RadioButton fx:id="rbRiz" text="Riz" toggleGroup="$accompagnement" selected="true" 
                                            styleClass="radio-option"/>
@@ -105,7 +105,7 @@
                     
                     <!-- Sélecteur de quantité -->
                     <VBox spacing="15" styleClass="quantity-section">
-                        <Label text="Quantité" styleClass="section-title"/>
+                        <Label fx:id="qt" text="Quantité" styleClass="section-title"/>
                         <HBox spacing="20" alignment="CENTER_LEFT">
                             <Button fx:id="btnMinus" text="-" styleClass="btn-quantity" onAction="#diminuerQuantite"/>
                             <Label fx:id="lblQuantite" text="1" styleClass="quantity-label"/>
@@ -118,7 +118,7 @@
                             styleClass="btn-ajouter-panier" onAction="#ajouterAuPanier"
                             maxWidth="Infinity"/>
                 </VBox>
-                <Label fx:id="languageDisplay" text="Langue sélectionnée" />
+                <Label fx:id="languageDisplay"/>
 
                 <Button alignment="CENTER" mnemonicParsing="false" styleClass="btn-round" text="FR" onAction="#changeLanguage" />
                 <Button alignment="CENTER" mnemonicParsing="false" styleClass="btn-round" text="EN" onAction="#changeLanguage" />
