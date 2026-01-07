@@ -89,10 +89,14 @@ public class ApiClient {
 
         OrderRequest(int tableNumber, List<Plat> panier) {
             this.tableNumber = tableNumber;
-            // Transformation du panier en items avec options par défaut (0)
             this.items = panier.stream()
-                    .map(p -> new ItemData(p.getId(), 1, 0, 0))
-                    .collect(Collectors.toList());
+                    .map(p -> new ItemData(
+                            p.getId(),
+                            1,
+                            p.getPimentChoisi(),        // On récupère le choix réel
+                            p.getAccompagnementChoisi() // On récupère le choix réel
+                    ))
+                    .collect(java.util.stream.Collectors.toList());
         }
     }
 
