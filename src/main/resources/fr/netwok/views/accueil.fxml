@@ -67,9 +67,8 @@
 
             <Button mnemonicParsing="false" styleClass="btn-round" text="FR" onAction="#changeLanguage" />
             <Button mnemonicParsing="false" styleClass="btn-round" text="EN" onAction="#changeLanguage" />
-            <Label text="|" textFill="#334155">
-               <font><Font size="24.0" /></font>
-            </Label>
+            <Button mnemonicParsing="false" styleClass="btn-round" text="中文" onAction="#changeLanguage" />
+            <Button mnemonicParsing="false" styleClass="btn-round" text="日本語" onAction="#changeLanguage" />
         </HBox>
     </bottom>
 

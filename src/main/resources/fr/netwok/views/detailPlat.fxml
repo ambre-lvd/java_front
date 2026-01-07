@@ -122,6 +122,8 @@
 
                 <Button alignment="CENTER" mnemonicParsing="false" styleClass="btn-round" text="FR" onAction="#changeLanguage" />
                 <Button alignment="CENTER" mnemonicParsing="false" styleClass="btn-round" text="EN" onAction="#changeLanguage" />
+                <Button alignment="CENTER" mnemonicParsing="false" styleClass="btn-round" text="中文" onAction="#changeLanguage" />
+                <Button alignment="CENTER" mnemonicParsing="false" styleClass="btn-round" text="日本語 " onAction="#changeLanguage" />
             </HBox>
         </VBox>
     </ScrollPane>

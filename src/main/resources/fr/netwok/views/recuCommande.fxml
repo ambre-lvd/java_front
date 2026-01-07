@@ -84,11 +84,9 @@
                 <Label fx:id="lblAuRevoir" text="À bientôt chez NETWOK" styleClass="ticket-goodbye"/>
             </VBox>
         </VBox>
-
-        <Button fx:id="btnTermine" text="✓ Terminé"
-                styleClass="btn-termine"
-                onAction="#terminerCommande"
-                style="-fx-padding: 15 50 15 50; -fx-font-size: 20px; -fx-margin: 30 0 0 0;"/>
+        <HBox alignment="CENTER">
+            <Button fx:id="btnTermine" text="✓ Terminé" styleClass="btn-termine" onAction="#terminerCommande" style="-fx-padding: 15 50 15 50; -fx-font-size: 20px;"/>
+        </HBox>
     </VBox>
 
     <VBox fx:id="vboxMessage" alignment="CENTER" VBox.vgrow="ALWAYS"
