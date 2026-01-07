@@ -76,6 +76,10 @@
                 <Button text="EN" onAction="#changeLanguage" styleClass="btn-round"/>
                 <Button text="中文" onAction="#changeLanguage" styleClass="btn-round"/>
                 <Button text="日本語" onAction="#changeLanguage" styleClass="btn-round"/>
+                <Button text="ES" onAction="#changeLanguage" styleClass="btn-round"/>
+                <Button text="PY" onAction="#changeLanguage" styleClass="btn-round"/>
+                <Button text="ไทย" onAction="#changeLanguage" styleClass="btn-round"/>
+                <Button text="한국말" onAction="#changeLanguage" styleClass="btn-round"/>
                 <Label fx:id="languageDisplay" text="Langue : FR" style="-fx-text-fill: white;"/>
             </HBox>
         </VBox>

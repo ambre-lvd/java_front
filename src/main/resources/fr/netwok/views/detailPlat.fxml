@@ -27,7 +27,7 @@
         
         <Region HBox.hgrow="ALWAYS"/>
         
-        <Label text="Détail du plat" styleClass="header-title"/>
+        <Label fx:id="detail" text="Détails du plat" styleClass="header-title"/>
         
         <Region HBox.hgrow="ALWAYS"/>
         
@@ -63,20 +63,20 @@
                     
                     <!-- Description -->
                     <VBox spacing="10">
-                        <Label text="Description" styleClass="section-title"/>
+                        <Label fx:id="desc" text="Description" styleClass="section-title"/>
                         <Text fx:id="txtDescription" wrappingWidth="500" styleClass="plat-description"/>
                     </VBox>
                     
                     <!-- Informations additionnelles -->
                     <VBox spacing="10" fx:id="vboxInfos">
-                        <Label text="Informations" styleClass="section-title"/>
+                        <Label fx:id="info" text="Informations" styleClass="section-title"/>
                         <Text fx:id="txtInfos" wrappingWidth="500" styleClass="plat-infos" 
                               text="Allergènes : gluten, soja&#10;Calories : 450 kcal&#10;Temps de préparation : 15 min"/>
                     </VBox>
                     
                     <!-- Options de personnalisation -->
                     <VBox spacing="20" styleClass="options-container">
-                        <Label text="Options" styleClass="section-title"/>
+                        <Label fx:id="opt" text="Options" styleClass="section-title"/>
                         
                         <!-- Niveau d'épice -->
                         <VBox spacing="10" styleClass="option-group">
@@ -118,13 +118,20 @@
                             styleClass="btn-ajouter-panier" onAction="#ajouterAuPanier"
                             maxWidth="Infinity"/>
                 </VBox>
-                <Label fx:id="languageDisplay"/>
-
-                <Button alignment="CENTER" mnemonicParsing="false" styleClass="btn-round" text="FR" onAction="#changeLanguage" />
-                <Button alignment="CENTER" mnemonicParsing="false" styleClass="btn-round" text="EN" onAction="#changeLanguage" />
-                <Button alignment="CENTER" mnemonicParsing="false" styleClass="btn-round" text="中文" onAction="#changeLanguage" />
-                <Button alignment="CENTER" mnemonicParsing="false" styleClass="btn-round" text="日本語 " onAction="#changeLanguage" />
+                <HBox alignment="CENTER" spacing="10">
+                    <Button text="FR" onAction="#changeLanguage" styleClass="btn-round"/>
+                    <Button text="EN" onAction="#changeLanguage" styleClass="btn-round"/>
+                    <Button text="中文" onAction="#changeLanguage" styleClass="btn-round"/>
+                    <Button text="日本語" onAction="#changeLanguage" styleClass="btn-round"/>
+                    <Button text="ES" onAction="#changeLanguage" styleClass="btn-round"/>
+                    <Button text="PY" onAction="#changeLanguage" styleClass="btn-round"/>
+                    <Button text="ไทย" onAction="#changeLanguage" styleClass="btn-round"/>
+                    <Button text="한국말" onAction="#changeLanguage" styleClass="btn-round"/>
+                    <Label fx:id="languageDisplay" text="Langue : FR" style="-fx-text-fill: white;"/>
+                </HBox>
             </HBox>
         </VBox>
+
     </ScrollPane>
 </VBox>
+

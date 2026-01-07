@@ -64,11 +64,14 @@
                 <Insets bottom="30.0" top="10.0"/>
             </padding>
             <Label fx:id="languageDisplay" />
-
             <Button mnemonicParsing="false" styleClass="btn-round" text="FR" onAction="#changeLanguage" />
             <Button mnemonicParsing="false" styleClass="btn-round" text="EN" onAction="#changeLanguage" />
             <Button mnemonicParsing="false" styleClass="btn-round" text="中文" onAction="#changeLanguage" />
             <Button mnemonicParsing="false" styleClass="btn-round" text="日本語" onAction="#changeLanguage" />
+            <Button mnemonicParsing="false" styleClass="btn-round" text="ES" onAction="#changeLanguage" />
+            <Button mnemonicParsing="false" styleClass="btn-round" text="PY" onAction="#changeLanguage" />
+            <Button mnemonicParsing="false" styleClass="btn-round" text="ไทย" onAction="#changeLanguage" />
+            <Button mnemonicParsing="false" styleClass="btn-round" text="한국말" onAction="#changeLanguage" />
         </HBox>
     </bottom>
 
