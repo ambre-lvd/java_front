@@ -358,4 +358,10 @@ public class CatalogueController implements Initializable {
             scrollPane.setVvalue(0);
         }
     }
+    @FXML
+    void changeLanguage() {
+        // Cette méthode est appelée par ton bouton de langue dans le FXML
+        System.out.println("Changement de langue demandé (Logique à implémenter)");
+        // Tu pourras ajouter ici ta logique de traduction plus tard
+    }
 }
