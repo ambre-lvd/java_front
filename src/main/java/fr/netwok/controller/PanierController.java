@@ -264,7 +264,8 @@ public class PanierController implements Initializable {
                 try {
                     Thread.sleep(1200);
                     javafx.application.Platform.runLater(() -> {
-                        RecuCommandeController.setCommandeInfo(numCommande, finalTableNumber, finalNomClient);
+                        RecuCommandeController.setCommandeInfo(numCommande, finalTableNumber, finalNomClient, currentLanguage);
+
                         try {
                             NetwokApp.setRoot("views/recuCommande");
                         } catch (IOException e) {
@@ -281,7 +282,8 @@ public class PanierController implements Initializable {
             btnConfirmer.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white;");
         }
 
-        }
+
+    }
 
         @FXML
         void retourCatalogue () throws IOException {
