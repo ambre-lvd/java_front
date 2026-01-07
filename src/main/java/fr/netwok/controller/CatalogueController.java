@@ -31,14 +31,19 @@ public class CatalogueController implements Initializable {
     @FXML private FlowPane gridPlats;
     @FXML private Label lblNbArticles;
     @FXML private Label lblTotal;
-    @FXML private Label lblMonPanierTitre; // Assurez-vous d'avoir cet ID dans le FXML pour "MON PANIER"
+    @FXML private Label lblMonPanierTitre;
+    @FXML private Label languageDisplay;
     @FXML private HBox sousCategorieBar;
     @FXML private ScrollPane scrollPane;
-    @FXML private ToggleButton tabAllDesserts;
     @FXML private Label sectionTitle;
-    @FXML private Button btnNavEntrees;
-    @FXML private Button btnNavPlats;
-    @FXML private Button btnNavDesserts;
+
+    // Correspondance avec les ToggleButtons du FXML
+    @FXML private ToggleButton tabEntrees;
+    @FXML private ToggleButton tabPlats;
+    @FXML private ToggleButton tabDesserts;
+    @FXML private ToggleButton tabAllDesserts;
+
+    // Bouton d'action
     @FXML private Button btnVoirPanier;
 
     private int categorieActuelle = 1;
@@ -93,6 +98,7 @@ public class CatalogueController implements Initializable {
 
     private void afficherPlats(int categorie) {
         gridPlats.getChildren().clear();
+
         List<Plat> plats = MockService.getInstance().getPlatsParCategorie(categorie);
         for (Plat p : plats) {
             gridPlats.getChildren().add(creerCarteVBox(p));
@@ -102,7 +108,6 @@ public class CatalogueController implements Initializable {
     private void afficherPlatsDessertsBoissons(int mode) {
         gridPlats.getChildren().clear();
         updateSectionTitle(mode);
-
         if (mode == 3) {
             afficherSectionAvecTitre(ui("Desserts", "Desserts"), MockService.getInstance().getPlatsParCategorie(3));
         } else if (mode == 4) {
@@ -206,23 +211,22 @@ public class CatalogueController implements Initializable {
     @FXML
     void changeLanguage(ActionEvent event) {
         Button btn = (Button) event.getSource();
-        langueActuelle = btn.getText().toUpperCase(); // "FR" ou "EN"
+        langueActuelle = btn.getText().toUpperCase();
 
-        // 1. Traduction Navigation
-        if (btnNavEntrees != null) btnNavEntrees.setText(ui("ENTRÉES", "STARTERS"));
-        if (btnNavPlats != null) btnNavPlats.setText(ui("PLATS", "MAINS"));
-        if (btnNavDesserts != null) btnNavDesserts.setText(ui("DESSERTS / BOISSONS", "DESSERTS / DRINKS"));
+        // 1. Traduction des onglets (Navigation)
+        if (tabEntrees != null) tabEntrees.setText(ui("ENTRÉES", "STARTERS"));
+        if (tabPlats != null) tabPlats.setText(ui("PLATS", "MAINS"));
+        if (tabDesserts != null) tabDesserts.setText(ui("DESSERTS / BOISSONS", "DESSERTS / DRINKS"));
 
-        // 2. Traduction Panier & Bouton
-        if (btnVoirPanier != null) btnVoirPanier.setText(ui("VOIR PANIER >", "VIEW BASKET >"));
+        // 2. Traduction de la barre de panier
         if (lblMonPanierTitre != null) lblMonPanierTitre.setText(ui("MON PANIER", "MY BASKET"));
+        if (btnVoirPanier != null) btnVoirPanier.setText(ui("VOIR PANIER >", "VIEW BASKET >"));
+        if (languageDisplay != null) languageDisplay.setText(ui("Langue :", "Language:"));
 
         updatePanierDisplay();
 
-        // 3. Rafraîchir le contenu (reconstruit les cartes avec les traductions)
-        if (categorieActuelle == 1) filtrerEntrees();
-        else if (categorieActuelle == 2) filtrerPlats();
-        else filtrerDesserts();
+        // 3. Rafraîchir les cartes produits
+        refreshView();
     }
 
     // Helper pour basculer facilement entre les deux langues
@@ -279,7 +283,11 @@ public class CatalogueController implements Initializable {
         lblNbArticles.setText(nb + " " + unit);
         lblTotal.setText(String.format("%.2f €", total));
     }
-
+    private void refreshView() {
+        if (categorieActuelle == 1) afficherPlats(1);
+        else if (categorieActuelle == 2) afficherPlats(2);
+        else afficherPlatsDessertsBoissons(0);
+    }
     // --- UTILITAIRES ---
 
     private void toggleSousCategorie(boolean show) {
