@@ -15,14 +15,14 @@ import java.time.Duration;
 import java.util.*;
 
 public class ApiClient {
-    // URL de ton API Back-end (Modelio / Javalin)
+    // URL de ton API Back-end
     private static final String BASE_URL = "http://localhost:7001";
 
     // Client HTTP et Gson pour le JSON
     private static final HttpClient client = HttpClient.newHttpClient();
     private static final Gson gson = new Gson();
 
-    // Paramètres MySQL pour le mode secours (si l'API est éteinte)
+    // Paramètres MySQL pour le mode secours
     private static final String DB_URL = "jdbc:mysql://localhost:3306/restaurant_db";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "";
@@ -39,8 +39,6 @@ public class ApiClient {
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            // Conversion du JSON reçu en tableau de Plats
             return Arrays.asList(gson.fromJson(response.body(), Plat[].class));
         } catch (Exception e) {
             System.out.println("⚠️ API indisponible, chargement depuis la base de données de secours...");
@@ -48,9 +46,6 @@ public class ApiClient {
         }
     }
 
-    /**
-     * Mode secours : Lecture directe de la BDD MySQL
-     */
     private static List<Plat> fetchMenuFromDatabase() throws Exception {
         List<Plat> plats = new ArrayList<>();
         try {
@@ -59,51 +54,55 @@ public class ApiClient {
                 String query = "SELECT id, name, description, price, category_id, image_path FROM Dish";
                 try (Statement stmt = conn.createStatement();
                      ResultSet rs = stmt.executeQuery(query)) {
-
                     while (rs.next()) {
-                        String id = rs.getString("id");
-                        String nom = rs.getString("name");
-                        String description = rs.getString("description");
-                        double prix = rs.getDouble("price");
-                        int categorie = rs.getInt("category_id");
-                        String image = rs.getString("image_path");
-
-                        Plat p = new Plat(id, nom, description, prix, categorie, image);
+                        Plat p = new Plat(
+                                rs.getString("id"), rs.getString("name"),
+                                rs.getString("description"), rs.getDouble("price"),
+                                rs.getInt("category_id"), rs.getString("image_path")
+                        );
                         plats.add(p);
                     }
                 }
             }
-        } catch (Exception e) {
-            throw e;
-        }
+        } catch (Exception e) { throw e; }
         return plats;
     }
 
     /**
-     * Envoie la commande au serveur (Correction Map + JSON propre)
+     * CORRECTION IMPORTANTE ICI :
+     * On envoie maintenant les objets complets (ID + OPTIONS) et pas juste les IDs.
      */
     public static void sendOrder(int tableNumber, List<Plat> plats) throws Exception {
         try {
-            // 1. Extraction des IDs des plats
-            List<String> dishIds = new ArrayList<>();
+            // 1. On prépare la liste des "items" telle que le Back-end l'attend
+            // (cf. la classe DishItemRequest du Back-end)
+            List<Map<String, Object>> itemsList = new ArrayList<>();
+
             for (Plat p : plats) {
-                dishIds.add(p.getId());
+                Map<String, Object> itemData = new HashMap<>();
+                itemData.put("dishId", p.getId());
+
+                // C'est ici qu'on envoie enfin tes choix au serveur !
+                itemData.put("piment", p.getPimentChoisi());
+                itemData.put("accompagnement", p.getAccompagnementChoisi());
+
+                itemsList.add(itemData);
             }
 
-            // 2. Création d'une Map pour générer un JSON propre
-            // C'est ce qui corrige l'erreur "readValue... must not be null"
-            Map<String, Object> data = new HashMap<>();
-            data.put("tableNumber", tableNumber);
-            data.put("dishIds", dishIds);
+            // 2. Création du corps JSON global
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("tableNumber", tableNumber);
+            // Attention : la clé doit être "items" pour correspondre à ton Back-end
+            requestBody.put("items", itemsList);
 
-            String json = gson.toJson(data);
-            System.out.println("📤 Envoi JSON : " + json);
+            String json = gson.toJson(requestBody);
+            System.out.println("📤 Envoi JSON COMPLET : " + json);
 
             // 3. Envoi de la requête POST
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(BASE_URL + "/orders"))
                     .header("Content-Type", "application/json")
-                    .timeout(Duration.ofSeconds(2))
+                    .timeout(Duration.ofSeconds(5))
                     .POST(HttpRequest.BodyPublishers.ofString(json))
                     .build();
 
@@ -116,8 +115,7 @@ public class ApiClient {
             }
         } catch (Exception e) {
             System.err.println("⚠️ Impossible d'envoyer la commande : " + e.getMessage());
-            // Tu peux relancer l'exception si tu veux afficher l'erreur à l'utilisateur
-            // throw e;
+            e.printStackTrace();
         }
     }
 }
