@@ -28,11 +28,15 @@ public class PanierController implements Initializable {
     @FXML private TextField txtNumeroTable, txtNomClient;
     @FXML private Button btnConfirmer, btnRetour, btnModifier;
 
-    private String currentLanguage = "FR";
+    private static String currentLanguage = "FR";
+    public static void setLangueActuelle(String langue) {
+        currentLanguage = langue;
+    }
     private static final double TAUX_TAXE = 0.15;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        this.currentLanguage = CatalogueController.getLangueActuelle();
         traduire();
         chargerPanier();
     }
@@ -40,9 +44,12 @@ public class PanierController implements Initializable {
     @FXML
     void changeLanguage(javafx.event.ActionEvent event) {
         Button btn = (Button) event.getSource();
-        currentLanguage = btn.getText().toUpperCase(); // Récupère "FR" ou "EN"
+        String nouvelleLangue = btn.getText().toUpperCase();
+        CatalogueController.setLangueActuelle(nouvelleLangue);
+        this.currentLanguage = nouvelleLangue;
+
         traduire();
-        chargerPanier(); // Indispensable pour rafraîchir les noms des produits
+        chargerPanier();
     }
 
     private void traduire() {

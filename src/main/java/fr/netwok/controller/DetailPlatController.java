@@ -45,6 +45,9 @@ public class DetailPlatController implements Initializable {
 
     // On utilise une variable statique pour garder la langue entre les écrans
     private static String langueActuelle = "FR";
+    public static void setLangueActuelle(String langue) {
+        langueActuelle = langue;
+    }
     private static Plat platAfficher = null;
 
     public static void setPlatAfficher(Plat plat) {
