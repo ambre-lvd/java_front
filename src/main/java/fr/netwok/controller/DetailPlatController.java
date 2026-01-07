@@ -61,6 +61,7 @@ public class DetailPlatController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        this.langueActuelle = CatalogueController.getLangueActuelle();
         if (platAfficher != null) {
             platActuel = platAfficher;
             chargerDetailPlat();
@@ -204,7 +205,9 @@ public class DetailPlatController implements Initializable {
     @FXML
     void changeLanguage(ActionEvent event) {
         Button btn = (Button) event.getSource();
-        langueActuelle = btn.getText().toUpperCase();
+        String langue = btn.getText().toUpperCase();
+        CatalogueController.setLangueActuelle(langue);
+        this.langueActuelle = langue;
         traduireInterface();
         chargerDetailPlat();
         updatePanierDisplay();
