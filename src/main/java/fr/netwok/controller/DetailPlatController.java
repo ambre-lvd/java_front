@@ -157,19 +157,44 @@ public class DetailPlatController implements Initializable {
     void ajouterAuPanier() {
         if (platActuel == null) return;
 
+        // --- 1. RÉCUPÉRATION DU NIVEAU DE PIMENT ---
+        // On définit un entier : 0 pour Doux, 1 pour Moyen, 2 pour Fort
+        int niveauPiment = 0;
+        if (rbMoyen.isSelected()) {
+            niveauPiment = 1;
+        } else if (rbFort.isSelected()) {
+            niveauPiment = 2;
+        }
+        platActuel.setPimentChoisi(niveauPiment);
+
+        // --- 2. RÉCUPÉRATION DE L'ACCOMPAGNEMENT ---
+        // On définit un entier : 0 pour Riz, 1 pour Nouilles
+        int niveauAccompagnement = 0;
+        if (rbNouilles.isSelected()) {
+            niveauAccompagnement = 1;
+        }
+        platActuel.setAccompagnementChoisi(niveauAccompagnement);
+
+        // --- 3. AJOUT AU PANIER SELON LA QUANTITÉ ---
         for (int i = 0; i < quantite; i++) {
+            // On utilise l'instance du service pour stocker le plat avec ses options
             MockService.getInstance().ajouterAuPanier(platActuel);
         }
 
+        // --- 4. MISE À JOUR DE L'INTERFACE ET FEEDBACK ---
         updatePanierDisplay();
+
         btnAjouter.setText(ui("✓ Ajouté !", "✓ Added!"));
         btnAjouter.setDisable(true);
 
+        // Petit thread pour retourner au catalogue automatiquement après l'ajout
         new Thread(() -> {
             try {
                 Thread.sleep(800);
                 javafx.application.Platform.runLater(this::retourCatalogue);
-            } catch (InterruptedException e) { e.printStackTrace(); }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }).start();
     }
 

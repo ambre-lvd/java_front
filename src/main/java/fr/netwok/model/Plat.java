@@ -7,6 +7,8 @@ public class Plat {
     private double price;
     private int category; // "Entrée", "Plat", "Dessert"
     private String imagePath; // Chemin vers l'image
+    private int pimentChoisi = 0;
+    private int accompagnementChoisi = 0;
 
     public Plat(String id, String nom, String description, double prix, int categorie, String imagePath) {
         this.id = id;
@@ -24,7 +26,11 @@ public class Plat {
     public double getPrix() { return price; }
     public int getCategorie() { return category; }
     public String getImagePath() { return imagePath; }
-    
+    public void setPimentChoisi(int pimentChoisi) { this.pimentChoisi = pimentChoisi; }
+    public int getPimentChoisi() { return pimentChoisi; }
+    public void setAccompagnementChoisi(int accompagnementChoisi) { this.accompagnementChoisi = accompagnementChoisi; }
+    public int getAccompagnementChoisi() { return accompagnementChoisi; }
+
     // Formattage du prix pour l'affichage (ex: "12.50 €")
     public String getPrixFormate() {
         return String.format("%.2f €", price);
