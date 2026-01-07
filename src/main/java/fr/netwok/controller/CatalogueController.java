@@ -46,6 +46,9 @@ public class CatalogueController implements Initializable {
     private int categorieActuelle = 1; // 1: Entrees, 2: Plats, 3: Desserts/Boissons
     private int sousModeActuel = 0;    // 0: Tout, 3: Desserts, 4: Boissons
     private static String langueActuelle = "FR";
+    public static void setLangueActuelle(String langue) {
+        langueActuelle = langue;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -56,6 +59,19 @@ public class CatalogueController implements Initializable {
         }
 
         updatePanierDisplay();
+        if (tabEntrees != null) tabEntrees.setText(ui("ENTRÉES", "STARTERS"));
+        if (tabPlats != null) tabPlats.setText(ui("PLATS", "MAINS"));
+        if (tabDesserts != null) tabDesserts.setText(ui("DESSERTS / BOISSONS", "DESSERTS / DRINKS"));
+
+        if (tabAllDesserts != null) tabAllDesserts.setText(ui("TOUT", "ALL"));
+        if (tabDessertsOnly != null) tabDessertsOnly.setText(ui("DESSERTS", "DESSERTS"));
+        if (tabBoissonsOnly != null) tabBoissonsOnly.setText(ui("BOISSONS", "DRINKS"));
+
+        if (lblMonPanierTitre != null) lblMonPanierTitre.setText(ui("MON PANIER", "MY BASKET"));
+        if (btnVoirPanier != null) btnVoirPanier.setText(ui("VOIR PANIER >", "VIEW BASKET >"));
+
+        updatePanierDisplay();
+        refreshView();
         toggleSousCategorie(false);
         if (sectionTitle != null) {
             sectionTitle.setVisible(false);
