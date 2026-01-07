@@ -4,67 +4,40 @@ import com.google.gson.Gson;
 import fr.netwok.model.Plat;
 import java.net.URI;
 import java.net.http.*;
-import java.sql.*;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.Collectors; // Indispensable
+import java.util.stream.Collectors;
 
 public class ApiClient {
     private static final String BASE_URL = "http://localhost:7001";
     private static final HttpClient client = HttpClient.newHttpClient();
     private static final Gson gson = new Gson();
 
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/restaurant_db";
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "";
-
+    /**
+     * Récupère le menu via l'API.
+     * Si le serveur est éteint, une exception est levée.
+     */
     public static List<Plat> fetchMenu() throws Exception {
-        try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(BASE_URL + "/menu"))
-                    .GET()
-                    .timeout(java.time.Duration.ofSeconds(2))
-                    .build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/menu"))
+                .GET()
+                .timeout(java.time.Duration.ofSeconds(3))
+                .build();
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            return Arrays.asList(gson.fromJson(response.body(), Plat[].class));
-        } catch (Exception e) {
-            System.out.println("API indisponible, chargement depuis la base de données...");
-            return fetchMenuFromDatabase();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != 200) {
+            throw new RuntimeException("Erreur serveur : " + response.statusCode());
         }
+
+        return Arrays.asList(gson.fromJson(response.body(), Plat[].class));
     }
 
-    private static List<Plat> fetchMenuFromDatabase() throws Exception {
-        List<Plat> plats = new ArrayList<>();
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-            String query = "SELECT id, name, description, price, category_id, image_path FROM Dish";
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-
-            while (rs.next()) {
-                plats.add(new Plat(
-                        rs.getString("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getDouble("price"),
-                        rs.getInt("category_id"),
-                        rs.getString("image_path")
-                ));
-            }
-            conn.close();
-        } catch (Exception e) {
-            System.err.println("❌ Erreur BDD : " + e.getMessage());
-            throw e;
-        }
-        return plats;
-    }
-
-    // --- MÉTHODE CORRIGÉE POUR ACCEPTER List<Plat> ---
+    /**
+     * Envoie la commande au Back-end.
+     * Inclut maintenant le niveau de piment et l'accompagnement choisis.
+     */
     public static void sendOrder(int tableNumber, List<Plat> panier) throws Exception {
-        // On utilise la structure de classe interne pour un JSON propre
         OrderRequest data = new OrderRequest(tableNumber, panier);
         String json = gson.toJson(data);
 
@@ -78,25 +51,28 @@ public class ApiClient {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() != 200 && response.statusCode() != 201) {
-            throw new RuntimeException("Erreur serveur : " + response.statusCode());
+            throw new RuntimeException("Erreur lors de l'envoi : " + response.statusCode());
         }
+        System.out.println("✅ Commande transmise au serveur avec succès.");
     }
 
-    // --- STRUCTURES POUR GSON (Mapping JSON) ---
+    // --- CLASSES INTERNES POUR LE MAPPING JSON (GSON) ---
+
     private static class OrderRequest {
         int tableNumber;
         List<ItemData> items;
 
         OrderRequest(int tableNumber, List<Plat> panier) {
             this.tableNumber = tableNumber;
+            // Transformation du panier en format attendu par le Back-end
             this.items = panier.stream()
                     .map(p -> new ItemData(
                             p.getId(),
                             1,
-                            p.getPimentChoisi(),        // On récupère le choix réel
-                            p.getAccompagnementChoisi() // On récupère le choix réel
+                            p.getPimentChoisi(),
+                            p.getAccompagnementChoisi()
                     ))
-                    .collect(java.util.stream.Collectors.toList());
+                    .collect(Collectors.toList());
         }
     }
 
