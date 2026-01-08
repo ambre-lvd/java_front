@@ -11,10 +11,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="rootPane" 
+<?import javafx.scene.layout.StackPane?>
+<BorderPane fx:id="rootPane"
             styleClass="root"
-            stylesheets="@../css/styles.css" 
-            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
+            stylesheets="@../css/styles.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="fr.netwok.controller.AccueilController">
 
     <center>
@@ -64,14 +65,14 @@
                 <Insets bottom="30.0" top="10.0"/>
             </padding>
             <Label fx:id="languageDisplay" />
-            <Button mnemonicParsing="false" styleClass="btn-round" text="FR" onAction="#changeLanguage" />
-            <Button mnemonicParsing="false" styleClass="btn-round" text="EN" onAction="#changeLanguage" />
-            <Button mnemonicParsing="false" styleClass="btn-round" text="中文" onAction="#changeLanguage" />
-            <Button mnemonicParsing="false" styleClass="btn-round" text="日本語" onAction="#changeLanguage" />
-            <Button mnemonicParsing="false" styleClass="btn-round" text="ES" onAction="#changeLanguage" />
-            <Button mnemonicParsing="false" styleClass="btn-round" text="PY" onAction="#changeLanguage" />
-            <Button mnemonicParsing="false" styleClass="btn-round" text="ไทย" onAction="#changeLanguage" />
-            <Button mnemonicParsing="false" styleClass="btn-round" text="한국말" onAction="#changeLanguage" />
+            <Button alignment="CENTER" mnemonicParsing="false" text="FR" onAction="#changeLanguage" prefHeight="50.0" prefWidth="50.0" style="-fx-background-image: url('https://flagcdn.com/w80/fr.png'); -fx-background-size: cover; -fx-background-repeat: no-repeat;-fx-background-position: center;-fx-background-radius: 25;-fx-border-radius: 25;-fx-shape: 'M 25, 25 m -25, 0 a 25,25 0 1,0 50,0 a 25,25 0 1,0 -50,0';-fx-text-fill: white; -fx-font-weight: bold;-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 3, 0, 0, 0);"/>
+            <Button alignment="CENTER" mnemonicParsing="false" text="EN" onAction="#changeLanguage" prefHeight="50.0" prefWidth="50.0" style="-fx-background-image: url('https://flagcdn.com/w80/gb.png'); -fx-background-size: cover; -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-radius: 25; -fx-border-radius: 25; -fx-shape: 'M 25, 25 m -25, 0 a 25,25 0 1,0 50,0 a 25,25 0 1,0 -50,0'; -fx-text-fill: transparent;" />
+            <Button alignment="CENTER" mnemonicParsing="false" text="中文" onAction="#changeLanguage" prefHeight="50.0" prefWidth="50.0" style="-fx-background-image: url('https://flagcdn.com/w80/cn.png'); -fx-background-size: cover; -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-radius: 25; -fx-border-radius: 25; -fx-shape: 'M 25, 25 m -25, 0 a 25,25 0 1,0 50,0 a 25,25 0 1,0 -50,0'; -fx-text-fill: transparent;" />
+            <Button alignment="CENTER" mnemonicParsing="false" text="日本語" onAction="#changeLanguage" prefHeight="50.0" prefWidth="50.0" style="-fx-background-image: url('https://flagcdn.com/w80/jp.png'); -fx-background-size: cover; -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-radius: 25; -fx-border-radius: 25; -fx-shape: 'M 25, 25 m -25, 0 a 25,25 0 1,0 50,0 a 25,25 0 1,0 -50,0'; -fx-text-fill: transparent;" />
+            <Button alignment="CENTER" mnemonicParsing="false" text="ES" onAction="#changeLanguage" prefHeight="50.0" prefWidth="50.0" style="-fx-background-image: url('https://flagcdn.com/w80/es.png'); -fx-background-size: cover; -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-radius: 25; -fx-border-radius: 25; -fx-shape: 'M 25, 25 m -25, 0 a 25,25 0 1,0 50,0 a 25,25 0 1,0 -50,0'; -fx-text-fill: transparent;" />
+            <Button alignment="CENTER" mnemonicParsing="false" text="PY" onAction="#changeLanguage" prefHeight="50.0" prefWidth="50.0" style="-fx-background-image: url('https://flagcdn.com/w80/ru.png'); -fx-background-size: cover; -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-radius: 25; -fx-border-radius: 25; -fx-shape: 'M 25, 25 m -25, 0 a 25,25 0 1,0 50,0 a 25,25 0 1,0 -50,0'; -fx-text-fill: transparent;" />
+            <Button alignment="CENTER" mnemonicParsing="false" text="ไทย" onAction="#changeLanguage" prefHeight="50.0" prefWidth="50.0" style="-fx-background-image: url('https://flagcdn.com/w80/th.png'); -fx-background-size: cover; -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-radius: 25; -fx-border-radius: 25; -fx-shape: 'M 25, 25 m -25, 0 a 25,25 0 1,0 50,0 a 25,25 0 1,0 -50,0'; -fx-text-fill: transparent;" />
+            <Button alignment="CENTER" mnemonicParsing="false" text="한국말" onAction="#changeLanguage" prefHeight="50.0" prefWidth="50.0" style="-fx-background-image: url('https://flagcdn.com/w80/kr.png'); -fx-background-size: cover; -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-radius: 25; -fx-border-radius: 25; -fx-shape: 'M 25, 25 m -25, 0 a 25,25 0 1,0 50,0 a 25,25 0 1,0 -50,0'; -fx-text-fill: transparent;" />
         </HBox>
     </bottom>
 
