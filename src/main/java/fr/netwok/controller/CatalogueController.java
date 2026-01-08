@@ -180,6 +180,9 @@ public class CatalogueController implements Initializable {
     @FXML void filtrerBoissonsOnly() { this.sousModeActuel = 4; refreshView(); }
     @FXML void filtrerAllDessertsBoissons() { this.sousModeActuel = 0; refreshView(); }
 
+    public static java.util.Set<String> getPlatsIndisponibles() {
+        return platsIndisponibles;
+    }
 
     private void refreshView() {
         gridPlats.getChildren().clear();

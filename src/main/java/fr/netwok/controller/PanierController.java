@@ -162,7 +162,9 @@ public class PanierController implements Initializable {
     private Plat trouverSuggestion(Set<String> categoriesPresentes) {
         List<String> toutesCategories = Arrays.asList("E", "P", "D", "B");
         List<String> manquantes = new ArrayList<>();
-        for(String c : toutesCategories) if(!categoriesPresentes.contains(c)) manquantes.add(c);
+        for(String c : toutesCategories) {
+            if(!categoriesPresentes.contains(c)) manquantes.add(c);
+        }
 
         if(manquantes.isEmpty()) return null;
 
@@ -173,7 +175,16 @@ public class PanierController implements Initializable {
         Collections.shuffle(copie);
 
         for(Plat p : copie) {
-            if(manquantes.contains(p.getId().substring(0, 1))) return p;
+            // Condition 1 : La catégorie du plat est manquante dans le panier
+            boolean estCategorieManquante = manquantes.contains(p.getId().substring(0, 1));
+
+            // Condition 2 : Le plat n'est pas dans la liste des indisponibles du catalogue
+            // Note : On accède à la liste statique définie dans CatalogueController
+            boolean estDisponible = !CatalogueController.getPlatsIndisponibles().contains(p.getId());
+
+            if(estCategorieManquante && estDisponible) {
+                return p;
+            }
         }
         return null;
     }
@@ -258,29 +269,15 @@ public class PanierController implements Initializable {
         }
 
         try {
-            // 2. Récupération des données
             int table = Integer.parseInt(txtNumeroTable.getText());
             List<Plat> panier = MockService.getInstance().getPanier();
-
             if (panier.isEmpty()) return;
-
             System.out.println("🚀 Clic sur Commander : Envoi au serveur en cours...");
-
-            // 3. APPEL AU BACKEND (Sauvegarde en Base de Données)
             ApiClient.sendOrder(table, panier);
-
-            // 4. Feedback visuel (Bouton vert)
             btnConfirmer.setText(t("✓ Envoyé", "✓ Sent", "✓ 已发送", "✓ 送信済み", "✓ ¡Enviado!", "✓ Отправлено!", "✓ ส่งแล้ว!", "✓ 전송됨!"));
             btnConfirmer.setDisable(true);
-
-            // 5. SAUVEGARDE DES DONNÉES POUR LE TICKET (Avant de vider le panier !)
             double totalPanier = MockService.getInstance().getTotalPanier();
-            // La variable 'panier' contient déjà la liste des plats
-
-            // 6. Nettoyage du service (On vide le panier localement)
             MockService.getInstance().viderPanier();
-
-            // 7. Transition vers la page du Reçu (Ticket)
             new Thread(() -> {
                 try {
                     Thread.sleep(1000); // Petite pause esthétique
@@ -292,8 +289,8 @@ public class PanierController implements Initializable {
                                     table,
                                     txtNomClient.getText(),
                                     currentLanguage,
-                                    totalPanier, // <--- ON PASSE LE PRIX TOTAL CALCULÉ AVANT
-                                    panier       // <--- ON PASSE LA LISTE DES PLATS
+                                    totalPanier,
+                                    panier
                             );
                             NetwokApp.setRoot("views/recuCommande");
                         } catch (Exception e) { e.printStackTrace(); }
@@ -307,8 +304,6 @@ public class PanierController implements Initializable {
         } catch (Exception e) {
             System.err.println("❌ ERREUR LORS DE L'ENVOI API : " + e.getMessage());
             e.printStackTrace();
-            // Tu peux décommenter la ligne suivante si tu veux afficher l'erreur sur l'écran
-            // lblTitreRecap.setText("Erreur Connexion !");
         }
     }
 
