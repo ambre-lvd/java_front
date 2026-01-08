@@ -330,8 +330,11 @@ public class PanierController implements Initializable {
 
             System.out.println("📝 Envoi de la commande - Table: " + tableNumber);
 
-            // 4. ENVOI À L'API (On envoie la liste de Plats, l'ApiClient gèrera la conversion en JSON)
-            ApiClient.sendOrder(tableNumber, panier);
+            // 4. ENVOI À L'API (On envoie la liste d'IDs de plats)
+            List<String> dishIds = panier.stream()
+                    .map(Plat::getId)
+                    .collect(Collectors.toList());
+            ApiClient.sendOrder(tableNumber, dishIds);
 
             // 5. Succès : Feedback visuel
             System.out.println("✅ Commande enregistrée en BDD !");
