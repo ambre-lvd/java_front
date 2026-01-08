@@ -3,6 +3,9 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.effect.Glow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="fr.netwok.controller.RecuCommandeController"
@@ -16,7 +19,15 @@
 
             <VBox alignment="CENTER" styleClass="ticket-header" spacing="10">
                 <padding><Insets top="30" right="20" bottom="30" left="20"/></padding>
-                <Label text="🧾" style="-fx-font-size: 48px;"/>
+<!--                //<Label text="🧾" style="-fx-font-size: 48px;"/>-->
+                <ImageView fitHeight="125" fitWidth="125" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/logo_main.png" />
+                    </image>
+                    <effect>
+                        <Glow level="0.6" />
+                    </effect>
+                </ImageView>
                 <Label fx:id="lblTitreRecu" text="TICKET DE CAISSE" styleClass="ticket-title"/>
                 <Label text="NETWOK" styleClass="ticket-subtitle"/>
             </VBox>
@@ -92,9 +103,17 @@
     <VBox fx:id="vboxMessage" alignment="CENTER" VBox.vgrow="ALWAYS"
           style="-fx-background-color: rgba(0, 0, 0, 0.9); -fx-opacity: 0;"
           mouseTransparent="true">
-        <Label text="Merci de votre commande !"
+        <ImageView fitHeight="125" fitWidth="125" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../images/logo_main.png" />
+            </image>
+            <effect>
+                <Glow level="0.6" />
+            </effect>
+        </ImageView>
+        <Label fx:id="mercifinal" text="Merci de votre commande !"
                style="-fx-text-fill: #00F0FF; -fx-font-size: 48px; -fx-font-weight: bold;"/>
-        <Label text="À très bientôt ! 🍜"
+        <Label fx:id="abientot" text="À très bientôt ! 🍜"
                style="-fx-text-fill: #FF007F; -fx-font-size: 32px; -fx-margin: 20 0 0 0;"/>
     </VBox>
 </VBox>
