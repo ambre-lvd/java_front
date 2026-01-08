@@ -45,6 +45,7 @@ public class DetailPlatController implements Initializable {
     @FXML private Button btnAjouter;
     @FXML private Button btnRetour;
     @FXML private Button btnVoirPanier;
+    @FXML private Button panierlogo;
     @FXML private Label languageDisplay;
 
     @FXML private Label lblNbArticles;
@@ -115,6 +116,7 @@ public class DetailPlatController implements Initializable {
         if (languageDisplay != null) {
             languageDisplay.setText(t("Langue : FR", "Language : EN", "语言 : 中文", "言語 : 日本語", "Idioma: ES", "Язык: PY", "ภาษา: ไทย", "언어: 한국말"));
         }
+        if(panierlogo != null) panierlogo.setText(t("🛒 Panier","🛒 Basket", "🛒 购物车", "🛒 買い物カゴ", "🛒 Carrito", "🛒 Корзина", "🛒 ตะกร้าสินค้า", "🛒 장바구니"));
     }
 
     private String[] getTraductionProduit(String id) {
@@ -247,7 +249,8 @@ public class DetailPlatController implements Initializable {
     private void updatePanierDisplay() {
         int nb = MockService.getInstance().getNombreArticlesPanier();
         double total = MockService.getInstance().getTotalPanier();
-        lblNbArticles.setText(nb + " " + t("articles", "items", "件商品", "点", "artículos", "товаров", "รายการ", "개"));
+        String label = (nb <= 1) ? t("article", "item", "件商品", "点", "artículo", "товар", "รายการ", "개") : t("articles", "items", "件商品", "点", "artículos", "товаров", "รายการ", "개");
+        lblNbArticles.setText(nb + " " + label);
         lblTotal.setText(String.format("%.2f €", total));
     }
 }

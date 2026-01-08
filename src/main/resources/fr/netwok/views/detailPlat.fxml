@@ -23,19 +23,18 @@
             <Insets top="20" right="30" bottom="20" left="30"/>
         </padding>
         
-        <Button fx:id="btnRetour" text="← Retour" styleClass="btn-retour" onAction="#retourCatalogue"/>
+        <Button fx:id="btnRetour" text="← Retour" styleClass="btn-retour" onAction="#retourCatalogue" />
         
         <Region HBox.hgrow="ALWAYS"/>
         
         <Label fx:id="detail" text="Détails du plat" styleClass="header-title"/>
         
         <Region HBox.hgrow="ALWAYS"/>
-        
-        <!-- Zone panier -->
-        <HBox alignment="CENTER_RIGHT" spacing="15">
-            <Label fx:id="lblNbArticles" text="0 articles" styleClass="header-info"/>
-            <Label fx:id="lblTotal" text="0,00 €" styleClass="header-price"/>
-            <Button text="🛒 Panier" styleClass="btn-panier" onAction="#voirPanier"/>
+
+        <HBox alignment="CENTER_RIGHT" spacing="15" styleClass="header-title">
+            <Label fx:id="lblNbArticles" text="0 article" styleClass="header-info" style="-fx-text-fill: white;"/>
+            <Label fx:id="lblTotal" text="0,00 €" styleClass="header-price" style="-fx-text-fill: white;"/>
+            <Button fx:id="panierlogo" text="🛒 Panier" styleClass="btn-panier" onAction="#voirPanier" style="-fx-text-fill: black;"/>
         </HBox>
     </HBox>
 
