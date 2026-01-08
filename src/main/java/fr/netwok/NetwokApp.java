@@ -14,9 +14,22 @@ public class NetwokApp extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("views/accueil"), 1920, 1080);
+        // 1. Récupérer la taille réelle de ton écran (sans la barre des tâches)
+        javafx.geometry.Rectangle2D screenBounds = javafx.stage.Screen.getPrimary().getVisualBounds();
+
+        // 2. Charger la vue
+        Parent root = loadFXML("views/accueil");
+
+        // 3. Créer la scène avec EXACTEMENT la taille disponible
+        scene = new Scene(root, screenBounds.getWidth(), screenBounds.getHeight());
+
         stage.setTitle("NetWok - Borne de Commande");
         stage.setScene(scene);
+
+        // 4. Maximiser pour être sûr que ça colle aux bords
+        stage.setMaximized(true);
+        // stage.setFullScreen(true); // Décommente cette ligne si tu veux un vrai mode "Borne" (sans croix pour fermer)
+
         stage.show();
     }
 
@@ -40,7 +53,4 @@ public class NetwokApp extends Application {
         return fxmlLoader.load();
     }
 
-    public static void main(String[] args) {
-        launch();
-    }
 }

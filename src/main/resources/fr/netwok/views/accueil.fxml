@@ -20,7 +20,7 @@
     <center>
         <VBox alignment="CENTER" spacing="15.0" BorderPane.alignment="CENTER">
             
-            <ImageView fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="375.0" fitWidth="375.0" pickOnBounds="true" preserveRatio="true">
                 <image>
                     <Image url="@../images/logo_main.png" />
                 </image>
@@ -63,13 +63,15 @@
             <padding>
                 <Insets bottom="30.0" top="10.0"/>
             </padding>
-            <Label fx:id="languageDisplay" text="Langue sélectionnée" />
-
+            <Label fx:id="languageDisplay" />
             <Button mnemonicParsing="false" styleClass="btn-round" text="FR" onAction="#changeLanguage" />
             <Button mnemonicParsing="false" styleClass="btn-round" text="EN" onAction="#changeLanguage" />
-            <Label text="|" textFill="#334155">
-               <font><Font size="24.0" /></font>
-            </Label>
+            <Button mnemonicParsing="false" styleClass="btn-round" text="中文" onAction="#changeLanguage" />
+            <Button mnemonicParsing="false" styleClass="btn-round" text="日本語" onAction="#changeLanguage" />
+            <Button mnemonicParsing="false" styleClass="btn-round" text="ES" onAction="#changeLanguage" />
+            <Button mnemonicParsing="false" styleClass="btn-round" text="PY" onAction="#changeLanguage" />
+            <Button mnemonicParsing="false" styleClass="btn-round" text="ไทย" onAction="#changeLanguage" />
+            <Button mnemonicParsing="false" styleClass="btn-round" text="한국말" onAction="#changeLanguage" />
         </HBox>
     </bottom>
 

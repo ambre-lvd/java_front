@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 public class MockService {
 
     private static MockService instance;
-    private List<Plat> catalogue;
-    private List<Plat> panier;
+    private final List<Plat> catalogue;
+    private final List<Plat> panier;
 
     // CONSTRUCTEUR : On initialise les listes vides
     private MockService() {
@@ -40,7 +40,7 @@ public class MockService {
         } catch (Exception e) {
             System.err.println("❌ Erreur API : " + e.getMessage());
             // Optionnel : ajoute un plat de secours pour tester si la page s'ouvre
-            this.catalogue.add(new Plat("ERR", "Erreur Serveur", "Vérifiez la console", 0, 1, ""));
+            this.catalogue.add(new Plat("ERR", "Erreur Serveur", "Vérifiez la console", 0, 1, "",0));
         }
     }
 

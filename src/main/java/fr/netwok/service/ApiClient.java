@@ -2,101 +2,112 @@ package fr.netwok.service;
 
 import com.google.gson.Gson;
 import fr.netwok.model.Plat;
+
 import java.net.URI;
-import java.net.http.*;
-import java.sql.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.time.Duration;
+import java.util.*;
 
 public class ApiClient {
+    // URL de ton API Back-end
     private static final String BASE_URL = "http://localhost:7001";
+
+    // Client HTTP et Gson pour le JSON
     private static final HttpClient client = HttpClient.newHttpClient();
     private static final Gson gson = new Gson();
-    
-    // Paramètres MySQL
+
+    // Paramètres MySQL pour le mode secours
     private static final String DB_URL = "jdbc:mysql://localhost:3306/restaurant_db";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "";
 
-    // Récupérer le menu depuis le Back-end ou la BDD locale
+    /**
+     * Récupère le menu depuis l'API, ou depuis la BDD si l'API échoue.
+     */
     public static List<Plat> fetchMenu() throws Exception {
         try {
-            // Essayer d'abord l'API
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(BASE_URL + "/menu"))
                     .GET()
-                    .timeout(java.time.Duration.ofSeconds(2))
+                    .timeout(Duration.ofSeconds(2))
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            // Transforme le JSON reçu en liste d'objets Plat
             return Arrays.asList(gson.fromJson(response.body(), Plat[].class));
         } catch (Exception e) {
-            System.out.println("API indisponible, chargement depuis la base de données...");
-            // Fallback : charger depuis la BDD
+            System.out.println("⚠️ API indisponible, chargement depuis la base de données de secours...");
             return fetchMenuFromDatabase();
         }
     }
 
-    // Récupérer les plats depuis la base de données MySQL
     private static List<Plat> fetchMenuFromDatabase() throws Exception {
         List<Plat> plats = new ArrayList<>();
-        
-        try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-            String query = "SELECT id, name, description, price, category_id, image_path FROM Dish";
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-            
-            while (rs.next()) {
-                String id = rs.getString("id");
-                String nom = rs.getString("name");
-                String description = rs.getString("description");
-                double prix = rs.getDouble("price");
-                int categorie = rs.getInt("category_id");
-                String image = rs.getString("image_path");
-                
-                Plat p = new Plat(id, nom, description, prix, categorie, image);
-                plats.add(p);
+            try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+                String query = "SELECT id, name, description, price, category_id, image_path FROM Dish";
+                try (Statement stmt = conn.createStatement();
+                     ResultSet rs = stmt.executeQuery(query)) {
+                    while (rs.next()) {
+                        Plat p = new Plat(
+                                rs.getString("id"), rs.getString("name"),
+                                rs.getString("description"), rs.getDouble("price"),
+                                rs.getInt("category_id"), rs.getString("image_path"),rs.getInt("disponibilite")
+                        );
+                        plats.add(p);
+                    }
+                }
             }
-            
-            conn.close();
-            System.out.println("✅ " + plats.size() + " plats chargés depuis la BDD");
-        } catch (Exception e) {
-            System.err.println("❌ Erreur connexion BDD : " + e.getMessage());
-            throw e;
-        }
-        
+
         return plats;
     }
 
-    // Envoyer la commande finale au Back-end
-    public static void sendOrder(int tableNumber, List<String> dishIds) throws Exception {
-        try {
-            // Objet temporaire pour correspondre au format attendu par le Back
-            var data = new Object() {
-                int tableNumberValue = tableNumber;
-                List<String> dishIdsList = dishIds;
-            };
+    /**
+     * CORRECTION IMPORTANTE ICI :
+     * On envoie maintenant les objets complets (ID + OPTIONS) et pas juste les IDs.
+     */
+    // 1. Méthode pour préparer les données (ce que l'IDE a demandé d'extraire)
+    private static Map<String, Object> createRequestBody(int tableNumber, List<Plat> plats) {
+        List<Map<String, Object>> itemsList = new ArrayList<>();
+        for (Plat p : plats) {
+            Map<String, Object> itemData = new HashMap<>();
+            itemData.put("dishId", p.getId());
+            itemData.put("piment", p.getPimentChoisi());
+            itemData.put("accompagnement", p.getAccompagnementChoisi());
+            itemsList.add(itemData);
+        }
 
-            String json = gson.toJson(data)
-                    .replace("tableNumberValue", "tableNumber")
-                    .replace("dishIdsList", "dishIds");
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("tableNumber", tableNumber);
+        requestBody.put("items", itemsList);
+        return requestBody;
+    }
+
+    // 2. Méthode principale qui envoie (beaucoup plus courte)
+    public static void sendOrder(int tableNumber, List<Plat> plats) {
+        try {
+            // On appelle la petite méthode qu'on a créée au-dessus
+            Map<String, Object> requestBody = createRequestBody(tableNumber, plats);
+
+            String json = gson.toJson(requestBody);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(BASE_URL + "/orders"))
                     .header("Content-Type", "application/json")
-                    .timeout(java.time.Duration.ofSeconds(2))
                     .POST(HttpRequest.BodyPublishers.ofString(json))
                     .build();
 
+            // Envoi...
             client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("✅ Commande envoyée au serveur");
+            System.out.println("✅ Envoyé !");
+
         } catch (Exception e) {
-            System.out.println("⚠️ Serveur indisponible - Commande traitée localement");
-            // Ne pas lever l'exception, continuer normalement
+            e.printStackTrace();
         }
     }
 }
