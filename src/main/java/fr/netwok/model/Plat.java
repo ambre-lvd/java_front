@@ -9,14 +9,16 @@ public class Plat {
     private String imagePath; // Chemin vers l'image
     private int pimentChoisi = 0;
     private int accompagnementChoisi = 0;
+    private int disponibilite = 0;
 
-    public Plat(String id, String nom, String description, double prix, int categorie, String imagePath) {
+    public Plat(String id, String nom, String description, double prix, int categorie, String imagePath, int disponibilite) {
         this.id = id;
         this.name = nom;
         this.description = description;
         this.price = prix;
         this.category = categorie;
         this.imagePath = imagePath;
+        this.disponibilite = disponibilite;
     }
 
     // Getters
@@ -30,7 +32,6 @@ public class Plat {
     public int getPimentChoisi() { return pimentChoisi; }
     public void setAccompagnementChoisi(int accompagnementChoisi) { this.accompagnementChoisi = accompagnementChoisi; }
     public int getAccompagnementChoisi() { return accompagnementChoisi; }
-    private int disponibilite;
     public int getDisponibilite() { return disponibilite; }
     public void setDisponibilite(int disponibilite) { this.disponibilite = disponibilite; }
 

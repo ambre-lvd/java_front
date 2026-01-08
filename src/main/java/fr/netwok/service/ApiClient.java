@@ -57,7 +57,7 @@ public class ApiClient {
                         Plat p = new Plat(
                                 rs.getString("id"), rs.getString("name"),
                                 rs.getString("description"), rs.getDouble("price"),
-                                rs.getInt("category_id"), rs.getString("image_path")
+                                rs.getInt("category_id"), rs.getString("image_path"),rs.getInt("disponibilite")
                         );
                         plats.add(p);
                     }
