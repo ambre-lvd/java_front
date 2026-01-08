@@ -38,6 +38,9 @@
                 <Separator styleClass="panier-separator"/>
                 <VBox fx:id="vboxArticles" spacing="15"/>
             </VBox>
+            <VBox fx:id="vboxSuggestions" spacing="10">
+                </VBox>
+
 
             <VBox spacing="15" styleClass="totaux-section">
                 <HBox alignment="CENTER_RIGHT" spacing="20">

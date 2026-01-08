@@ -33,6 +33,7 @@ public class CatalogueController implements Initializable {
     @FXML private HBox sousCategorieBar;
     @FXML private ScrollPane scrollPane;
     @FXML private Label sectionTitle;
+    @FXML private Label languageDisplay;
 
     @FXML private ToggleButton tabEntrees;
     @FXML private ToggleButton tabPlats;
@@ -84,6 +85,9 @@ public class CatalogueController implements Initializable {
         if (lblTotaltxt != null) lblTotaltxt.setText(t("TOTAL :", "TOTAL :", "總計 :", "合計 :", "TOTAL :", "ИТОГО :", "ราคารวม :", "합계 :"));
         if (lblMonPanierTitre != null) lblMonPanierTitre.setText(t("MON PANIER", "MY BASKET", "我的购物车", "買い物かご", "MI CESTA", "КОРЗИНА", "ตะกร้าของฉัน", "내 장바구니"));
         if (btnVoirPanier != null) btnVoirPanier.setText(t("VOIR PANIER >", "VIEW BASKET >", "查看购物车 >", "かごを見る >", "VER CESTA >", "В КОРЗИНУ >", "ดูตะกร้า >", "장바구니 보기 >"));
+        if (languageDisplay != null) {
+            languageDisplay.setText(t("Langue : FR", "Language : EN", "语言 : 中文", "言語 : 日本語", "Idioma: ES", "Язык: PY", "ภาษา: ไทย", "언어: 한국말"));
+        }
 
         updateSectionTitle(sousModeActuel);
         updatePanierDisplay();
