@@ -122,7 +122,7 @@ public class RecuCommandeController implements Initializable {
         String clientVide = t("Non spécifié", "Not specified", "未指定", "指定なし", "No especificado", "Не указано", "ไม่ได้ระบุ", "미지정");
         lblNomClient.setText(nomClient.isEmpty() ? clientVide : nomClient);
         lblHeure.setText(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-        vboxArticlesTicket.getChildren().clear(); // Toujours vider avant de remplir
+        vboxArticlesTicket.getChildren().clear();
         List<Plat> panier = MockService.getInstance().getPanier();
         Set<String> idsTraites = new HashSet<>();
 
