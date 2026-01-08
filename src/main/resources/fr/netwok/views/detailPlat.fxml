@@ -1,136 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" 
-      fx:controller="fr.netwok.controller.DetailPlatController"
-      styleClass="root-container"
-      stylesheets="@../css/styles.css"
-      spacing="0">
+<VBox spacing="0" styleClass="root-container" stylesheets="@../css/styles.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="fr.netwok.controller.DetailPlatController">
 
     <fx:define>
-        <ToggleGroup fx:id="epice"/>
-        <ToggleGroup fx:id="accompagnement"/>
+        <ToggleGroup fx:id="epice" />
+        <ToggleGroup fx:id="accompagnement" />
     </fx:define>
 
-    <!-- Header avec bouton retour -->
-    <HBox styleClass="header" alignment="CENTER_LEFT" spacing="15">
+    <HBox alignment="CENTER_LEFT" spacing="15" styleClass="header">
         <padding>
-            <Insets top="20" right="30" bottom="20" left="30"/>
+            <Insets bottom="20" left="30" right="30" top="20" />
         </padding>
-        
-        <Button fx:id="btnRetour" text="← Retour" styleClass="btn-retour" onAction="#retourCatalogue" />
-        
-        <Region HBox.hgrow="ALWAYS"/>
-        
-        <Label fx:id="detail" text="Détails du plat" styleClass="header-title"/>
-        
-        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnRetour" onAction="#retourCatalogue" styleClass="btn-retour" text="← Retour" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Label fx:id="detail" styleClass="header-title" text="Détails du plat" />
+        <Region HBox.hgrow="ALWAYS" />
 
-        <HBox alignment="CENTER_RIGHT" spacing="15" styleClass="header-title">
-            <Label fx:id="lblNbArticles" text="0 article" styleClass="header-info" style="-fx-text-fill: white;"/>
-            <Label fx:id="lblTotal" text="0,00 €" styleClass="header-price" style="-fx-text-fill: white;"/>
-            <Button fx:id="panierlogo" text="🛒 Panier" styleClass="btn-panier" onAction="#voirPanier" style="-fx-text-fill: black;"/>
+        <HBox alignment="CENTER_RIGHT" spacing="15">
+            <Button fx:id="btnVoirPanier" onAction="#voirPanier" styleClass="btn-panier-header" text="Voir le Panier" />
         </HBox>
     </HBox>
 
-    <!-- Contenu principal -->
-    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll-container">
-        <VBox spacing="30" styleClass="detail-container">
+    <ScrollPane fitToWidth="true" styleClass="main-scrollpane" VBox.vgrow="ALWAYS">
+        <VBox spacing="30" styleClass="content-padding">
             <padding>
-                <Insets top="40" right="60" bottom="40" left="60"/>
+                <Insets bottom="40" left="50" right="50" top="30" />
             </padding>
-            
-            <HBox spacing="50" alignment="TOP_LEFT">
-                <!-- Colonne gauche : Image -->
-                <VBox alignment="TOP_CENTER" spacing="15" styleClass="image-section">
-                    <ImageView fx:id="imgPlat" fitWidth="450" fitHeight="400" preserveRatio="true" 
-                               styleClass="detail-image"/>
+
+            <HBox spacing="40">
+                <VBox styleClass="image-container-detail">
+                    <ImageView fx:id="imgPlat" fitHeight="350.0" fitWidth="450.0" preserveRatio="true" />
                 </VBox>
-                
-                <!-- Colonne droite : Informations -->
-                <VBox spacing="25" HBox.hgrow="ALWAYS" styleClass="info-section">
-                    <!-- Nom du plat -->
-                    <Label fx:id="lblNom" text="Nom du plat" styleClass="plat-nom"/>
-                    
-                    <!-- Prix -->
-                    <Label fx:id="lblPrix" text="0,00 €" styleClass="plat-prix"/>
-                    
-                    <!-- Description -->
+
+                <VBox spacing="25" HBox.hgrow="ALWAYS">
+                    <VBox spacing="5">
+                        <Label fx:id="lblNom" styleClass="detail-name" text="Nom du Plat" />
+                        <Label fx:id="lblPrix" styleClass="detail-price" text="0.00€" />
+                    </VBox>
+
                     <VBox spacing="10">
-                        <Label fx:id="desc" text="Description" styleClass="section-title"/>
-                        <Text fx:id="txtDescription" wrappingWidth="500" styleClass="plat-description"/>
+                        <Label fx:id="desc" styleClass="section-title" text="Description" />
+                        <Text fx:id="txtDescription" styleClass="detail-description" text="..." wrappingWidth="400.0" />
                     </VBox>
-                    
-                    <!-- Informations additionnelles -->
-                    <VBox spacing="10" fx:id="vboxInfos">
-                        <Label fx:id="info" text="Informations" styleClass="section-title"/>
-                        <Text fx:id="txtInfos" wrappingWidth="500" styleClass="plat-infos" 
-                              text="Allergènes : gluten, soja&#10;Calories : 450 kcal&#10;Temps de préparation : 15 min"/>
+
+                    <VBox spacing="10">
+                        <Label fx:id="info" styleClass="section-title" text="Informations" />
+                        <Text fx:id="txtInfos" styleClass="detail-info" text="..." wrappingWidth="400.0" />
                     </VBox>
-                    
-                    <!-- Options de personnalisation -->
-                    <VBox spacing="20" styleClass="options-container">
-                        <Label fx:id="opt" text="Options" styleClass="section-title"/>
-                        
-                        <!-- Niveau d'épice -->
-                        <VBox spacing="10" styleClass="option-group">
-                            <Label fx:id="epices" text="Épice" styleClass="option-label"/>
-                            <HBox spacing="15">
-                                <RadioButton fx:id="rbDoux" text="Doux" toggleGroup="$epice" selected="true" 
-                                           styleClass="radio-option"/>
-                                <RadioButton fx:id="rbMoyen" text="Moyen" toggleGroup="$epice" 
-                                           styleClass="radio-option"/>
-                                <RadioButton fx:id="rbFort" text="Fort" toggleGroup="$epice" 
-                                           styleClass="radio-option"/>
-                            </HBox>
-                        </VBox>
-                        
-                        <!-- Accompagnement -->
-                        <VBox spacing="10" styleClass="option-group">
-                            <Label fx:id="acc" text="Accompagnement" styleClass="option-label"/>
-                            <HBox spacing="15">
-                                <RadioButton fx:id="rbRiz" text="Riz" toggleGroup="$accompagnement" selected="true" 
-                                           styleClass="radio-option"/>
-                                <RadioButton fx:id="rbNouilles" text="Nouilles" toggleGroup="$accompagnement" 
-                                           styleClass="radio-option"/>
-                            </HBox>
-                        </VBox>
-                    </VBox>
-                    
-                    <!-- Sélecteur de quantité -->
-                    <VBox spacing="15" styleClass="quantity-section">
-                        <Label fx:id="qt" text="Quantité" styleClass="section-title"/>
-                        <HBox spacing="20" alignment="CENTER_LEFT">
-                            <Button fx:id="btnMinus" text="-" styleClass="btn-quantity" onAction="#diminuerQuantite"/>
-                            <Label fx:id="lblQuantite" text="1" styleClass="quantity-label"/>
-                            <Button fx:id="btnPlus" text="+" styleClass="btn-quantity" onAction="#augmenterQuantite"/>
+
+                    <Label fx:id="opt" styleClass="section-title" text="OPTIONS" />
+
+                    <VBox fx:id="vboxOptionsPiment" spacing="10">
+                        <Label fx:id="epices" styleClass="option-title" text="Niveau de piment" />
+                        <HBox spacing="20">
+                            <RadioButton fx:id="rbDoux" selected="true" styleClass="radio-custom" text="Doux" toggleGroup="$epice" />
+                            <RadioButton fx:id="rbMoyen" styleClass="radio-custom" text="Moyen" toggleGroup="$epice" />
+                            <RadioButton fx:id="rbFort" styleClass="radio-custom" text="Fort" toggleGroup="$epice" />
                         </HBox>
                     </VBox>
-                    
-                    <!-- Bouton Ajouter au panier -->
-                    <Button fx:id="btnAjouter" text="Ajouter au panier" 
-                            styleClass="btn-ajouter-panier" onAction="#ajouterAuPanier"
-                            maxWidth="Infinity"/>
+
+                    <VBox fx:id="vboxOptionsAccompagnement" spacing="10">
+                        <Label fx:id="acc" text="Accompagnement" styleClass="option-title"/>
+                        <HBox spacing="20">
+                            <RadioButton fx:id="rbRiz" text="Riz" toggleGroup="$accompagnement" selected="true" />
+                            <RadioButton fx:id="rbNouilles" text="Nouilles" toggleGroup="$accompagnement" />
+                        </HBox>
+                    </VBox>
+
+                    <VBox spacing="10">
+                        <Label fx:id="qt" styleClass="option-title" text="Quantité" />
+                        <HBox alignment="CENTER_LEFT" spacing="15">
+                            <Button fx:id="btnMoins" onAction="#diminuerQuantite" styleClass="btn-quantity" text="-" />
+                            <Label fx:id="lblQuantite" styleClass="quantity-label" text="1" />
+                            <Button fx:id="btnPlus" onAction="#augmenterQuantite" styleClass="btn-quantity" text="+" />
+                        </HBox>
+                    </VBox>
+
+                    <Button fx:id="btnAjouter" maxWidth="Infinity" onAction="#ajouterAuPanier" styleClass="btn-ajouter-panier" text="Ajouter au panier" />
                 </VBox>
+
                 <VBox alignment="CENTER" spacing="10">
-                    <Button text="FR" onAction="#changeLanguage" styleClass="btn-round"/>
-                    <Button text="EN" onAction="#changeLanguage" styleClass="btn-round"/>
-                    <Button text="中文" onAction="#changeLanguage" styleClass="btn-round"/>
-                    <Button text="日本語" onAction="#changeLanguage" styleClass="btn-round"/>
-                    <Button text="ES" onAction="#changeLanguage" styleClass="btn-round"/>
-                    <Button text="PY" onAction="#changeLanguage" styleClass="btn-round"/>
-                    <Button text="ไทย" onAction="#changeLanguage" styleClass="btn-round"/>
-                    <Button text="한국말" onAction="#changeLanguage" styleClass="btn-round"/>
-                    <Label fx:id="languageDisplay" text="Langue : FR" style="-fx-text-fill: white;"/>
+                    <Button onAction="#changeLanguage" styleClass="btn-round" text="FR" />
+                    <Button onAction="#changeLanguage" styleClass="btn-round" text="EN" />
+                    <Button onAction="#changeLanguage" styleClass="btn-round" text="ZH" />
+                    <Button onAction="#changeLanguage" styleClass="btn-round" text="JA" />
+                    <Button onAction="#changeLanguage" styleClass="btn-round" text="ES" />
+                    <Button onAction="#changeLanguage" styleClass="btn-round" text="RU" />
+                    <Button onAction="#changeLanguage" styleClass="btn-round" text="TH" />
+                    <Button onAction="#changeLanguage" styleClass="btn-round" text="KO" />
                 </VBox>
             </HBox>
         </VBox>
-
     </ScrollPane>
 </VBox>
-
