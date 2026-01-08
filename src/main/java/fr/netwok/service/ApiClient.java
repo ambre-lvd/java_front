@@ -48,7 +48,6 @@ public class ApiClient {
 
     private static List<Plat> fetchMenuFromDatabase() throws Exception {
         List<Plat> plats = new ArrayList<>();
-        try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
                 String query = "SELECT id, name, description, price, category_id, image_path FROM Dish";
@@ -64,7 +63,7 @@ public class ApiClient {
                     }
                 }
             }
-        } catch (Exception e) { throw e; }
+
         return plats;
     }
 
@@ -75,7 +74,7 @@ public class ApiClient {
     public static void sendOrder(int tableNumber, List<Plat> plats) throws Exception {
         try {
             // 1. On prépare la liste des "items" telle que le Back-end l'attend
-            // (cf. la classe DishItemRequest du Back-end)
+            // (cf. la classe DishItemRequest du Back-end.)
             List<Map<String, Object>> itemsList = new ArrayList<>();
 
             for (Plat p : plats) {

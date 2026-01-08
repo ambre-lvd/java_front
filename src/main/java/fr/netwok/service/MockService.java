@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 public class MockService {
 
     private static MockService instance;
-    private List<Plat> catalogue;
-    private List<Plat> panier;
+    private final List<Plat> catalogue;
+    private final List<Plat> panier;
 
     // CONSTRUCTEUR : On initialise les listes vides
     private MockService() {
