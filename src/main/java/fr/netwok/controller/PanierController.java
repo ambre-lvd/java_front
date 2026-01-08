@@ -222,7 +222,7 @@ public class PanierController implements Initializable {
 
     @FXML
     void confirmerCommande() {
-        // 1. Vérification du numéro de table
+        // 1. Vérification que le numéro de table est rempli
         if (txtNumeroTable.getText().isEmpty()) {
             txtNumeroTable.setStyle("-fx-border-color: #FF007F;");
             return;
@@ -237,29 +237,34 @@ public class PanierController implements Initializable {
 
             System.out.println("🚀 Clic sur Commander : Envoi au serveur en cours...");
 
-            // 3. APPEL AU BACKEND (C'est la ligne magique qui manquait !)
-            // On envoie la table et la liste des plats à l'API
+            // 3. APPEL AU BACKEND (Sauvegarde en Base de Données)
             ApiClient.sendOrder(table, panier);
 
-            // 4. Succès visuel
+            // 4. Feedback visuel (Bouton vert)
             btnConfirmer.setText(t("✓ Envoyé", "✓ Sent", "✓ 已发送", "✓ 送信済み", "✓ ¡Enviado!", "✓ Отправлено!", "✓ ส่งแล้ว!", "✓ 전송됨!"));
             btnConfirmer.setDisable(true);
 
-            // 5. On vide le panier localement car la commande est passée
+            // 5. SAUVEGARDE DES DONNÉES POUR LE TICKET (Avant de vider le panier !)
+            double totalPanier = MockService.getInstance().getTotalPanier();
+            // La variable 'panier' contient déjà la liste des plats
+
+            // 6. Nettoyage du service (On vide le panier localement)
             MockService.getInstance().viderPanier();
 
-            // 6. Redirection vers le reçu après 1 seconde
+            // 7. Transition vers la page du Reçu (Ticket)
             new Thread(() -> {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(1000); // Petite pause esthétique
                     javafx.application.Platform.runLater(() -> {
                         try {
-                            // On passe les infos au contrôleur du reçu
+                            // C'est ici qu'on envoie TOUTES les infos au contrôleur du Reçu
                             RecuCommandeController.setCommandeInfo(
-                                    "CMD-" + System.currentTimeMillis() % 10000, // ID temporaire pour l'affichage
+                                    "CMD-" + System.currentTimeMillis() % 10000, // Faux numéro de commande
                                     table,
                                     txtNomClient.getText(),
-                                    currentLanguage
+                                    currentLanguage,
+                                    totalPanier, // <--- ON PASSE LE PRIX TOTAL CALCULÉ AVANT
+                                    panier       // <--- ON PASSE LA LISTE DES PLATS
                             );
                             NetwokApp.setRoot("views/recuCommande");
                         } catch (Exception e) { e.printStackTrace(); }
@@ -268,14 +273,13 @@ public class PanierController implements Initializable {
             }).start();
 
         } catch (NumberFormatException e) {
-            System.err.println("❌ Erreur : Le numéro de table n'est pas un chiffre valide.");
+            System.err.println("❌ Erreur : Le numéro de table n'est pas valide.");
             txtNumeroTable.setStyle("-fx-border-color: red;");
         } catch (Exception e) {
             System.err.println("❌ ERREUR LORS DE L'ENVOI API : " + e.getMessage());
             e.printStackTrace();
-            // Optionnel : Afficher un message d'erreur sur l'écran
-            lblTitreRecap.setText("Erreur Connexion Serveur !");
-            lblTitreRecap.setStyle("-fx-text-fill: red;");
+            // Tu peux décommenter la ligne suivante si tu veux afficher l'erreur sur l'écran
+            // lblTitreRecap.setText("Erreur Connexion !");
         }
     }
 

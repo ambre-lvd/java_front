@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -33,16 +34,27 @@ public class RecuCommandeController implements Initializable {
     @FXML private Button btnTermine;
     @FXML private VBox vboxArticlesTicket, vboxMessage;
 
+    // --- VARIABLES DE SAUVEGARDE ---
     private static String numeroCommande = "";
     private static int numeroTable = 0;
     private static String nomClient = "";
     private static String currentLanguage = "FR";
 
-    public static void setCommandeInfo(String numCmd, int table, String client, String lang) {
+    // Sauvegarde des données car le Panier est vidé
+    private static double montantTotalSauvegarde = 0.0;
+    private static List<Plat> panierSauvegarde = new ArrayList<>();
+
+    /**
+     * Méthode appelée par PanierController pour passer les infos avant de changer de page.
+     */
+    public static void setCommandeInfo(String numCmd, int table, String client, String lang, double total, List<Plat> items) {
         numeroCommande = numCmd;
         numeroTable = table;
         nomClient = client;
         currentLanguage = lang;
+        montantTotalSauvegarde = total;
+        // Important : On crée une COPIE de la liste
+        panierSauvegarde = new ArrayList<>(items);
     }
 
     @Override
@@ -50,6 +62,7 @@ public class RecuCommandeController implements Initializable {
         traduireInterface();
         afficherTicket();
     }
+
     private String t(String fr, String en, String zh, String jp, String es, String ru, String th, String co) {
         return switch (currentLanguage) {
             case "EN" -> en;
@@ -62,6 +75,7 @@ public class RecuCommandeController implements Initializable {
             default -> fr;
         };
     }
+
     private void traduireInterface() {
         lblTitreRecu.setText(t("TICKET DE CAISSE", "RECEIPT", "收据", "領収書", "RECIBO", "ЧЕК", "ใบเสร็จรับเงิน", "영수증"));
         lblTxtNumCommande.setText(t("N° Commande :", "Order N°:", "订单号 :", "注文番号 :", "N° Pedido:", "№ Заказа:", "หมายเลขคำสั่งซื้อ:", "주문 번호:"));
@@ -75,6 +89,7 @@ public class RecuCommandeController implements Initializable {
         lblMerci.setText(t("Merci de votre commande !", "Thank you for your order!", "感谢您的订购！", "ご注文ありがとうございました！", "¡Gracias por su pedido!", "Спасибо за заказ!", "ขอบคุณสำหรับคำสั่งซื้อของคุณ!", "주문해 주셔서 감사합니다!"));
         lblAuRevoir.setText(t("À bientôt chez NETWOK", "See you soon at NETWOK", "NETWOK 期待您的再次光临", "またのご来店をお待ちしております", "¡Hasta pronto en NETWOK!", "До встречи в NETWOK", "แล้วพบกันใหม่ที่ NETWOK", "NETWOK에서 곧 다시 뵙겠습니다"));
     }
+
     private String[] getTraductionProduit(String id) {
         return switch (id) {
             // BOISSONS
@@ -84,12 +99,14 @@ public class RecuCommandeController implements Initializable {
             case "B4" -> new String[]{t("Jus de Coco", "Coconut Juice", "椰子汁", "ココナッツジュース", "Jugo de Coco", "Кокосовый сок", "น้ำมะพร้าว", "코코넛 주스"), t("Avec morceaux", "With chunks", "果肉果汁", "果肉入り", "Con trozos", "С кусочками", "มีเนื้อมะพร้าว", "과육 포함")};
             case "B5" -> new String[]{t("Sake", "Sake", "清酒", "日本酒", "Sake", "Саке", "สาเก", "사케"), t("Petit pichet", "Small pitcher", "小瓶装", "徳利（小）", "Jarra pequeña", "Маленький кувшин", "กาเล็ก", "도구리 (소)")};
 
+            // DESSERTS
             case "D1" -> new String[]{t("Perles de Coco", "Coconut Pearls", "椰丝球", "ココナッツ団子", "Perlas de Coco", "Кокосовые шарики", "ขนมต้มมะพร้าว", "코코넛 경단"), t("2 pièces, tiède", "2 pieces, warm", "2个, 温热", "2個、温かい", "2 piezas, tibio", "2 штуки, теплые", "2 ชิ้น อุ่นๆ", "2개, 따뜻함")};
             case "D2" -> new String[]{t("Mochi Glacé", "Iced Mochi", "冰淇淋大福", "雪見だいふく", "Mochi Helado", "Моти-мороженое", "โมจิไอศกรีม", "모찌 아이스크림"), t("2 pièces, Vanille et Matcha", "2 pieces, Vanilla/Matcha", "2个, 香草和抹茶", "2個、バニラと抹茶", "2 piezas, Vainilla/Matcha", "2 штуки, ваниль/матча", "2 ชิ้น วานิลลา/มัทฉะ", "2개, 바닐라/말차")};
             case "D3" -> new String[]{t("Mangue Fraîche", "Fresh Mango", "鲜芒果", "フレッシュマンゴー", "Mango Fresco", "Свежий манго", "มะม่วงสด", "생망고"), t("Tranches de mangue", "Mango slices", "新鲜切片", "マンゴースライス", "Rodajas de mango", "Ломтики манго", "มะม่วงหั่นชิ้น", "망고 슬라이스")};
             case "D4" -> new String[]{t("Banane Flambée", "Flambé Banana", "拔丝香蕉", "バナナのフランベ", "Plátano Flambeado", "Фламбированный банан", "กล้วยทอดฟลมเบ้", "바나나 플람베"), t("Au saké", "With sake", "清酒烹制", "日本酒風味", "Con sake", "С саке", "ผสมสาเก", "사케 풍미")};
             case "D5" -> new String[]{t("Nougat Chinois", "Chinese Nougat", "芝麻糖", "中華風の中華菓子", "Turrón Chino", "Китайская нуга", "ตุ๊บตั๊บจีน", "중국식 누가"), t("Aux graines de sésame", "With sesame seeds", "芝麻味", "ゴマ入り", "Con semillas de sésamo", "С кунжутом", "ผสมงา", "참깨 포함")};
 
+            // ENTREES
             case "E1" -> new String[]{t("Nems Poulet", "Chicken Nems", "鸡肉春卷", "鶏肉の揚げ春巻き", "Rollitos de Pollo", "Немы с курицей", "ปอเปี๊ยะทอดไก่", "치킨 넴"), t("4 pièces, sauce nuoc-mâm", "4 pieces, fish sauce", "4个, 鱼露", "4個、ヌクマムソース", "4 piezas, salsa de pescado", "4 штуки, рыбный соус", "4 ชิ้น พร้อมน้ำจิ้มปลา", "4개, 피쉬 소스")};
             case "E2" -> new String[]{t("Rouleaux Printemps", "Spring Rolls", "夏卷", "生春巻き", "Rollitos de Primavera", "Спринг-роллы", "ปอเปี๊ยะสด", "월남쌈"), t("Crevette, menthe, riz", "Shrimp, mint, rice", "鲜虾, 薄荷", "海老、ミント、米粉", "Camarón, menta, arroz", "Креветки, мята, рис", "กุ้ง มิ้นต์ เส้นหมี่", "새우, 민트, 쌀면")};
             case "E3" -> new String[]{t("Gyozas Poulet", "Chicken Gyozas", "鸡肉饺子", "鶏肉餃子", "Gyozas de Pollo", "Гёдза с курицей", "เกี๊ยวซ่าไก่", "치킨 교자"), t("Raviolis grillés (5 pièces)", "Grilled dumplings (5 pcs)", "煎饺 (5个)", "焼き餃子（5個）", "Dumplings a la plancha (5 pzas)", "Жареные пельмени (5 шт)", "เกี๊ยวซ่าย่าง (5 ชิ้น)", "군만두 (5개)")};
@@ -104,7 +121,7 @@ public class RecuCommandeController implements Initializable {
             // PLATS
             case "P1" -> new String[]{t("Pad Thaï", "Pad Thai", "泰式炒河粉", "パッタイ", "Pad Thai", "Пад-тай", "ผัดไทย", "팥타이"), t("Nouilles de riz, crevettes", "Rice noodles, shrimp", "大米粉, 鲜虾", "米粉の麺、海老", "Fideos de arroz, camarones", "Рисовая лапша, креветки", "เส้นเล็กผัดกุ้ง", "쌀국수, 새우")};
             case "P2" -> new String[]{t("Bo Bun Boeuf", "Beef Bo Bun", "牛肉米粉", "牛焼肉のブン", "Bo Bun de Ternera", "Бо Бун с говядиной", "โบブンเนื้อ", "소고기 보분"), t("Vermicelles, boeuf sauté", "Vermicelli, sautéed beef", "干拌粉, 炒牛肉", "米麺、牛肉炒め", "Fideos, ternera salteada", "Вермишель, жареная говядина", "เส้นหมี่ เนื้อผัด", "버미셀리, 소고기 볶음")};
-            case "P3" -> new String[]{t("Curry Vert", "Green Curry", "绿咖喱", "グリーンカレー", "Curry Verde", "Зеленый карри", "แกงเขียวหวาน", "그린 커리"), t("Poulet, lait de coco", "Chicken, coconut milk", "鸡肉, 椰奶", "鶏肉、ココナッツミルク", "Pollo, leche de coco", "Курица, кокосовое молоко", "ไก่ กะทิ", "치킨, 코코넛 밀크")};
+            case "P3" -> new String[]{t("Curry Vert", "Green Curry", "绿咖喱", "グリーンカレー", "Curry Verde", "Зеленый карри", "แกงเขียวหวาน", "그린 커리"), t("Poulet, lait de coco", "Chicken, coconut milk", "鸡肉,椰奶", "鶏肉、ココナッツミルク", "Pollo, leche de coco", "Курица, кокосовое молоко", "ไก่ กะทิ", "치킨, 코코넛 밀크")};
             case "P4" -> new String[]{t("Riz Cantonais", "Cantonese Rice", "扬州炒饭", "チャーハン", "Arroz Cantonés", "Рис по-кантонски", "ข้าวผัดหยางโจว", "볶음밥"), t("Riz sauté, jambon", "Fried rice, ham", "火腿蛋炒饭", "ハム入り炒飯", "Arroz salteado, jamón", "Жареный рис, ветчина", "ข้าวผัดใส่แฮม", "햄 볶음밥")};
             case "P5" -> new String[]{t("Porc au Caramel", "Caramel Pork", "红烧肉", "豚肉のキャラメル煮", "Cerdo al Caramelo", "Свинина в карамели", "หมูหวาน", "돼지갈비찜"), t("Travers de porc confits", "Candied ribs", "焦糖猪排", "豚バラ肉の甘辛煮", "Costillas de cerdo confitadas", "Засахаренные ребрышки", "ซี่โครงหมูตุ๋นหวาน", "졸인 돼지갈비")};
             case "P6" -> new String[]{t("Canard Laqué", "Peking Duck", "北京烤鸭", "北京ダック", "Pato Laqueado", "Утка по-пекински", "เป็ดปักกิ่ง", "베이징 덕"), t("Avec crêpes", "With pancakes", "附荷叶饼", "薄餅添え", "Con crepas", "С блинчиками", "เสิร์ฟพร้อมแป้งห่อ", "전병 포함")};
@@ -122,14 +139,27 @@ public class RecuCommandeController implements Initializable {
         String clientVide = t("Non spécifié", "Not specified", "未指定", "指定なし", "No especificado", "Не указано", "ไม่ได้ระบุ", "미지정");
         lblNomClient.setText(nomClient.isEmpty() ? clientVide : nomClient);
         lblHeure.setText(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-        vboxArticlesTicket.getChildren().clear(); // Toujours vider avant de remplir
-        List<Plat> panier = MockService.getInstance().getPanier();
+
+        vboxArticlesTicket.getChildren().clear();
+
+        // On utilise la liste SAUVEGARDÉE (panierSauvegarde) et non MockService qui est vide
+        List<Plat> panier = panierSauvegarde;
         Set<String> idsTraites = new HashSet<>();
 
         for (Plat p : panier) {
             if (!idsTraites.contains(p.getId())) {
                 idsTraites.add(p.getId());
-                int qte = MockService.getInstance().getQuantiteDuPlat(p);
+
+                // --- CORRECTION QUANTITÉ ---
+                // On calcule la quantité manuellement depuis la liste sauvegardée
+                // car le MockService a été vidé
+                int qte = 0;
+                for(Plat temp : panier) {
+                    if(temp.getId().equals(p.getId())) {
+                        qte++;
+                    }
+                }
+
                 String[] trads = getTraductionProduit(p.getId());
                 vboxArticlesTicket.getChildren().add(creerLigneArticleTicket(trads[0], qte, p.getPrix()));
             }
@@ -152,7 +182,8 @@ public class RecuCommandeController implements Initializable {
     }
 
     private void calculerTotaux() {
-        double st = MockService.getInstance().getTotalPanier();
+        // On utilise le total SAUVEGARDÉ et pas celui du service vide
+        double st = montantTotalSauvegarde;
         double tx = st * 0.15;
         lblSousTotal.setText(String.format("%.2f€", st));
         lblTaxes.setText(String.format("%.2f€", tx));
@@ -177,7 +208,7 @@ public class RecuCommandeController implements Initializable {
 
     private void retournerCatalogue() {
         try {
-            MockService.getInstance().viderPanier();
+            // Pas besoin de vider ici, le panier est déjà vide depuis l'écran précédent
             NetwokApp.setRoot("views/catalogue");
         } catch (IOException e) { e.printStackTrace(); }
     }
