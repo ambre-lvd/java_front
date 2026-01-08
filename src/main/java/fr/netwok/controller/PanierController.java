@@ -222,26 +222,61 @@ public class PanierController implements Initializable {
 
     @FXML
     void confirmerCommande() {
+        // 1. Vérification du numéro de table
         if (txtNumeroTable.getText().isEmpty()) {
             txtNumeroTable.setStyle("-fx-border-color: #FF007F;");
             return;
         }
-        btnConfirmer.setText(t("✓ Envoyé", "✓ Sent", "✓ 已发送", "✓ 送信済み", "✓ ¡Enviado!", "✓ Отправлено!", "✓ ส่งแล้ว!", "✓ 전송됨!"));
-        btnConfirmer.setDisable(true);
 
-        // Redirection vers reçu après délai
-        new Thread(() -> {
-            try {
-                Thread.sleep(1000);
-                javafx.application.Platform.runLater(() -> {
-                    try {
-                        RecuCommandeController.setCommandeInfo("CMD-"+System.currentTimeMillis()%1000,
-                                Integer.parseInt(txtNumeroTable.getText()), txtNomClient.getText(), currentLanguage);
-                        NetwokApp.setRoot("views/recuCommande");
-                    } catch (Exception e) { e.printStackTrace(); }
-                });
-            } catch (Exception e) {}
-        }).start();
+        try {
+            // 2. Récupération des données
+            int table = Integer.parseInt(txtNumeroTable.getText());
+            List<Plat> panier = MockService.getInstance().getPanier();
+
+            if (panier.isEmpty()) return;
+
+            System.out.println("🚀 Clic sur Commander : Envoi au serveur en cours...");
+
+            // 3. APPEL AU BACKEND (C'est la ligne magique qui manquait !)
+            // On envoie la table et la liste des plats à l'API
+            ApiClient.sendOrder(table, panier);
+
+            // 4. Succès visuel
+            btnConfirmer.setText(t("✓ Envoyé", "✓ Sent", "✓ 已发送", "✓ 送信済み", "✓ ¡Enviado!", "✓ Отправлено!", "✓ ส่งแล้ว!", "✓ 전송됨!"));
+            btnConfirmer.setDisable(true);
+
+            // 5. On vide le panier localement car la commande est passée
+            MockService.getInstance().viderPanier();
+
+            // 6. Redirection vers le reçu après 1 seconde
+            new Thread(() -> {
+                try {
+                    Thread.sleep(1000);
+                    javafx.application.Platform.runLater(() -> {
+                        try {
+                            // On passe les infos au contrôleur du reçu
+                            RecuCommandeController.setCommandeInfo(
+                                    "CMD-" + System.currentTimeMillis() % 10000, // ID temporaire pour l'affichage
+                                    table,
+                                    txtNomClient.getText(),
+                                    currentLanguage
+                            );
+                            NetwokApp.setRoot("views/recuCommande");
+                        } catch (Exception e) { e.printStackTrace(); }
+                    });
+                } catch (Exception e) {}
+            }).start();
+
+        } catch (NumberFormatException e) {
+            System.err.println("❌ Erreur : Le numéro de table n'est pas un chiffre valide.");
+            txtNumeroTable.setStyle("-fx-border-color: red;");
+        } catch (Exception e) {
+            System.err.println("❌ ERREUR LORS DE L'ENVOI API : " + e.getMessage());
+            e.printStackTrace();
+            // Optionnel : Afficher un message d'erreur sur l'écran
+            lblTitreRecap.setText("Erreur Connexion Serveur !");
+            lblTitreRecap.setStyle("-fx-text-fill: red;");
+        }
     }
 
     @FXML void retourCatalogue() throws IOException { NetwokApp.setRoot("views/catalogue"); }
