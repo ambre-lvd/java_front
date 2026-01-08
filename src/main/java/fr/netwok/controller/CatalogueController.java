@@ -47,6 +47,9 @@ public class CatalogueController implements Initializable {
     private int categorieActuelle = 1;
     private int sousModeActuel = 0;
     private static String langueActuelle = "FR";
+    private static final java.util.Set<String> platsIndisponibles = new java.util.HashSet<>();
+    private static List<Plat> catalogueFixe = null;
+    private static boolean indisponibiliteInitialisee = false;
 
     public static String getLangueActuelle() { return langueActuelle; }
     public static void setLangueActuelle(String langue) { langueActuelle = langue; }
@@ -54,7 +57,16 @@ public class CatalogueController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            MockService.getInstance().rafraichirCatalogue();
+            if (catalogueFixe == null) {
+                MockService.getInstance().rafraichirCatalogue();
+                catalogueFixe = new java.util.ArrayList<>(MockService.getInstance().getPlats());
+                java.util.Collections.shuffle(catalogueFixe);
+                if (catalogueFixe.size() >= 3) {
+                    for (int i = 0; i < 3; i++) {
+                        platsIndisponibles.add(catalogueFixe.get(i).getId());
+                    }
+                }
+            }
         } catch (Exception e) {
             System.err.println("Erreur chargement catalogue: " + e.getMessage());
         }
@@ -168,25 +180,30 @@ public class CatalogueController implements Initializable {
     @FXML void filtrerBoissonsOnly() { this.sousModeActuel = 4; refreshView(); }
     @FXML void filtrerAllDessertsBoissons() { this.sousModeActuel = 0; refreshView(); }
 
-    // --- AFFICHAGE ---
 
     private void refreshView() {
         gridPlats.getChildren().clear();
-        if (categorieActuelle == 1) {
-            updateSectionTitle(1);
-            List<Plat> plats = MockService.getInstance().getPlatsParCategorie(1);
-            plats.forEach(p -> gridPlats.getChildren().add(creerCarteVBox(p)));
-        } else if (categorieActuelle == 2) {
-            updateSectionTitle(2);
-            List<Plat> plats = MockService.getInstance().getPlatsParCategorie(2);
-            plats.forEach(p -> gridPlats.getChildren().add(creerCarteVBox(p)));
+        List<Plat> platsAFiltrer = catalogueFixe.stream()
+                .filter(p -> {
+                    if (categorieActuelle == 1) return p.getCategorie() == 1;
+                    if (categorieActuelle == 2) return p.getCategorie() == 2;
+                    return p.getCategorie() == 3 || p.getCategorie() == 4;
+                })
+                .toList();
+
+        if (categorieActuelle == 1 || categorieActuelle == 2) {
+            updateSectionTitle(categorieActuelle);
+            platsAFiltrer.forEach(p -> gridPlats.getChildren().add(creerCarteVBox(p)));
         } else {
             updateSectionTitle(sousModeActuel);
-            if (sousModeActuel == 3 || sousModeActuel == 0)
-                afficherSectionAvecTitre(t("Desserts", "Desserts", "甜点", "デザート","Postres", "Десерты", "ของหวาน", "디저트"), MockService.getInstance().getPlatsParCategorie(3));
-
-            if (sousModeActuel == 4 || sousModeActuel == 0)
-                afficherSectionAvecTitre(t("Boissons", "Drinks", "饮料", "ドリンク","Bebidas", "Напитки", "เครื่องดื่ม", "음료"), MockService.getInstance().getPlatsParCategorie(4));
+            if (sousModeActuel == 3 || sousModeActuel == 0) {
+                List<Plat> desserts = platsAFiltrer.stream().filter(p -> p.getCategorie() == 3).toList();
+                afficherSectionAvecTitre(t("Desserts", "Desserts", "甜点", "デザート","Postres", "Десерты", "ของหวาน", "디저트"), desserts);
+            }
+            if (sousModeActuel == 4 || sousModeActuel == 0) {
+                List<Plat> boissons = platsAFiltrer.stream().filter(p -> p.getCategorie() == 4).toList();
+                afficherSectionAvecTitre(t("Boissons", "Drinks", "饮料", "ドリンク","Bebidas", "Напитки", "เครื่องดื่ม", "음료"), boissons);
+            }
         }
     }
 
@@ -214,8 +231,8 @@ public class CatalogueController implements Initializable {
         carte.setPrefWidth(280);
         carte.setAlignment(Pos.CENTER);
 
+        boolean estIndisponible = platsIndisponibles.contains(p.getId());
         String[] trads = getTraductionProduit(p.getId());
-
         ImageView imgView = new ImageView();
         imgView.setFitHeight(180); imgView.setFitWidth(240); imgView.setPreserveRatio(true);
         try {
@@ -226,16 +243,36 @@ public class CatalogueController implements Initializable {
         Label name = new Label(trads[0]);
         name.setStyle("-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;");
         name.setWrapText(true); name.setTextAlignment(TextAlignment.CENTER);
-
-        Label desc = new Label(trads[1]);
-        desc.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 14px;");
+        Label desc = new Label();
+        if (estIndisponible) {
+            desc.setText(t("INDISPONIBLE", "UNAVAILABLE", "不可用", "利用不可", "NO DISPONIBLE", "НЕДОСТУПНО", "ไม่ว่าง", "품절"));
+            desc.setStyle("-fx-text-fill: #ff4444; -fx-font-size: 16px; -fx-font-weight: bold;");
+        } else {
+            desc.setText(trads[1]);
+            desc.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 14px;");
+        }
         desc.setWrapText(true); desc.setTextAlignment(TextAlignment.CENTER);
 
-        Label price = new Label(String.format("%.2f €", p.getPrix()));
-        price.setStyle("-fx-text-fill: #00F0FF; -fx-font-size: 24px; -fx-font-weight: bold;");
+        Label price = new Label();
+        if (estIndisponible) {
+            price.setText("✘");
+            price.setStyle("-fx-text-fill: #ff4444; -fx-font-size: 32px; -fx-font-weight: bold;");
+        } else {
+            price.setText(String.format("%.2f €", p.getPrix()));
+            price.setStyle("-fx-text-fill: #00F0FF; -fx-font-size: 24px; -fx-font-weight: bold;");
+        }
 
         HBox quantityBox = creerSelecteurQuantite(p);
-        carte.setOnMouseClicked(e -> ouvrirDetailPlat(p));
+        if (estIndisponible) {
+            carte.setOpacity(0.4);
+            carte.setMouseTransparent(true);
+            javafx.scene.effect.ColorAdjust desaturate = new javafx.scene.effect.ColorAdjust();
+            desaturate.setSaturation(-1.0);
+            imgView.setEffect(desaturate);
+        } else {
+            carte.setOnMouseClicked(e -> ouvrirDetailPlat(p));
+        }
+
         carte.getChildren().addAll(imgView, name, desc, price, quantityBox);
         return carte;
     }
