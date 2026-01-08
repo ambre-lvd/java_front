@@ -10,6 +10,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.ScrollPane;
+import javafx.geometry.Bounds;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
@@ -41,10 +43,13 @@ public class DetailPlatController implements Initializable {
     @FXML private RadioButton rbNouilles;
 
     @FXML private Label lblQuantite;
+    @FXML private Button btnMoins;
+    @FXML private Button btnPlus;
     @FXML private Button btnAjouter;
     @FXML private Button btnRetour;
-    @FXML private Button btnVoirPanier;
+    @FXML private Label btnVoirPanier;
     @FXML private Button panierlogo;
+    @FXML private ScrollPane mainScroll;
 
 
     @FXML private javafx.scene.layout.Pane vboxOptionsPiment;
@@ -70,6 +75,84 @@ public class DetailPlatController implements Initializable {
         }
         updatePanierDisplay();
         traduireInterface();
+        Platform.runLater(this::setupResponsiveLayout);
+    }
+
+    private void setupResponsiveLayout() {
+        if (mainScroll == null) return;
+
+        // Base de référence 1280px. On limite l'échelle pour éviter les extrêmes.
+        final double baseWidth = 1280.0;
+        final double minScale = 0.75;
+        final double maxScale = 1.2;
+
+        mainScroll.viewportBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
+            double width = newBounds.getWidth();
+            double scale = Math.max(minScale, Math.min(maxScale, width / baseWidth));
+
+            // Texte : largeur proportionnelle mais bornée pour rester lisible
+            double wrapWidth = Math.max(260, Math.min(width * 0.42, 520));
+            txtDescription.setWrappingWidth(wrapWidth);
+            txtInfos.setWrappingWidth(wrapWidth);
+
+            // Image : s'adapte à la largeur, avec des bornes mini/maxi
+            double imageWidth = Math.max(260, Math.min(width * 0.30, 520));
+            imgPlat.setFitWidth(imageWidth);
+
+            applyScale(scale);
+        });
+
+        Bounds current = mainScroll.getViewportBounds();
+        if (current != null && current.getWidth() > 0) {
+            double width = current.getWidth();
+            double scale = Math.max(minScale, Math.min(maxScale, width / baseWidth));
+            double wrapWidth = Math.max(260, Math.min(width * 0.42, 520));
+            txtDescription.setWrappingWidth(wrapWidth);
+            txtInfos.setWrappingWidth(wrapWidth);
+            double imageWidth = Math.max(260, Math.min(width * 0.30, 520));
+            imgPlat.setFitWidth(imageWidth);
+            applyScale(scale);
+        }
+    }
+
+    private void applyScale(double scale) {
+        // Styles restent appliqués depuis le CSS, on ne touche qu'à la taille pour la lisibilité.
+        if (lblNom != null) lblNom.setStyle(String.format("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: %.1fpx;", 34 * scale));
+        if (lblPrix != null) lblPrix.setStyle(String.format("-fx-text-fill: #00F0FF; -fx-font-weight: bold; -fx-font-size: %.1fpx;", 30 * scale));
+
+        if (detail != null) detail.setStyle(String.format("-fx-text-fill: white; -fx-font-size: %.1fpx; -fx-font-weight: bold;", 28 * scale));
+        String sectionColor = "-fx-text-fill: #00F0FF; -fx-font-weight: bold;";
+        if (desc != null) desc.setStyle(sectionColor + String.format(" -fx-font-size: %.1fpx;", 22 * scale));
+        if (info != null) info.setStyle(sectionColor + String.format(" -fx-font-size: %.1fpx;", 22 * scale));
+        if (opt != null) opt.setStyle(sectionColor + String.format(" -fx-font-size: %.1fpx;", 22 * scale));
+        if (epices != null) epices.setStyle(String.format("-fx-text-fill: #94A3B8; -fx-font-weight: bold; -fx-font-size: %.1fpx;", 18 * scale));
+        if (acc != null) acc.setStyle(String.format("-fx-text-fill: #94A3B8; -fx-font-weight: bold; -fx-font-size: %.1fpx;", 18 * scale));
+        if (qt != null) qt.setStyle(String.format("-fx-text-fill: #94A3B8; -fx-font-weight: bold; -fx-font-size: %.1fpx;", 18 * scale));
+
+        if (txtDescription != null) txtDescription.setStyle(String.format("-fx-fill: #E5E7EB; -fx-font-size: %.1fpx; -fx-line-spacing: 4px;", 16 * scale));
+        if (txtInfos != null) txtInfos.setStyle(String.format("-fx-fill: #CBD5E1; -fx-font-size: %.1fpx; -fx-line-spacing: 3px;", 14 * scale));
+
+        if (btnRetour != null) btnRetour.setStyle(String.format("-fx-font-size: %.1fpx;", 16 * scale));
+        if (btnVoirPanier != null) {
+            String baseStyle = "-fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: transparent; -fx-border-color: transparent;";
+            btnVoirPanier.setStyle(baseStyle + String.format(" -fx-font-size: %.1fpx;", 18 * scale));
+        }
+        if (panierlogo != null) {
+            String baseStyle = "-fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: transparent; -fx-border-color: #00F0FF; -fx-border-width: 1.5px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 6 14 6 14; -fx-cursor: hand;";
+            panierlogo.setStyle(baseStyle + String.format(" -fx-font-size: %.1fpx;", 18 * scale));
+        }
+
+        if (rbDoux != null) rbDoux.setStyle(String.format("-fx-font-size: %.1fpx;", 16 * scale));
+        if (rbMoyen != null) rbMoyen.setStyle(String.format("-fx-font-size: %.1fpx;", 16 * scale));
+        if (rbFort != null) rbFort.setStyle(String.format("-fx-font-size: %.1fpx;", 16 * scale));
+        if (rbRiz != null) rbRiz.setStyle(String.format("-fx-font-size: %.1fpx;", 16 * scale));
+        if (rbNouilles != null) rbNouilles.setStyle(String.format("-fx-font-size: %.1fpx;", 16 * scale));
+
+        if (btnMoins != null) btnMoins.setStyle(String.format("-fx-font-size: %.1fpx;", 24 * scale));
+        if (btnPlus != null) btnPlus.setStyle(String.format("-fx-font-size: %.1fpx;", 24 * scale));
+
+        if (lblQuantite != null) lblQuantite.setStyle(String.format("-fx-font-size: %.1fpx;", 28 * scale));
+        if (btnAjouter != null) btnAjouter.setStyle(String.format("-fx-font-size: %.1fpx;", 22 * scale));
     }
 
     private void chargerDetailPlat() {
