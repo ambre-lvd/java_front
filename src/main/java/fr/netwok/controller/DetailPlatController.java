@@ -45,6 +45,7 @@ public class DetailPlatController implements Initializable {
     @FXML private Button btnAjouter;
     @FXML private Button btnRetour;
     @FXML private Button btnVoirPanier;
+    @FXML private Label languageDisplay;
 
     @FXML private Label lblNbArticles;
     @FXML private Label lblTotal;
@@ -111,6 +112,9 @@ public class DetailPlatController implements Initializable {
         if (rbRiz != null) rbRiz.setText(t("Riz", "Rice", "米饭", "ライス", "Arroz", "Рис", "ข้าว", "밥"));
         if (rbNouilles != null) rbNouilles.setText(t("Nouilles", "Noodles", "面条", "麺", "Fideos", "Лапша", "บะหมี่", "국수"));
         if (qt != null) qt.setText(t("Quantité", "Quantity", "数量", "数量", "Cantidad", "Кол-во", "จำนวน", "수량"));
+        if (languageDisplay != null) {
+            languageDisplay.setText(t("Langue : FR", "Language : EN", "语言 : 中文", "言語 : 日本語", "Idioma: ES", "Язык: PY", "ภาษา: ไทย", "언어: 한국말"));
+        }
     }
 
     private String[] getTraductionProduit(String id) {

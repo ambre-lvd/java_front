@@ -118,7 +118,7 @@
                             styleClass="btn-ajouter-panier" onAction="#ajouterAuPanier"
                             maxWidth="Infinity"/>
                 </VBox>
-                <HBox alignment="CENTER" spacing="10">
+                <VBox alignment="CENTER" spacing="10">
                     <Button text="FR" onAction="#changeLanguage" styleClass="btn-round"/>
                     <Button text="EN" onAction="#changeLanguage" styleClass="btn-round"/>
                     <Button text="中文" onAction="#changeLanguage" styleClass="btn-round"/>
@@ -128,7 +128,7 @@
                     <Button text="ไทย" onAction="#changeLanguage" styleClass="btn-round"/>
                     <Button text="한국말" onAction="#changeLanguage" styleClass="btn-round"/>
                     <Label fx:id="languageDisplay" text="Langue : FR" style="-fx-text-fill: white;"/>
-                </HBox>
+                </VBox>
             </HBox>
         </VBox>
 
