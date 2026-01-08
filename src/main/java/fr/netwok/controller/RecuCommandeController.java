@@ -210,7 +210,7 @@ public class RecuCommandeController implements Initializable {
     private void retournerCatalogue() {
         try {
             // Pas besoin de vider ici, le panier est déjà vide depuis l'écran précédent
-            NetwokApp.setRoot("views/catalogue");
+            NetwokApp.setRoot("views/accueil");
         } catch (IOException e) { e.printStackTrace(); }
     }
 }
