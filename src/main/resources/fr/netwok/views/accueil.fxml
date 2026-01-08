@@ -20,7 +20,7 @@
     <center>
         <VBox alignment="CENTER" spacing="15.0" BorderPane.alignment="CENTER">
             
-            <ImageView fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="375.0" fitWidth="375.0" pickOnBounds="true" preserveRatio="true">
                 <image>
                     <Image url="@../images/logo_main.png" />
                 </image>

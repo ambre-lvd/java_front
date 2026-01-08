@@ -32,6 +32,8 @@ public class RecuCommandeController implements Initializable {
     @FXML private Label lblSousTotal, lblTaxes, lblTotal, lblMerci, lblAuRevoir;
     @FXML private Button btnTermine;
     @FXML private VBox vboxArticlesTicket, vboxMessage;
+    @FXML private Label mercifinal;
+    @FXML private Label abientot;
 
     // --- VARIABLES DE SAUVEGARDE ---
     private static String numeroCommande = "";
@@ -87,6 +89,8 @@ public class RecuCommandeController implements Initializable {
         btnTermine.setText(t("✓ Terminé", "✓ Done", "✓ 完成", "✓ 完了", "✓ Finalizar", "✓ Готово", "✓ เสร็จสิ้น", "✓ 완료"));
         lblMerci.setText(t("Merci de votre commande !", "Thank you for your order!", "感谢您的订购！", "ご注文ありがとうございました！", "¡Gracias por su pedido!", "Спасибо за заказ!", "ขอบคุณสำหรับคำสั่งซื้อของคุณ!", "주문해 주셔서 감사합니다!"));
         lblAuRevoir.setText(t("À bientôt chez NETWOK", "See you soon at NETWOK", "NETWOK 期待您的再次光临", "またのご来店をお待ちしております", "¡Hasta pronto en NETWOK!", "До встречи в NETWOK", "แล้วพบกันใหม่ที่ NETWOK", "NETWOK에서 곧 다시 뵙겠습니다"));
+        mercifinal.setText(t("Merci de votre commande !", "Thank you for your order!", "感谢您的订购！", "ご注文ありがとうございました！", "¡Gracias por su pedido!", "Спасибо за заказ!", "ขอบคุณสำหรับคำสั่งซื้อของคุณ!", "주문해 주셔서 감사합니다!"));
+        abientot.setText(t("À très bientôt ! 🍜", "See you very soon! 🍜", "期待您的再次光临！ 🍜", "またのご来店をお待ちしております！ 🍜", "¡Hasta muy pronto! 🍜", "До скорой встречи! 🍜", "แล้วพบกันใหม่นะ! 🍜", "곧 다시 뵙겠습니다! 🍜"));
     }
 
     private String[] getTraductionProduit(String id) {
@@ -143,7 +147,6 @@ public class RecuCommandeController implements Initializable {
 
         vboxArticlesTicket.getChildren().clear();
 
-        // On utilise la liste SAUVEGARDÉE (panierSauvegarde) et non MockService qui est vide
         panier = panierSauvegarde;
         Set<String> idsTraites = new HashSet<>();
 
@@ -151,9 +154,6 @@ public class RecuCommandeController implements Initializable {
             if (!idsTraites.contains(p.getId())) {
                 idsTraites.add(p.getId());
 
-                // --- CORRECTION QUANTITÉ ---
-                // On calcule la quantité manuellement depuis la liste sauvegardée
-                //car, le MockService a été vidé
                 int qte = 0;
                 for(Plat temp : panier) {
                     if(temp.getId().equals(p.getId())) {
