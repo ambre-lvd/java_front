@@ -56,23 +56,16 @@ public class DetailPlatController implements Initializable {
 
     // On utilise une variable statique pour garder la langue entre les écrans
     private static String langueActuelle = "FR";
-    public static void setLangueActuelle(String langue) {
-        langueActuelle = langue;
-    }
     private static Plat platAfficher = null;
 
     public static void setPlatAfficher(Plat plat) {
         platAfficher = plat;
     }
 
-    // Permet au CatalogueController de définir la langue avant de changer de vue
-    public static void setLangue(String langue) {
-        langueActuelle = langue;
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        this.langueActuelle = CatalogueController.getLangueActuelle();
+        langueActuelle = CatalogueController.getLangueActuelle();
         if (platAfficher != null) {
             platActuel = platAfficher;
             chargerDetailPlat();
@@ -163,8 +156,8 @@ public class DetailPlatController implements Initializable {
         if (platActuel == null) return;
 
         String[] trads = getTraductionProduit(platActuel.getId());
-        String nomTrad = (trads != null) ? trads[0] : platActuel.getNom();
-        String descTrad = (trads != null) ? trads[1] : platActuel.getDescription();
+        String nomTrad = (trads.length > 0) ? trads[0] : platActuel.getNom();
+        String descTrad = (trads.length > 1) ? trads[1] : platActuel.getDescription();
 
         lblNom.setText(nomTrad != null ? nomTrad : platActuel.getNom());
         lblPrix.setText(String.format("%.2f €", platActuel.getPrix()));
@@ -179,11 +172,9 @@ public class DetailPlatController implements Initializable {
     }
 
     private String genererInformations() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(t("Allergènes : peut contenir des traces de gluten, soja\n", "Allergens: may contain traces of gluten, soy\n", "過敏原：可能含有麩質、大豆的痕跡\n", "アレルゲン：小麦、大豆の成分が含まれている可能性があります\n", "Alérgenos: puede contener trazas de gluten, soja\n", "Аллергены: может содержать следы глютена, сои\n", "ข้อมูลสำหรับผู้แพ้อาหาร: อาจมีกลูเตนและถั่วเหลือง\n", "알레르기 유발 성분: 글루텐, 대두 성분이 포함될 수 있음\n"));
-        sb.append(t("Calories : environ 450 kcal\n", "Calories: approx. 450 kcal\n", "熱量：約 450 大卡\n", "エネルギー：約 450 kcal\n", "Calorías: aprox. 450 kcal\n", "Калории: около 450 ккал\n", "แคลอรี่: ประมาณ 450 kcal\n", "칼로리: 약 450 kcal\n"));
-        sb.append(t("Temps de préparation : 15-20 min", "Preparation time: 15-20 min", "準備時間：15-20 分鐘", "調理時間：15-20 分", "Tiempo de preparación: 15-20 min", "Время приготовления: 15-20 мин", "เวลาในการเตรียม: 15-20 นาที", "조리 시간: 15-20분"));
-        return sb.toString();
+        return t("Allergènes : peut contenir des traces de gluten, soja\n", "Allergens: may contain traces of gluten, soy\n", "過敏原：可能含有麩質、大豆的痕跡\n", "アレルゲン：小麦、大豆の成分が含まれている可能性があります\n", "Alérgenos: puede contener trazas de gluten, soja\n", "Аллергены: может содержать следы глютена, сои\n", "ข้อมูลสำหรับผู้แพ้อาหาร: อาจมีกลูเตนและถั่วเหลือง\n", "알레르기 유발 성분: 글루텐, 대두 성분이 포함될 수 있음\n") +
+                t("Calories : environ 450 kcal\n", "Calories: approx. 450 kcal\n", "熱量：約 450 大卡\n", "エネルギー：約 450 kcal\n", "Calorías: aprox. 450 kcal\n", "Калории: около 450 ккал\n", "แคลอรี่: ประมาณ 450 kcal\n", "칼로리: 약 450 kcal\n") +
+                t("Temps de préparation : 15-20 min", "Preparation time: 15-20 min", "準備時間：15-20 分鐘", "調理時間：15-20 分", "Tiempo de preparación: 15-20 min", "Время приготовления: 15-20 мин", "เวลาในการเตรียม: 15-20 นาที", "조리 시간: 15-20분");
     }
 
     // --- ACTIONS ---
@@ -229,7 +220,7 @@ public class DetailPlatController implements Initializable {
         Button btn = (Button) event.getSource();
         String langue = btn.getText().toUpperCase();
         CatalogueController.setLangueActuelle(langue);
-        this.langueActuelle = langue;
+        langueActuelle = langue;
         traduireInterface();
         chargerDetailPlat();
         updatePanierDisplay();

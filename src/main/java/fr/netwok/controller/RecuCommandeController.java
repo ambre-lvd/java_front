@@ -2,7 +2,6 @@ package fr.netwok.controller;
 
 import fr.netwok.NetwokApp;
 import fr.netwok.model.Plat;
-import fr.netwok.service.MockService;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
@@ -40,7 +39,7 @@ public class RecuCommandeController implements Initializable {
     private static String nomClient = "";
     private static String currentLanguage = "FR";
 
-    // Sauvegarde des données car le Panier est vidé
+    // Sauvegarde des données, car le Panier est vidé
     private static double montantTotalSauvegarde = 0.0;
     private static List<Plat> panierSauvegarde = new ArrayList<>();
 
@@ -140,7 +139,7 @@ public class RecuCommandeController implements Initializable {
         lblNomClient.setText(nomClient.isEmpty() ? clientVide : nomClient);
         lblHeure.setText(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
         vboxArticlesTicket.getChildren().clear();
-        List<Plat> panier = MockService.getInstance().getPanier();
+        List<Plat> panier;
 
         vboxArticlesTicket.getChildren().clear();
 
@@ -154,7 +153,7 @@ public class RecuCommandeController implements Initializable {
 
                 // --- CORRECTION QUANTITÉ ---
                 // On calcule la quantité manuellement depuis la liste sauvegardée
-                // car le MockService a été vidé
+                //car, le MockService a été vidé
                 int qte = 0;
                 for(Plat temp : panier) {
                     if(temp.getId().equals(p.getId())) {

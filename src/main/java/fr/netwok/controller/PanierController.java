@@ -4,7 +4,6 @@ import fr.netwok.NetwokApp;
 import fr.netwok.model.Plat;
 import fr.netwok.service.ApiClient;
 import fr.netwok.service.MockService;
-import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -12,7 +11,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -226,7 +224,7 @@ public class PanierController implements Initializable {
         try {
             URL res = getClass().getResource("/fr/netwok/images/" + p.getImagePath());
             if (res != null) img.setImage(new Image(res.toExternalForm()));
-        } catch (Exception e) {}
+        } catch (Exception ignored) {}
         VBox colInfo = new VBox(5); colInfo.setPrefWidth(350);
         Label lblNom = new Label(trads[0]); lblNom.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
         Label lblDesc = new Label(trads[1]); lblDesc.setStyle("-fx-text-fill: #94a3b8;");
@@ -300,7 +298,7 @@ public class PanierController implements Initializable {
                             NetwokApp.setRoot("views/recuCommande");
                         } catch (Exception e) { e.printStackTrace(); }
                     });
-                } catch (Exception e) {}
+                } catch (Exception ignored) {}
             }).start();
 
         } catch (NumberFormatException e) {
