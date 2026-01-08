@@ -23,15 +23,21 @@ public class ApiClient {
     private static final Gson gson = new Gson();
 
     // Paramètres MySQL pour le mode secours
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/restaurant_db";
+    private static final String DB_URL = "jdbc:mysql://127.0.0.1:3306/restaurant_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "";
 
     /**
-     * Récupère le menu depuis l'API, ou depuis la BDD si l'API échoue.
+     * Récupère le menu : priorité à la BDD (pour disposer des champs enrichis),
+     * fallback sur l'API si la BDD est indisponible.
      */
     public static List<Plat> fetchMenu() throws Exception {
         try {
+            return fetchMenuFromDatabase();
+        } catch (Exception dbEx) {
+            System.err.println("❌ Erreur BDD : " + dbEx.getMessage());
+            dbEx.printStackTrace();
+            System.out.println("⚠️ BDD indisponible, tentative via l'API...");
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(BASE_URL + "/menu"))
                     .GET()
@@ -40,9 +46,6 @@ public class ApiClient {
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             return Arrays.asList(gson.fromJson(response.body(), Plat[].class));
-        } catch (Exception e) {
-            System.out.println("⚠️ API indisponible, chargement depuis la base de données de secours...");
-            return fetchMenuFromDatabase();
         }
     }
 
@@ -50,14 +53,15 @@ public class ApiClient {
         List<Plat> plats = new ArrayList<>();
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-                String query = "SELECT id, name, description, price, category_id, image_path FROM Dish";
+                String query = "SELECT id, name, description, price, category_id, image_path, disponibilite, allergens, calories, prep_time FROM Dish";
                 try (Statement stmt = conn.createStatement();
                      ResultSet rs = stmt.executeQuery(query)) {
                     while (rs.next()) {
                         Plat p = new Plat(
                                 rs.getString("id"), rs.getString("name"),
                                 rs.getString("description"), rs.getDouble("price"),
-                                rs.getInt("category_id"), rs.getString("image_path"),rs.getInt("disponibilite")
+                                rs.getInt("category_id"), rs.getString("image_path"),rs.getInt("disponibilite"),
+                                rs.getString("allergens"), rs.getInt("calories"), rs.getString("prep_time")
                         );
                         plats.add(p);
                     }

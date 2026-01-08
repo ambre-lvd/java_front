@@ -152,9 +152,18 @@ public class DetailPlatController implements Initializable {
     }
 
     private String genererInformations() {
-        return t("Allergènes : traces de gluten, soja\n", "Allergens: traces of gluten, soy\n", "過敏原：可能含有麩質、大豆\n", "アレルゲン：小麦、大豆\n", "Alérgenos: trazas de gluten, soja\n", "Аллергены: следы глютена, сои\n", "ข้อมูลสำหรับผู้แพ้อาหาร: อาจมีกลูเตนและถั่วเหลือง\n", "알레르기: 글루텐, 대두 포함 가능\n") +
-                t("Calories : env. 450 kcal\n", "Calories: approx. 450 kcal\n", "熱量：約 450 大卡\n", "エネルギー：約 450 kcal\n", "Calorías: aprox. 450 kcal\n", "Калории: около 450 ккал\n", "แคลอรี่: ประมาณ 450 kcal\n", "칼로리: 약 450 kcal\n") +
-                t("Temps : 15-20 min", "Time: 15-20 min", "準備時間：15-20 分鐘", "調理時間：15-20 分", "Tiempo: 15-20 min", "Время: 15-20 мин", "เวลา: 15-20 นาที", "시간: 15-20분");
+        String allergens = platActuel.getAllergens() != null && !platActuel.getAllergens().isEmpty() 
+            ? platActuel.getAllergens() 
+            : t("Non spécifié", "Not specified", "未指定", "指定なし", "No especificado", "Не указано", "ไม่ระบุ", "미지정");
+        
+        int calories = platActuel.getCalories();
+        String prepTime = platActuel.getPrepTime() != null && !platActuel.getPrepTime().isEmpty() 
+            ? platActuel.getPrepTime() 
+            : "---";
+        
+        return t("Allergènes : ", "Allergens: ", "過敏原：", "アレルゲン：", "Alérgenos: ", "Аллергены: ", "ข้อมูลสำหรับผู้แพ้อาหาร: ", "알레르기: ") + allergens + "\n" +
+                t("Calories : ", "Calories: ", "熱量：", "エネルギー：", "Calorías: ", "Калории: ", "แคลอรี่: ", "칼로리: ") + calories + " kcal\n" +
+                t("Temps : ", "Time: ", "準備時間：", "調理時間：", "Tiempo: ", "Время: ", "เวลา: ", "시간: ") + prepTime;
     }
 
     @FXML
