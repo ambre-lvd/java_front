@@ -71,49 +71,42 @@ public class ApiClient {
      * CORRECTION IMPORTANTE ICI :
      * On envoie maintenant les objets complets (ID + OPTIONS) et pas juste les IDs.
      */
-    public static void sendOrder(int tableNumber, List<Plat> plats) throws Exception {
+    // 1. Méthode pour préparer les données (ce que l'IDE a demandé d'extraire)
+    private static Map<String, Object> createRequestBody(int tableNumber, List<Plat> plats) {
+        List<Map<String, Object>> itemsList = new ArrayList<>();
+        for (Plat p : plats) {
+            Map<String, Object> itemData = new HashMap<>();
+            itemData.put("dishId", p.getId());
+            itemData.put("piment", p.getPimentChoisi());
+            itemData.put("accompagnement", p.getAccompagnementChoisi());
+            itemsList.add(itemData);
+        }
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("tableNumber", tableNumber);
+        requestBody.put("items", itemsList);
+        return requestBody;
+    }
+
+    // 2. Méthode principale qui envoie (beaucoup plus courte)
+    public static void sendOrder(int tableNumber, List<Plat> plats) {
         try {
-            // 1. On prépare la liste des "items" telle que le Back-end l'attend
-            // (cf. la classe DishItemRequest du Back-end.)
-            List<Map<String, Object>> itemsList = new ArrayList<>();
-
-            for (Plat p : plats) {
-                Map<String, Object> itemData = new HashMap<>();
-                itemData.put("dishId", p.getId());
-
-                // C'est ici qu'on envoie enfin tes choix au serveur !
-                itemData.put("piment", p.getPimentChoisi());
-                itemData.put("accompagnement", p.getAccompagnementChoisi());
-
-                itemsList.add(itemData);
-            }
-
-            // 2. Création du corps JSON global
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("tableNumber", tableNumber);
-            // Attention : la clé doit être "items" pour correspondre à ton Back-end
-            requestBody.put("items", itemsList);
+            // On appelle la petite méthode qu'on a créée au-dessus
+            Map<String, Object> requestBody = createRequestBody(tableNumber, plats);
 
             String json = gson.toJson(requestBody);
-            System.out.println("📤 Envoi JSON COMPLET : " + json);
 
-            // 3. Envoi de la requête POST
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(BASE_URL + "/orders"))
                     .header("Content-Type", "application/json")
-                    .timeout(Duration.ofSeconds(5))
                     .POST(HttpRequest.BodyPublishers.ofString(json))
                     .build();
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            // Envoi...
+            client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("✅ Envoyé !");
 
-            if (response.statusCode() == 201 || response.statusCode() == 200) {
-                System.out.println("✅ Commande envoyée avec succès !");
-            } else {
-                System.err.println("❌ Erreur serveur (" + response.statusCode() + ") : " + response.body());
-            }
         } catch (Exception e) {
-            System.err.println("⚠️ Impossible d'envoyer la commande : " + e.getMessage());
             e.printStackTrace();
         }
     }
