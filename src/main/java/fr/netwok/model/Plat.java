@@ -30,6 +30,9 @@ public class Plat {
     public int getPimentChoisi() { return pimentChoisi; }
     public void setAccompagnementChoisi(int accompagnementChoisi) { this.accompagnementChoisi = accompagnementChoisi; }
     public int getAccompagnementChoisi() { return accompagnementChoisi; }
+    private int disponibilite;
+    public int getDisponibilite() { return disponibilite; }
+    public void setDisponibilite(int disponibilite) { this.disponibilite = disponibilite; }
 
     // Formattage du prix pour l'affichage (ex: "12.50 €")
     public String getPrixFormate() {
