@@ -7,19 +7,18 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="fr.netwok.controller.RecuCommandeController"
-      styleClass="root-container"
-      stylesheets="@../css/styles.css"
-      alignment="CENTER"
-      spacing="20">
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="fr.netwok.controller.RecuCommandeController"
+           styleClass="root-container"
+           stylesheets="@../css/styles.css"
+           prefHeight="800.0"
+           prefWidth="1024.0">
 
-    <VBox alignment="CENTER" VBox.vgrow="ALWAYS" style="-fx-padding: 40;">
-        <VBox styleClass="ticket-container" spacing="0">
-
-            <VBox alignment="CENTER" styleClass="ticket-header" spacing="10">
-                <padding><Insets top="30" right="20" bottom="30" left="20"/></padding>
-<!--                //<Label text="🧾" style="-fx-font-size: 48px;"/>-->
+    <StackPane fx:id="vboxMessage" style="-fx-background-color: rgba(0, 0, 0, 0.9); -fx-opacity: 0;"
+               mouseTransparent="true">
+        <VBox alignment="CENTER" spacing="20.0">
+            <StackPane.alignment>CENTER</StackPane.alignment>
+            <HBox alignment="CENTER">
                 <ImageView fitHeight="125" fitWidth="125" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@../images/logo_main.png" />
@@ -28,92 +27,96 @@
                         <Glow level="0.6" />
                     </effect>
                 </ImageView>
-                <Label fx:id="lblTitreRecu" text="TICKET DE CAISSE" styleClass="ticket-title"/>
-                <Label text="NETWOK" styleClass="ticket-subtitle"/>
-            </VBox>
-
-            <Separator styleClass="ticket-separator"/>
-
-            <VBox spacing="8" styleClass="ticket-info">
-                <padding><Insets top="15" right="20" bottom="15" left="20"/></padding>
-
-                <HBox spacing="40">
-                    <Label fx:id="lblTxtNumCommande" text="N° Commande :" styleClass="ticket-label"/>
-                    <Label fx:id="lblNumCommande" text="---" styleClass="ticket-value"/>
-                </HBox>
-
-                <HBox spacing="40">
-                    <Label fx:id="lblTxtTable" text="Table :" styleClass="ticket-label"/>
-                    <Label fx:id="lblNumTable" text="---" styleClass="ticket-value"/>
-                </HBox>
-
-                <HBox spacing="40">
-                    <Label fx:id="lblTxtNom" text="Client :" styleClass="ticket-label"/>
-                    <Label fx:id="lblNomClient" text="---" styleClass="ticket-value"/>
-                </HBox>
-
-                <HBox spacing="40">
-                    <Label fx:id="lblTxtHeure" text="Heure :" styleClass="ticket-label"/>
-                    <Label fx:id="lblHeure" text="---" styleClass="ticket-value"/>
-                </HBox>
-            </VBox>
-
-            <Separator styleClass="ticket-separator"/>
-
-            <VBox fx:id="vboxArticlesTicket" spacing="5" styleClass="ticket-articles">
-                <padding><Insets top="15" right="20" bottom="15" left="20"/></padding>
-            </VBox>
-
-            <Separator styleClass="ticket-separator-bold"/>
-
-            <VBox spacing="8" styleClass="ticket-totaux">
-                <padding><Insets top="15" right="20" bottom="15" left="20"/></padding>
-
-                <HBox spacing="40" alignment="CENTER_RIGHT">
-                    <Label fx:id="lblTxtSousTotal" text="Sous-total :" styleClass="ticket-label"/>
-                    <Label fx:id="lblSousTotal" text="0,00€" styleClass="ticket-total-value"/>
-                </HBox>
-
-                <HBox spacing="40" alignment="CENTER_RIGHT">
-                    <Label fx:id="lblTxtTaxes" text="Taxes (15%) :" styleClass="ticket-label"/>
-                    <Label fx:id="lblTaxes" text="0,00€" styleClass="ticket-total-value"/>
-                </HBox>
-
-                <Separator styleClass="ticket-separator-light"/>
-
-                <HBox spacing="40" alignment="CENTER_RIGHT">
-                    <Label fx:id="lblTxtTotal" text="TOTAL :" styleClass="ticket-total-label"/>
-                    <Label fx:id="lblTotal" text="0,00€" styleClass="ticket-total-final"/>
-                </HBox>
-            </VBox>
-
-            <Separator styleClass="ticket-separator"/>
-
-            <VBox alignment="CENTER" spacing="10" styleClass="ticket-footer">
-                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
-                <Label fx:id="lblMerci" text="Merci de votre commande !" styleClass="ticket-thank-you"/>
-                <Label fx:id="lblAuRevoir" text="À bientôt chez NETWOK" styleClass="ticket-goodbye"/>
-            </VBox>
+            </HBox>
+            <Label fx:id="mercifinal" text="Merci de votre commande !"
+                   style="-fx-text-fill: #00F0FF; -fx-font-size: 48px; -fx-font-weight: bold;"/>
+            <Label fx:id="abientot" text="À très bientôt ! 🍜"
+                   style="-fx-text-fill: #FF007F; -fx-font-size: 32px;"/>
         </VBox>
+    </StackPane>
+
+    <VBox fx:id="rootTicket" alignment="CENTER" spacing="20">
+
+        <VBox alignment="CENTER" styleClass="ticket-header" spacing="10">
+            <padding><Insets top="30" right="20" bottom="30" left="20"/></padding>
+            <ImageView fitHeight="125" fitWidth="125" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@../images/logo_main.png" />
+                </image>
+                <effect>
+                    <Glow level="0.6" />
+                </effect>
+            </ImageView>
+            <Label fx:id="lblTitreRecu" text="TICKET DE CAISSE" styleClass="ticket-title"/>
+            <Label text="NETWOK" styleClass="ticket-subtitle"/>
+        </VBox>
+
+        <Separator styleClass="ticket-separator"/>
+
+        <VBox spacing="8" styleClass="ticket-info">
+            <padding><Insets top="15" right="20" bottom="15" left="20"/></padding>
+
+            <HBox spacing="40">
+                <Label fx:id="lblTxtNumCommande" text="N° Commande :" styleClass="ticket-label"/>
+                <Label fx:id="lblNumCommande" text="---" styleClass="ticket-value"/>
+            </HBox>
+
+            <HBox spacing="40">
+                <Label fx:id="lblTxtTable" text="Table :" styleClass="ticket-label"/>
+                <Label fx:id="lblNumTable" text="---" styleClass="ticket-value"/>
+            </HBox>
+
+            <HBox spacing="40">
+                <Label fx:id="lblTxtNom" text="Client :" styleClass="ticket-label"/>
+                <Label fx:id="lblNomClient" text="---" styleClass="ticket-value"/>
+            </HBox>
+
+            <HBox spacing="40">
+                <Label fx:id="lblTxtHeure" text="Heure :" styleClass="ticket-label"/>
+                <Label fx:id="lblHeure" text="---" styleClass="ticket-value"/>
+            </HBox>
+        </VBox>
+
+        <Separator styleClass="ticket-separator"/>
+
+        <VBox fx:id="vboxArticlesTicket" spacing="5" styleClass="ticket-articles">
+            <padding><Insets top="15" right="20" bottom="15" left="20"/></padding>
+        </VBox>
+
+        <Separator styleClass="ticket-separator-bold"/>
+
+        <VBox spacing="8" styleClass="ticket-totaux">
+            <padding><Insets top="15" right="20" bottom="15" left="20"/></padding>
+
+            <HBox spacing="40" alignment="CENTER_RIGHT">
+                <Label fx:id="lblTxtSousTotal" text="Sous-total :" styleClass="ticket-label"/>
+                <Label fx:id="lblSousTotal" text="0,00€" styleClass="ticket-total-value"/>
+            </HBox>
+
+            <HBox spacing="40" alignment="CENTER_RIGHT">
+                <Label fx:id="lblTxtTaxes" text="Taxes (15%) :" styleClass="ticket-label"/>
+                <Label fx:id="lblTaxes" text="0,00€" styleClass="ticket-total-value"/>
+            </HBox>
+
+            <Separator styleClass="ticket-separator-light"/>
+
+            <HBox spacing="40" alignment="CENTER_RIGHT">
+                <Label fx:id="lblTxtTotal" text="TOTAL :" styleClass="ticket-total-label"/>
+                <Label fx:id="lblTotal" text="0,00€" styleClass="ticket-total-final"/>
+            </HBox>
+        </VBox>
+
+        <Separator styleClass="ticket-separator"/>
+
+        <VBox alignment="CENTER" spacing="10" styleClass="ticket-footer">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <Label fx:id="lblMerci" text="Merci de votre commande !" styleClass="ticket-thank-you"/>
+            <Label fx:id="lblAuRevoir" text="À bientôt chez NETWOK" styleClass="ticket-goodbye"/>
+        </VBox>
+
         <HBox alignment="CENTER">
             <Button fx:id="btnTermine" text="✓ Terminé" styleClass="btn-termine" onAction="#terminerCommande" style="-fx-padding: 15 50 15 50; -fx-font-size: 20px;"/>
         </HBox>
-    </VBox>
 
-    <VBox fx:id="vboxMessage" alignment="CENTER" VBox.vgrow="ALWAYS"
-          style="-fx-background-color: rgba(0, 0, 0, 0.9); -fx-opacity: 0;"
-          mouseTransparent="true">
-        <ImageView fitHeight="125" fitWidth="125" pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@../images/logo_main.png" />
-            </image>
-            <effect>
-                <Glow level="0.6" />
-            </effect>
-        </ImageView>
-        <Label fx:id="mercifinal" text="Merci de votre commande !"
-               style="-fx-text-fill: #00F0FF; -fx-font-size: 48px; -fx-font-weight: bold;"/>
-        <Label fx:id="abientot" text="À très bientôt ! 🍜"
-               style="-fx-text-fill: #FF007F; -fx-font-size: 32px; -fx-margin: 20 0 0 0;"/>
     </VBox>
-</VBox>
+</StackPane>

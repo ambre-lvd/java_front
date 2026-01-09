@@ -11,6 +11,10 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.animation.FadeTransition;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -56,7 +60,25 @@ public class PanierController implements Initializable {
         CatalogueController.setLangueActuelle(nouvelleLangue);
         this.currentLanguage = nouvelleLangue;
         traduire();
-        chargerPanier();
+        animatedChargerPanier();
+    }
+
+    private void animatedChargerPanier() {
+        if (vboxArticles == null) {
+            chargerPanier();
+            return;
+        }
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(250), vboxArticles);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+        fadeOut.setOnFinished(e -> {
+            chargerPanier();
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(400), vboxArticles);
+            fadeIn.setFromValue(0.0);
+            fadeIn.setToValue(1.0);
+            fadeIn.play();
+        });
+        fadeOut.play();
     }
 
     private void traduire() {
@@ -307,5 +329,25 @@ public class PanierController implements Initializable {
         }
     }
 
-    @FXML void retourCatalogue() throws IOException { NetwokApp.setRoot("views/catalogue"); }
+    @FXML void retourCatalogue() throws IOException { animatePageTransition("views/catalogue"); }
+
+    private void animatePageTransition(String viewName) throws IOException {
+        if (vboxArticles == null || vboxArticles.getParent() == null) {
+            NetwokApp.setRoot(viewName);
+            return;
+        }
+        
+        // Créer un overlay noir immédiatement opaque
+        Rectangle blackOverlay = new Rectangle();
+        blackOverlay.setFill(Color.BLACK);
+        blackOverlay.setOpacity(1);
+        
+        Pane parent = (Pane) vboxArticles.getParent();
+        parent.getChildren().add(blackOverlay);
+        blackOverlay.widthProperty().bind(parent.widthProperty());
+        blackOverlay.heightProperty().bind(parent.heightProperty());
+        
+        // Charger la nouvelle page immédiatement après le noir
+        NetwokApp.setRoot(viewName);
+    }
 }

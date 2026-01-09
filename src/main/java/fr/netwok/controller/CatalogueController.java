@@ -15,8 +15,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
+import javafx.animation.FadeTransition;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -150,20 +155,20 @@ public class CatalogueController implements Initializable {
         Button btn = (Button) event.getSource();
         langueActuelle = btn.getText().toUpperCase();
         updateInterfaceText();
-        refreshView();
+        animatedRefreshView();
     }
 
     @FXML void filtrerEntrees() {
         this.categorieActuelle = 1;
         toggleSousCategorie(false);
-        refreshView();
+        animatedRefreshView();
         resetScroll();
     }
 
     @FXML void filtrerPlats() {
         this.categorieActuelle = 2;
         toggleSousCategorie(false);
-        refreshView();
+        animatedRefreshView();
         resetScroll();
     }
 
@@ -172,16 +177,31 @@ public class CatalogueController implements Initializable {
         this.sousModeActuel = 0;
         toggleSousCategorie(true);
         if (tabAllDesserts != null) tabAllDesserts.setSelected(true);
-        refreshView();
+        animatedRefreshView();
         resetScroll();
     }
 
-    @FXML void filtrerDessertsOnly() { this.sousModeActuel = 3; refreshView(); }
-    @FXML void filtrerBoissonsOnly() { this.sousModeActuel = 4; refreshView(); }
-    @FXML void filtrerAllDessertsBoissons() { this.sousModeActuel = 0; refreshView(); }
+    @FXML void filtrerDessertsOnly() { this.sousModeActuel = 3; animatedRefreshView(); }
+    @FXML void filtrerBoissonsOnly() { this.sousModeActuel = 4; animatedRefreshView(); }
+    @FXML void filtrerAllDessertsBoissons() { this.sousModeActuel = 0; animatedRefreshView(); }
 
     public static java.util.Set<String> getPlatsIndisponibles() {
         return platsIndisponibles;
+    }
+
+    private void animatedRefreshView() {
+        if (gridPlats == null) return;
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(250), gridPlats);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+        fadeOut.setOnFinished(e -> {
+            refreshView();
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(400), gridPlats);
+            fadeIn.setFromValue(0.0);
+            fadeIn.setToValue(1.0);
+            fadeIn.play();
+        });
+        fadeOut.play();
     }
 
     private void refreshView() {
@@ -222,7 +242,20 @@ public class CatalogueController implements Initializable {
         FlowPane carteContainer = new FlowPane(30, 30);
         carteContainer.setAlignment(Pos.TOP_CENTER);
         carteContainer.setPrefWrapLength(1200);
-        plats.forEach(p -> carteContainer.getChildren().add(creerCarteVBox(p)));
+        
+        int[] delay = {0};
+        plats.forEach(p -> {
+            VBox carte = creerCarteVBox(p);
+            carte.setOpacity(0);
+            carteContainer.getChildren().add(carte);
+            
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(500), carte);
+            fadeIn.setFromValue(0.0);
+            fadeIn.setToValue(1.0);
+            fadeIn.setDelay(Duration.millis(delay[0]));
+            fadeIn.play();
+            delay[0] += 80;
+        });
 
         section.getChildren().addAll(sectionLabel, carteContainer);
         gridPlats.getChildren().add(section);
@@ -342,11 +375,33 @@ public class CatalogueController implements Initializable {
     private void ouvrirDetailPlat(Plat p) {
         try {
             DetailPlatController.setPlatAfficher(p);
-            NetwokApp.setRoot("views/detailPlat");
+            animatePageTransition("views/detailPlat");
         } catch (IOException e) { e.printStackTrace(); }
     }
 
     @FXML void voirPanier() {
-        try { NetwokApp.setRoot("views/panier"); } catch (IOException e) { e.printStackTrace(); }
+        try { 
+            animatePageTransition("views/panier");
+        } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    private void animatePageTransition(String viewName) throws IOException {
+        if (scrollPane == null || scrollPane.getParent() == null) {
+            NetwokApp.setRoot(viewName);
+            return;
+        }
+        
+        // Créer un overlay noir immédiatement opaque
+        Rectangle blackOverlay = new Rectangle();
+        blackOverlay.setFill(Color.BLACK);
+        blackOverlay.setOpacity(1);
+        
+        Pane parent = (Pane) scrollPane.getParent();
+        parent.getChildren().add(blackOverlay);
+        blackOverlay.widthProperty().bind(parent.widthProperty());
+        blackOverlay.heightProperty().bind(parent.heightProperty());
+        
+        // Charger la nouvelle page immédiatement après le noir
+        NetwokApp.setRoot(viewName);
     }
 }

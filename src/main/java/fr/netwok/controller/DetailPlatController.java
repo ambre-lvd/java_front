@@ -15,6 +15,11 @@ import javafx.geometry.Bounds;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
+import javafx.animation.FadeTransition;
+import javafx.util.Duration;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 import java.net.URL;
@@ -229,9 +234,35 @@ public class DetailPlatController implements Initializable {
         new Thread(() -> {
             try {
                 Thread.sleep(1000);
-                Platform.runLater(this::retourCatalogue);
+                Platform.runLater(this::fadeOutAndNavigate);
             } catch (InterruptedException e) { e.printStackTrace(); }
         }).start();
+    }
+
+    private void fadeOutAndNavigate() {
+        if (mainScroll == null || mainScroll.getParent() == null) {
+            retourCatalogue();
+            return;
+        }
+        
+        // Créer un overlay noir immédiatement opaque
+        Rectangle blackOverlay = new Rectangle();
+        blackOverlay.setFill(Color.BLACK);
+        blackOverlay.setOpacity(1);
+        
+        Pane parent = (Pane) mainScroll.getParent();
+        parent.getChildren().add(blackOverlay);
+        blackOverlay.widthProperty().bind(parent.widthProperty());
+        blackOverlay.heightProperty().bind(parent.heightProperty());
+        
+        // Charger la nouvelle page
+        retourCatalogue();
+        
+        // Fade OUT du noir pour révéler la nouvelle page
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(300), blackOverlay);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+        fadeOut.play();
     }
 
     private String genererInformations() {
@@ -329,8 +360,28 @@ public class DetailPlatController implements Initializable {
 
     @FXML void augmenterQuantite() { if (quantite < 99) { quantite++; lblQuantite.setText(String.valueOf(quantite)); } }
     @FXML void diminuerQuantite() { if (quantite > 1) { quantite--; lblQuantite.setText(String.valueOf(quantite)); } }
-    @FXML void retourCatalogue() { try { NetwokApp.setRoot("views/catalogue"); } catch (IOException e) { e.printStackTrace(); } }
-    @FXML void voirPanier() { try { NetwokApp.setRoot("views/panier"); } catch (IOException e) { e.printStackTrace(); } }
+    @FXML void retourCatalogue() { try { animatePageTransition("views/catalogue"); } catch (IOException e) { e.printStackTrace(); } }
+    @FXML void voirPanier() { try { animatePageTransition("views/panier"); } catch (IOException e) { e.printStackTrace(); } }
+
+    private void animatePageTransition(String viewName) throws IOException {
+        if (mainScroll == null || mainScroll.getParent() == null) {
+            NetwokApp.setRoot(viewName);
+            return;
+        }
+        
+        // Créer un overlay noir immédiatement opaque
+        Rectangle blackOverlay = new Rectangle();
+        blackOverlay.setFill(Color.BLACK);
+        blackOverlay.setOpacity(1);
+        
+        Pane parent = (Pane) mainScroll.getParent();
+        parent.getChildren().add(blackOverlay);
+        blackOverlay.widthProperty().bind(parent.widthProperty());
+        blackOverlay.heightProperty().bind(parent.heightProperty());
+        
+        // Charger la nouvelle page immédiatement après le noir
+        NetwokApp.setRoot(viewName);
+    }
 
     private void updatePanierDisplay() {
         int nb = MockService.getInstance().getNombreArticlesPanier();

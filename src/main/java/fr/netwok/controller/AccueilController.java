@@ -6,6 +6,11 @@ import javafx.fxml.FXML;
 import java.io.IOException;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.animation.FadeTransition;
+import javafx.util.Duration;
 
 public class AccueilController {
 
@@ -15,11 +20,31 @@ public class AccueilController {
     @FXML
     void commencerCommande() {
         try {
-            NetwokApp.setRoot("views/catalogue");
+            animatePageTransition("views/catalogue");
         } catch (IOException e) {
             System.err.println("Erreur chargement catalogue : " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private void animatePageTransition(String viewName) throws IOException {
+        if (btnCommencer == null || btnCommencer.getScene() == null) {
+            NetwokApp.setRoot(viewName);
+            return;
+        }
+        
+        // Créer un overlay noir immédiatement opaque sur la racine
+        Pane root = (Pane) btnCommencer.getScene().getRoot();
+        Rectangle blackOverlay = new Rectangle();
+        blackOverlay.setFill(Color.BLACK);
+        blackOverlay.setOpacity(1);
+        
+        root.getChildren().add(blackOverlay);
+        blackOverlay.widthProperty().bind(root.widthProperty());
+        blackOverlay.heightProperty().bind(root.heightProperty());
+        
+        // Charger la nouvelle page immédiatement après le noir
+        NetwokApp.setRoot(viewName);
     }
 
     @FXML

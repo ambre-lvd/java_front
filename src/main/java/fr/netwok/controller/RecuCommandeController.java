@@ -10,8 +10,12 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -31,7 +35,9 @@ public class RecuCommandeController implements Initializable {
     @FXML private Label lblTxtNumCommande;
     @FXML private Label lblSousTotal, lblTaxes, lblTotal, lblMerci, lblAuRevoir;
     @FXML private Button btnTermine;
-    @FXML private VBox vboxArticlesTicket, vboxMessage;
+    @FXML private VBox vboxArticlesTicket;
+    @FXML private VBox rootTicket;
+    @FXML private StackPane vboxMessage;
     @FXML private Label mercifinal;
     @FXML private Label abientot;
 
@@ -192,8 +198,7 @@ public class RecuCommandeController implements Initializable {
     }
 
     @FXML void terminerCommande() {
-        VBox ticketParent = (VBox) vboxArticlesTicket.getParent().getParent();
-        FadeTransition fo = new FadeTransition(Duration.millis(500), ticketParent);
+        FadeTransition fo = new FadeTransition(Duration.millis(500), rootTicket);
         fo.setToValue(0);
         fo.setOnFinished(e -> {
             vboxMessage.setOpacity(0);
@@ -209,8 +214,25 @@ public class RecuCommandeController implements Initializable {
 
     private void retournerCatalogue() {
         try {
-            // Pas besoin de vider ici, le panier est déjà vide depuis l'écran précédent
+            if (vboxArticlesTicket == null || vboxArticlesTicket.getScene() == null) {
+                NetwokApp.setRoot("views/accueil");
+                return;
+            }
+            
+            // Créer un overlay noir immédiatement opaque
+            Pane root = (Pane) vboxArticlesTicket.getScene().getRoot();
+            Rectangle blackOverlay = new Rectangle();
+            blackOverlay.setFill(Color.BLACK);
+            blackOverlay.setOpacity(1);
+            
+            root.getChildren().add(blackOverlay);
+            blackOverlay.widthProperty().bind(root.widthProperty());
+            blackOverlay.heightProperty().bind(root.heightProperty());
+            
+            // Charger la nouvelle page immédiatement après le noir
             NetwokApp.setRoot("views/accueil");
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) { 
+            e.printStackTrace(); 
+        }
     }
 }
